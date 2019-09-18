@@ -1,0 +1,11 @@
+[Unit]
+Description=qBittorrent API's Telegram interface
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/home/pi/qbittorrent-bot
+ExecStart=/home/pi/qbittorrent-bot/venv/bin/python3 /home/pi/qbittorrent-bot/main.py
+
+[Install]
+WantedBy=multi-user.target

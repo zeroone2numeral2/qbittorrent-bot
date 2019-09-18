@@ -1,0 +1,8 @@
+.idea/
+venv/
+*.pyc
+*.log
+*.log.*
+config.toml
+*.torrent
+permissions.json

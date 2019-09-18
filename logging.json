@@ -1,0 +1,43 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
+            "level": "DEBUG"
+        },
+        "file": {
+            "class" : "logging.handlers.RotatingFileHandler",
+            "formatter": "standard",
+            "level": "DEBUG",
+            "encoding": "utf8",
+            "maxBytes": 524288,
+            "backupCount": 25
+        }
+    },
+    "loggers": {
+        "": {
+            "handlers": [
+                "console",
+                "file"
+            ],
+            "propagate": false,
+            "level": "DEBUG"
+        },
+        "telegram": {
+            "level": "WARNING"
+        },
+        "JobQueue": {
+            "level": "WARNING"
+        }
+    },
+    "formatters": {
+        "short": {
+            "format": "[%(name)s][%(levelname)s] >>> %(message)s"
+        },
+        "standard": {
+            "format": "[%(asctime)s][%(name)s][%(levelname)s] >>> %(message)s"
+        }
+    }
+}
