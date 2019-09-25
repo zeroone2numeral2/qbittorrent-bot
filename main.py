@@ -273,7 +273,7 @@ def on_torrents_list_selection(_, update, groups):
 
     torrents = qb.torrents(filter=qbfilter, sort='dlspeed', reverse=False) or []
     if qbfilter == 'tostart':
-        all_torrents = [t.hash for t in qb.torrents(filter='all')]
+        all_torrents = qb.torrents(filter='all')
         completed_torrents = [t.hash for t in qb.torrents(filter='completed')]
         active_torrents = [t.hash for t in qb.torrents(filter='active')]
 
