@@ -84,7 +84,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 <i>FREE commands</i>
 • /rmkb: remove the keyboard, if any"""
 
-TORRENTS_CATEGORIES = [r'\/?all', r'\/?completed', r'\/?downloading', r'\/?paused', r'\/?inactive', r'\/?active']
+TORRENTS_CATEGORIES = [r'\/?all', r'\/?completed', r'\/?downloading', r'\/?paused', r'\/?inactive', r'\/?active', r'\/?tostart']
 TORRENT_CATEG_REGEX_PATTERN = r'^({})'.format('|'.join(TORRENTS_CATEGORIES))
 TORRENT_CATEG_REGEX = re.compile(TORRENT_CATEG_REGEX_PATTERN, re.I)
 
