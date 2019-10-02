@@ -74,6 +74,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /altup <code>[kb/s]</code>: change the alternative max upload speed
 • /pauseall: pause all torrents
 • /resumeall: resume all torrents
+• /set <code>[setting] [new value]</code>: change a setting
 
 <i>ADMIN commands</i>
 • /getlog or /log: get the log file
@@ -325,6 +326,23 @@ def on_json_command(_, update):
     update.message.reply_document(open(file_path, 'rb'), caption='#torrents_list', timeout=60*10)
 
     os.remove(file_path)
+
+
+@u.check_permissions(required_permission=Permissions.EDIT)
+@u.failwithmessage
+def change_setting(_, update, args):
+    logger.info('/set from %s', update.effective_user.first_name)
+
+    if len(args) < 2:
+        update.message.reply_html('Usage: /set <code>[setting] [value]</code>')
+        return
+
+    key = args[0].lower()
+    val = args[1]
+
+    qb.set_preferences(**{key: val})
+
+    update.message.reply_html('<b>Setting changed</b>:\n\n<code>{}</code>'.format(val))
 
 
 @u.check_permissions(required_permission=Permissions.READ)
@@ -763,6 +781,7 @@ def main():
     dispatcher.add_handler(RegexHandler(r'^\/start info(.*)$', on_info_deeplink, pass_groups=True))
     dispatcher.add_handler(CommandHandler('help', on_help))
     dispatcher.add_handler(CommandHandler(['settings', 's'], on_settings_command))
+    dispatcher.add_handler(CommandHandler(['set'], change_setting, pass_args=True))
     dispatcher.add_handler(CommandHandler(['permissions', 'p'], get_permissions))
     dispatcher.add_handler(CommandHandler(['pset'], set_permission, pass_args=True))
     dispatcher.add_handler(CommandHandler(['filter', 'f'], on_filter_command, pass_args=True))

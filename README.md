@@ -56,6 +56,7 @@ all - list all torrents
 downloading - list downloading torrents
 paused - list paused torrents
 inactive - list inactive torrents
+set - change a setting
 filter - filter torrents by name
 log - get the log file
 settings - get the settings list
