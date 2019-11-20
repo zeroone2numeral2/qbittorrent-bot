@@ -121,14 +121,14 @@ ALTERNATIVE_SPEED_DISABLED = """Alternative speed limits disabled \
 (normal limits: {dl_limit} down, {up_limit} up)"""
 
 SPEED_TEXT = """<b>Max download:</b> {max_download}
-<b>Max upload:<b> {max_upload}
+<b>Max upload:</b> {max_upload}
 
-<b>Alt. max download:<b> {max_download_alt}
-<b>Alt. max upload:<b> {max_upload_alt}
-<b>Alternative limits status:<b> {alt_enabled}
+<b>Alt. max download:</b> {max_download_alt}
+<b>Alt. max upload:</b> {max_upload_alt}
+<b>Alternative limits status:</b> {alt_enabled}
 
-<b>Current download:<b> {speed_down}
-<b>Current upload:<b> {speed_up}"""
+<b>Current download:</b> {speed_down}
+<b>Current upload:</b> {speed_up}"""
 
 SCHEDULE_TEXT = """{}, alternative limits enabled from {:0>2from_hour} to {:0>2to_hour}. Days: {days}"""
 
