@@ -130,7 +130,7 @@ SPEED_TEXT = """<b>Max download:</b> {max_download}
 <b>Current download:</b> {speed_down}
 <b>Current upload:</b> {speed_up}"""
 
-SCHEDULE_TEXT = """{}, alternative limits enabled from {:0>2from_hour} to {:0>2to_hour}. Days: {days}"""
+SCHEDULE_TEXT = """{}, alternative limits enabled from {from_hour} to {to_hour}. Days: {days}"""
 
 PREF_FROMATTING = {
     # 'alt_dl_limit': lambda speed: u.get_human_readable(speed),
