@@ -76,6 +76,8 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /pauseall: pause all torrents
 • /resumeall: resume all torrents
 • /set <code>[setting] [new value]</code>: change a setting
+• /schedon: enable scheduled speed limits
+• /schedoff: disable scheduled speed limits
 
 <i>ADMIN commands</i>
 • /getlog or /log: get the log file
@@ -127,6 +129,8 @@ SPEED_TEXT = """<b>Max download:</b> {max_download}
 
 <b>Current download:<b> {speed_down}
 <b>Current upload:<b> {speed_up}"""
+
+SCHEDULE_TEXT = """{}, alternative limits enabled from {:0>2from_hour} to {:0>2to_hour}. Days: {days}"""
 
 PREF_FROMATTING = {
     # 'alt_dl_limit': lambda speed: u.get_human_readable(speed),
@@ -780,6 +784,29 @@ def on_config_command(_, update):
     update.message.reply_html('<code>{}</code>'.format(pformat(config.qbittorrent)))
 
 
+@u.check_permissions(required_permission=Permissions.EDIT)
+@u.failwithmessage
+def on_sched_change(_, update):
+    logger.info('/schedon/schedoff from %s', update.effective_user.first_name)
+
+    if update.message.text.lower().startswith('/schedon'):
+        new_status = True
+    else:
+        new_status = False
+
+    qb.set_preferences(**{'scheduler_enabled': new_status})
+
+    preferences = qb.preferences()
+    text = SCHEDULE_TEXT.format(
+        status='enabled' if new_status else 'disabled',
+        from_hour='{:0>2}:{:0>2}'.format(preferences['schedule_from_hour'], preferences['schedule_from_min']),
+        to_hour='{:0>2}:{:0>2}'.format(preferences['schedule_to_hour'], preferences['schedule_to_min']),
+        days=str(preferences['scheduler_days'])
+    )
+
+    update.message.reply_html(text)
+
+
 @u.failwithmessage
 def remove_keyboard(_, update):
     logger.info('/rmkb from %s', update.effective_user.first_name)
@@ -822,6 +849,7 @@ def main():
     dispatcher.add_handler(CommandHandler(['pset'], set_permission, pass_args=True))
     dispatcher.add_handler(CommandHandler(['filter', 'f'], on_filter_command, pass_args=True))
     dispatcher.add_handler(CommandHandler(['getlog', 'log'], send_log_file))
+    dispatcher.add_handler(CommandHandler(['schedon', 'schedoff'], on_sched_change))
     dispatcher.add_handler(CommandHandler(['altoff', 'fast'], on_fast))
     dispatcher.add_handler(CommandHandler(['alton', 'slow'], on_slow))
     dispatcher.add_handler(CommandHandler(['speed'], on_speed))
