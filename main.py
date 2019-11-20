@@ -61,6 +61,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /tostart: show torrents that are not active or completed
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
 • /settings or /s: get current settings list
+• /speed: get the current speed settings and info
 • /json: get a json file containing a list of all the torrents
 
 <i>WRITE commands</i>
@@ -116,6 +117,16 @@ ALTERNATIVE_SPEED_ALREADY_DISABLED = """Alternative speed limits are already dis
 
 ALTERNATIVE_SPEED_DISABLED = """Alternative speed limits disabled \
 (normal limits: {dl_limit} down, {up_limit} up)"""
+
+SPEED_TEXT = """<b>Max download:</b> {max_download}
+<b>Max upload:<b> {max_upload}
+
+<b>Alt. max download:<b> {max_download_alt}
+<b>Alt. max upload:<b> {max_upload_alt}
+<b>Alternative limits status:<b> {alt_enabled}
+
+<b>Current download:<b> {speed_down}
+<b>Current upload:<b> {speed_up}"""
 
 PREF_FROMATTING = {
     # 'alt_dl_limit': lambda speed: u.get_human_readable(speed),
@@ -190,7 +201,7 @@ def on_slow(_, update):
     else:
         qb.toggle_alternative_speed()
         update.message.reply_text(ALTERNATIVE_SPEED_ENABLED.format(**preferences))
-        
+
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
@@ -208,6 +219,31 @@ def on_fast(_, update):
     else:
         qb.toggle_alternative_speed()
         update.message.reply_text(ALTERNATIVE_SPEED_DISABLED.format(**format_dict))
+
+
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+def on_speed(_, update):
+    logger.info('/speed from %s', update.message.from_user.first_name)
+
+    preferences = qb.preferences()
+    polish_preferences(preferences)
+
+    transfer_info = qb.global_transfer_info
+
+    format_dict = dict(
+        max_download='{} kb/s'.format(preferences['dl_limit']) if preferences['dl_limit'] > -1 else 'none',
+        max_upload='{} kb/s'.format(preferences['up_limit']) if preferences['up_limit'] > -1 else 'none',
+
+        max_download_alt='{} kb/s'.format(preferences['alt_dl_limit']) if preferences['alt_dl_limit'] > -1 else 'none',
+        max_upload_alt='{} kb/s'.format(preferences['alt_up_limit']) if preferences['alt_up_limit'] > -1 else 'none',
+        alt_enabled='on' if bool(qb.get_alternative_speed_status()) else 'off',
+
+        speed_down=transfer_info.get('dl_info', 'unavailable'),
+        speed_up=transfer_info.get('up_info', 'unavailable')
+    )
+
+    update.message.reply_html(SPEED_TEXT.format(**format_dict))
 
 
 @u.check_permissions(required_permission=Permissions.EDIT)
@@ -788,6 +824,7 @@ def main():
     dispatcher.add_handler(CommandHandler(['getlog', 'log'], send_log_file))
     dispatcher.add_handler(CommandHandler(['altoff', 'fast'], on_fast))
     dispatcher.add_handler(CommandHandler(['alton', 'slow'], on_slow))
+    dispatcher.add_handler(CommandHandler(['speed'], on_speed))
     dispatcher.add_handler(CommandHandler(['altdown', 'altup'], change_alternative_limits, pass_args=True))
     dispatcher.add_handler(CommandHandler('json', on_json_command))
     dispatcher.add_handler(CommandHandler('config', on_config_command))
