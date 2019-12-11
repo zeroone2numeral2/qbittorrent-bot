@@ -352,6 +352,46 @@ def on_torrents_list_selection(_, update, groups):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True, reply_markup=markup)
 
 
+def get_quick_text():
+    active_trnts = qb.torrents(filter='active', sort='dlspeed', reverse=False)
+    completed_trnts = qb.torrents(filter='completed')
+
+    if active_trnts:
+        active_torrents_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_trnts]
+    else:
+        active_torrents_strings_list = ['no active torrent']
+
+    if completed_trnts:
+        completed_torrents_strings_list = ['{}'.format(t.name[:80]) for t in completed_trnts]
+    else:
+        completed_torrents_strings_list = ['no completed torrent']
+
+    schedule_info = qb.get_schedule()
+    if not schedule_info:
+        schedule_string = '<b>Schedule</b>: off'
+    else:
+        schedule_string = '<b>Schedule</b>: on, from {from_hour} to {to_hour} ({days})'.format(**schedule_info)
+
+    alt_speed_info = qb.get_alt_speed()
+    alt_speed_string = '<b>Alt speed is {}</b> (down: {dl_limit} kb/s, up: {up_limit} kb/s)'.format(
+        'on' if alt_speed_info['status'] else 'off',
+        **alt_speed_info
+    )
+
+    current_speed = qb.get_speed()
+    current_speed_string = '<b>Current speed</b>: down: {0}/s, up: {1}/s'.format(*current_speed)
+
+
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+def on_quick_command(_, update, groups):
+    logger.info('/quick command from %s', update.message.from_user.first_name)
+
+
+
+
+
+
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 def on_json_command(_, update):
@@ -854,6 +894,7 @@ def main():
     dispatcher.add_handler(RegexHandler(r'^\/start$', on_help))
     dispatcher.add_handler(RegexHandler(r'^\/start info(.*)$', on_info_deeplink, pass_groups=True))
     dispatcher.add_handler(CommandHandler('help', on_help))
+    dispatcher.add_handler(CommandHandler(['quick'], on_quick_command))
     dispatcher.add_handler(CommandHandler(['settings', 's'], on_settings_command))
     dispatcher.add_handler(CommandHandler(['set'], change_setting, pass_args=True))
     dispatcher.add_handler(CommandHandler(['permissions', 'p'], get_permissions))

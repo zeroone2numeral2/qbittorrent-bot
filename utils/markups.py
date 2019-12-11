@@ -17,6 +17,18 @@ LISTS_MENU = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+QUICK_MENU_BUTTON = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton('refresh', callback_data='quick:refresh'),
+        InlineKeyboardButton('alt speed on', callback_data='quick:alton'),
+        InlineKeyboardButton('alt speed off', callback_data='quick:altoff'),
+    ],
+    [
+        InlineKeyboardButton('schedule on', callback_data='quick:schedon'),
+        InlineKeyboardButton('schedule off', callback_data='quick:schedoff'),
+    ]
+])
+
 SPEEDCAP_MENU = InlineKeyboardMarkup([[InlineKeyboardButton('toggle', callback_data='togglespeedcap')]])
 
 REFRESH_ACTIVE = InlineKeyboardMarkup([[InlineKeyboardButton('refresh', callback_data='refreshactive')]])

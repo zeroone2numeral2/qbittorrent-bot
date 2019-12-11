@@ -153,6 +153,36 @@ class CustomClient(Client):
 
         return filtered
 
+    def get_schedule(self):
+        p = self.preferences()
+
+        if not p['scheduler_enabled']:
+            return None
+
+        return dict(
+            from_hour='{:0>2}:{:0>2}'.format(p['schedule_from_hour'], p['schedule_from_min']),
+            to_hour='{:0>2}:{:0>2}'.format(p['schedule_to_hour'], p['schedule_to_min']),
+            days=str(p['scheduler_days'])
+        )
+
+    def get_alt_speed(self):
+        p = self.preferences()
+
+        return dict(
+            status=bool(self.get_alternative_speed_status()),
+            dl_limit=p['dl_limit'] if p['dl_limit'] > -1 else None,
+            up_limit=p['up_limit'] if p['up_limit'] > -1 else None
+        )
+
+    def get_speed(self):
+        tinfo = self.global_transfer_info()
+
+        return (
+            u.get_human_readable(tinfo['dl_info_speed']),
+            u.get_human_readable(tinfo['up_info_speed'])
+        )
+
+
 
 class OfflineClient:
     """
