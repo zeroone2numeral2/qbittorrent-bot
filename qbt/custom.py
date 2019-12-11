@@ -129,6 +129,8 @@ class CustomClient(Client):
             torrent['manage_deeplink'] = 'https://t.me/{}?start=manage{}'.format(self._bot_username, torrent['hash'])
             torrent['info_deeplink'] = 'https://t.me/{}?start=info{}'.format(self._bot_username, torrent['hash'])
 
+        torrent['short_name'] = torrent['name'] if len(torrent['name']) < 81 else torrent['name'][:81] + '...'
+
         return {k: ATTR_FORMATTING.get(k, lambda x: x)(v) for k, v in torrent.items()}
 
     def torrents(self, **kwargs):

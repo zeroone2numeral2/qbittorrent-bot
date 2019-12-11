@@ -114,7 +114,7 @@ TORRENT_STRING_FILTERED = """• <code>{name}</code>
   <b>force start</b>: {force_start}
   [<a href="{info_deeplink}">info</a>]"""
 
-TORRENT_STRING_COMPACT = """• <code>{name}</code> ({progress}% of {size}, {state}, <b>{dlspeed}/s</b>) \
+TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress}% of {size}, {state}, <b>{dlspeed}/s</b>) \
 [<a href="{info_deeplink}">info</a>]"""
 
 TORRENT_STRING_COMPLETED = '• <code>{name}</code> ({size})'
@@ -142,6 +142,15 @@ SPEED_TEXT = """<b>Max download:</b> {max_download}
 <b>Current upload:</b> {speed_up}"""
 
 SCHEDULE_TEXT = """{}, alternative limits enabled from {from_hour} to {to_hour}. Days: {days}"""
+
+QUICK_INFO_TEXT = """<b>Completed:</b> {completed}
+
+<b>Active:</b>
+• {active}
+
+{schedule}
+{alt_speed}
+{current_speed}"""
 
 PREF_FROMATTING = {
     # 'alt_dl_limit': lambda speed: u.get_human_readable(speed),
@@ -352,7 +361,7 @@ def on_torrents_list_selection(_, update, groups):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True, reply_markup=markup)
 
 
-def get_quick_text():
+def get_quick_info_text():
     active_trnts = qb.torrents(filter='active', sort='dlspeed', reverse=False)
     completed_trnts = qb.torrents(filter='completed')
 
@@ -362,7 +371,7 @@ def get_quick_text():
         active_torrents_strings_list = ['no active torrent']
 
     if completed_trnts:
-        completed_torrents_strings_list = ['{}'.format(t.name[:80]) for t in completed_trnts]
+        completed_torrents_strings_list = ['{}'.format(t.short_name) for t in completed_trnts]
     else:
         completed_torrents_strings_list = ['no completed torrent']
 
@@ -381,15 +390,74 @@ def get_quick_text():
     current_speed = qb.get_speed()
     current_speed_string = '<b>Current speed</b>: down: {0}/s, up: {1}/s'.format(*current_speed)
 
+    text = QUICK_INFO_TEXT.format(
+        completed=', '.join(completed_torrents_strings_list),
+        active='\n• '.join(active_torrents_strings_list),
+        schedule=schedule_string,
+        alt_speed=alt_speed_string,
+        current_speed=current_speed_string
+    )
+
+    return text
+
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_command(_, update, groups):
+def on_quick_info_command(_, update):
     logger.info('/quick command from %s', update.message.from_user.first_name)
 
+    text = get_quick_info_text()
+    update.message.reply_html(text)
 
 
+@u.failwithmessage
+def on_refresh_button_quick(bot, update):
+    logger.info('quick info: refresh button')
 
+    text = get_quick_info_text()
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+
+
+@u.failwithmessage
+def on_alton_button_quick(_, update):
+    logger.info('quick info: alton button')
+
+    if not bool(qb.get_alternative_speed_status()):
+        qb.toggle_alternative_speed()
+
+    text = get_quick_info_text()
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+
+
+@u.failwithmessage
+def on_altoff_button_quick(_, update):
+    logger.info('quick info: altoff button')
+
+    if bool(qb.get_alternative_speed_status()):
+        qb.toggle_alternative_speed()
+
+    text = get_quick_info_text()
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+
+
+@u.failwithmessage
+def on_schedon_button_quick(_, update):
+    logger.info('quick info: schedon button')
+
+    qb.set_preferences(**{'scheduler_enabled': True})
+
+    text = get_quick_info_text()
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+
+
+@u.failwithmessage
+def on_schedoff_button_quick(_, update):
+    logger.info('quick info: schedoff button')
+
+    qb.set_preferences(**{'scheduler_enabled': False})
+
+    text = get_quick_info_text()
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
 
 
 @u.check_permissions(required_permission=Permissions.READ)
@@ -894,7 +962,7 @@ def main():
     dispatcher.add_handler(RegexHandler(r'^\/start$', on_help))
     dispatcher.add_handler(RegexHandler(r'^\/start info(.*)$', on_info_deeplink, pass_groups=True))
     dispatcher.add_handler(CommandHandler('help', on_help))
-    dispatcher.add_handler(CommandHandler(['quick'], on_quick_command))
+    dispatcher.add_handler(CommandHandler(['quick'], on_quick_info_command))
     dispatcher.add_handler(CommandHandler(['settings', 's'], on_settings_command))
     dispatcher.add_handler(CommandHandler(['set'], change_setting, pass_args=True))
     dispatcher.add_handler(CommandHandler(['permissions', 'p'], get_permissions))
@@ -930,6 +998,11 @@ def main():
     dispatcher.add_handler(CallbackQueryHandler(confirm_delete_with_files_cb, pattern=r'^confirmdeletewithfiles:(.*)$', pass_groups=True))
     dispatcher.add_handler(CallbackQueryHandler(reduce_buttons, pattern=r'^reduce:(.*)$', pass_groups=True))
     dispatcher.add_handler(CallbackQueryHandler(refresh_active_torrents, pattern=r'^refreshactive$'))
+    dispatcher.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh$'))
+    dispatcher.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))
+    dispatcher.add_handler(CallbackQueryHandler(on_altoff_button_quick, pattern=r'^quick:altoff$'))
+    dispatcher.add_handler(CallbackQueryHandler(on_schedon_button_quick, pattern=r'^quick:schedon'))
+    dispatcher.add_handler(CallbackQueryHandler(on_schedoff_button_quick, pattern=r'^quick:schedoff'))
 
     dispatcher.add_error_handler(error_callback)
     
