@@ -44,9 +44,10 @@ I made this bot to be able to manage what I'm downloading on my Raspberry runnin
 Use the text below to set your bot's commands suggestions through [@BotFather](https://t.me/botfather)
 
 ```
-active - list active torrents
+quick - get an overview of what we're downloading
 fast - disable alternative speed limits
 slow - enable alternative speed limits
+active - list active torrents
 tostart - show torrents that are not active or completed
 help - see the help message
 altoff - disable alternative speed limits

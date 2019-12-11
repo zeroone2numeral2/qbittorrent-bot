@@ -70,6 +70,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /start or /help: show this message
 • /completed, /active, /paused, /downloading, /inactive, /all: show the torrents list by status
 • /tostart: show torrents that are not active or completed
+• /quick: overview of what we're downloading
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
 • /settings or /s: get current settings list
 • /speed: get the current speed settings and info
