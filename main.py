@@ -9,7 +9,7 @@ from pprint import pprint
 
 import requests
 # noinspection PyPackageRequirements
-from telegram import ParseMode
+from telegram import ParseMode, Bot
 # noinspection PyPackageRequirements
 from telegram.constants import MAX_MESSAGE_LENGTH
 # noinspection PyPackageRequirements
@@ -43,7 +43,16 @@ def load_logging_config(file_path, logfile):
 logger = logging.getLogger(__name__)
 load_logging_config(config.logging.config, config.logging.path)
 
-updater = Updater(token=config.telegram.token, workers=config.telegram.get('workers', 1))
+
+class CustomBot(Bot):
+    def send_message(self, *args, **kwargs):
+        if 'timeout' not in kwargs and config.telegram.get('timeout', None):
+            kwargs['timeout'] = config.telegram.timeout
+
+        return super(CustomBot, self).send_message(*args, **kwargs)
+
+
+updater = Updater(bot=CustomBot(config.telegram.token), workers=config.telegram.get('workers', 1))
 dispatcher = updater.dispatcher
 
 try:
