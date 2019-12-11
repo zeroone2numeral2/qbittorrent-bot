@@ -102,3 +102,14 @@ def build_progress_bar(decimal_percentage, steps=10):
     completed_steps = round(steps * decimal_percentage)
     missing_steps = steps - completed_steps
     return '{}{}'.format(FULL * completed_steps, EMPTY * missing_steps)
+
+
+def custom_timeout(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        if 'timeout' not in kwargs and config.telegram.get('timeout', None):
+            kwargs['timeout'] = config.telegram.timeout
+
+        return func(*args, **kwargs)
+
+    return wrapped

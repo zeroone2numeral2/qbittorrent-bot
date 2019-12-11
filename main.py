@@ -45,16 +45,12 @@ load_logging_config(config.logging.config, config.logging.path)
 
 
 class CustomBot(Bot):
+    @u.custom_timeout
     def send_message(self, *args, **kwargs):
-        if 'timeout' not in kwargs and config.telegram.get('timeout', None):
-            kwargs['timeout'] = config.telegram.timeout
-
         return super(CustomBot, self).send_message(*args, **kwargs)
 
+    @u.custom_timeout
     def answer_callback_query(self, *args, **kwargs):
-        if 'timeout' not in kwargs and config.telegram.get('timeout', None):
-            kwargs['timeout'] = config.telegram.timeout
-
         return super(CustomBot, self).answer_callback_query(*args, **kwargs)
 
 
