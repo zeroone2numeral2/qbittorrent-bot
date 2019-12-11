@@ -51,6 +51,12 @@ class CustomBot(Bot):
 
         return super(CustomBot, self).send_message(*args, **kwargs)
 
+    def answer_callback_query(self, *args, **kwargs):
+        if 'timeout' not in kwargs and config.telegram.get('timeout', None):
+            kwargs['timeout'] = config.telegram.timeout
+
+        return super(CustomBot, self).answer_callback_query(*args, **kwargs)
+
 
 updater = Updater(bot=CustomBot(config.telegram.token), workers=config.telegram.get('workers', 1))
 dispatcher = updater.dispatcher
