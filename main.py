@@ -383,10 +383,10 @@ def get_quick_info_text():
         schedule_string = '<b>Schedule</b>: on, from {from_hour} to {to_hour} ({days})'.format(**schedule_info)
 
     alt_speed_info = qb.get_alt_speed()
-    alt_speed_string = '<b>Alt speed is {}</b> (down: {dl_limit} kb/s, up: {up_limit} kb/s)'.format(
+    alt_speed_string = '<b>Alt speed is {}</b> (down: {alt_dl_limit} kb/s, up: {alt_up_limit} kb/s)'.format(
         'on' if alt_speed_info['status'] else 'off',
-        dl_limit=alt_speed_info['dl_limit'] if alt_speed_info['dl_limit'] else 'none',
-        up_limit=alt_speed_info['up_limit'] if alt_speed_info['up_limit'] else 'none',
+        alt_dl_limit=alt_speed_info['alt_dl_limit'] if alt_speed_info['alt_dl_limit'] else 'none',
+        alt_up_limit=alt_speed_info['alt_up_limit'] if alt_speed_info['alt_up_limit'] else 'none',
     )
 
     current_speed = qb.get_speed()
@@ -409,7 +409,7 @@ def on_quick_info_command(_, update):
     logger.info('/quick command from %s', update.message.from_user.first_name)
 
     text = get_quick_info_text()
-    update.message.reply_html(text)
+    update.message.reply_html(text, reply_markup=kb.QUICK_MENU_BUTTON)
 
 
 @u.failwithmessage
@@ -417,7 +417,7 @@ def on_refresh_button_quick(bot, update):
     logger.info('quick info: refresh button')
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
 
 
 @u.failwithmessage
