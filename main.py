@@ -48,6 +48,7 @@ load_logging_config(config.logging.config, config.logging.path)
 class CustomBot(Bot):
     @u.custom_timeout
     def send_message(self, *args, **kwargs):
+        # print(args, kwargs)
         return super(CustomBot, self).send_message(*args, **kwargs)
 
     @u.custom_timeout
