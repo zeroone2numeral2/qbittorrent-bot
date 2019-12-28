@@ -177,7 +177,7 @@ class CustomClient(Client):
         )
 
     def get_speed(self):
-        tinfo = self.global_transfer_info()
+        tinfo = self.global_transfer_info
 
         return (
             u.get_human_readable(tinfo['dl_info_speed']),
