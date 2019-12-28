@@ -22,7 +22,7 @@ from telegram.ext import (
     Updater
 )
 # noinspection PyPackageRequirements
-from telegram.error import BadRequest
+from telegram.error import BadRequest, TelegramError
 
 from qbt import CustomClient
 from qbt import OfflineClient
@@ -417,7 +417,15 @@ def on_refresh_button_quick(bot, update):
     logger.info('quick info: refresh button')
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+
+    try:
+        update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+        update.callback_query.answer('Refreshed')
+    except (TelegramError, BadRequest) as err:
+        if 'not modified' not in str(err).lower():
+            raise err
+        else:
+            update.callback_query.answer('Nothing to refresh')
 
 
 @u.failwithmessage
