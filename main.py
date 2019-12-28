@@ -397,7 +397,7 @@ def get_quick_info_text():
 
     text = QUICK_INFO_TEXT.format(
         completed=', '.join(completed_torrents_strings_list),
-        active='\n• '.join(active_torrents_strings_list),
+        active='\n'.join(active_torrents_strings_list),
         schedule=schedule_string,
         alt_speed=alt_speed_string,
         current_speed=current_speed_string
