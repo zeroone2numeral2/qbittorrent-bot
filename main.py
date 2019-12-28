@@ -436,6 +436,7 @@ def on_alton_button_quick(_, update):
 
     text = get_quick_info_text()
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.answer('Alternative speed enabled')
 
 
 @u.failwithmessage
@@ -448,6 +449,7 @@ def on_altoff_button_quick(_, update):
 
     text = get_quick_info_text()
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.answer('Alternative speed disabled')
 
 
 @u.failwithmessage
@@ -459,6 +461,7 @@ def on_schedon_button_quick(_, update):
 
     text = get_quick_info_text()
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.answer('Scheduled altenrative speed on')
 
 
 @u.failwithmessage
@@ -470,6 +473,7 @@ def on_schedoff_button_quick(_, update):
 
     text = get_quick_info_text()
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.answer('Scheduled altenrative speed off')
 
 
 @u.check_permissions(required_permission=Permissions.READ)
