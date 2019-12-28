@@ -385,7 +385,8 @@ def get_quick_info_text():
     alt_speed_info = qb.get_alt_speed()
     alt_speed_string = '<b>Alt speed is {}</b> (down: {dl_limit} kb/s, up: {up_limit} kb/s)'.format(
         'on' if alt_speed_info['status'] else 'off',
-        **alt_speed_info
+        dl_limit=alt_speed_info['dl_limit'] if alt_speed_info['dl_limit'] else 'none',
+        up_limit=alt_speed_info['up_limit'] if alt_speed_info['up_limit'] else 'none',
     )
 
     current_speed = qb.get_speed()
