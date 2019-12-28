@@ -150,7 +150,7 @@ SCHEDULE_TEXT = """{}, alternative limits enabled from {from_hour} to {to_hour}.
 QUICK_INFO_TEXT = """<b>Completed:</b> {completed}
 
 <b>Active:</b>
-• {active}
+{active}
 
 {schedule}
 {alt_speed}
