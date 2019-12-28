@@ -413,22 +413,18 @@ def on_quick_info_command(_, update):
 
 
 @u.failwithmessage
+@u.ignore_not_modified_exception
 def on_refresh_button_quick(bot, update):
     logger.info('quick info: refresh button')
 
     text = get_quick_info_text()
 
-    try:
-        update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
-        update.callback_query.answer('Refreshed')
-    except (TelegramError, BadRequest) as err:
-        if 'not modified' not in str(err).lower():
-            raise err
-        else:
-            update.callback_query.answer('Nothing to refresh')
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.answer('Refreshed')
 
 
 @u.failwithmessage
+@u.ignore_not_modified_exception
 def on_alton_button_quick(_, update):
     logger.info('quick info: alton button')
 
@@ -436,10 +432,11 @@ def on_alton_button_quick(_, update):
         qb.toggle_alternative_speed()
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
 
 
 @u.failwithmessage
+@u.ignore_not_modified_exception
 def on_altoff_button_quick(_, update):
     logger.info('quick info: altoff button')
 
@@ -447,27 +444,29 @@ def on_altoff_button_quick(_, update):
         qb.toggle_alternative_speed()
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
 
 
 @u.failwithmessage
+@u.ignore_not_modified_exception
 def on_schedon_button_quick(_, update):
     logger.info('quick info: schedon button')
 
     qb.set_preferences(**{'scheduler_enabled': True})
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
 
 
 @u.failwithmessage
+@u.ignore_not_modified_exception
 def on_schedoff_button_quick(_, update):
     logger.info('quick info: schedoff button')
 
     qb.set_preferences(**{'scheduler_enabled': False})
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
 
 
 @u.check_permissions(required_permission=Permissions.READ)

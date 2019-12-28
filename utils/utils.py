@@ -4,6 +4,7 @@ from html import escape as html_escape
 
 from telegram import Bot, ParseMode
 from telegram import Update
+from telegram.error import BadRequest, TelegramError
 
 from .permissions_storage import permissions
 from config import config
@@ -71,6 +72,21 @@ def failwithmessage(func):
                 update.callback_query.message.reply_html(text)
             else:
                 update.message.reply_html(text)
+
+    return wrapped
+
+
+def ignore_not_modified_exception(func):
+    @wraps(func)
+    def wrapped(bot, update, *args, **kwargs):
+        try:
+            return func(bot, update, *args, **kwargs)
+        except (BadRequest, TelegramError) as err:
+            logger.info('"message is not modified error ignored')
+            if 'not modified' not in str(err).lower():
+                raise err
+            else:
+                update.callback_query.answer('Nothing to refresh')
 
     return wrapped
 
