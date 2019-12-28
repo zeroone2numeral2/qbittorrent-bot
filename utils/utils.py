@@ -82,7 +82,7 @@ def ignore_not_modified_exception(func):
         try:
             return func(bot, update, *args, **kwargs)
         except (BadRequest, TelegramError) as err:
-            logger.info('"message is not modified error ignored')
+            logger.info('"message is not modified" error ignored')
             if 'not modified' not in str(err).lower():
                 raise err
             else:

@@ -23,6 +23,7 @@ from telegram.ext import (
 )
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest, TelegramError
+from telegram.utils.request import Request
 
 from qbt import CustomClient
 from qbt import OfflineClient
@@ -54,7 +55,8 @@ class CustomBot(Bot):
         return super(CustomBot, self).answer_callback_query(*args, **kwargs)
 
 
-updater = Updater(bot=CustomBot(config.telegram.token), workers=config.telegram.get('workers', 1))
+cutom_bot = CustomBot(config.telegram.token, request=Request(con_pool_size=config.telegram.workers + 4))
+updater = Updater(bot=cutom_bot, workers=config.telegram.get('workers', 1))
 dispatcher = updater.dispatcher
 
 try:
