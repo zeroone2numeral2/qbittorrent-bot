@@ -3,7 +3,7 @@ import logging
 # noinspection PyPackageRequirements
 from telegram.ext import CommandHandler, CallbackQueryHandler
 # noinspection PyPackageRequirements
-from telegram import ParseMode
+from telegram import ParseMode, MAX_MESSAGE_LENGTH
 
 from bot import qb
 from bot import updater
@@ -40,6 +40,13 @@ def get_quick_info_text():
         completed_torrents_strings_list = ['{}'.format(t.short_name) for t in completed_trnts]
     else:
         completed_torrents_strings_list = ['no completed torrent']
+
+    # shorten the message if it's too long to send
+    completed_torrents_string_len = sum(map(len, completed_torrents_strings_list))
+    active_torrents_string_len = sum(map(len, active_torrents_strings_list))
+    if (completed_torrents_string_len + active_torrents_string_len) > MAX_MESSAGE_LENGTH:
+        # we assume the longest one between the two is the completed torrents list
+        completed_torrents_strings_list = ['list too long, use /completed to see completed torrents']
 
     schedule_info = qb.get_schedule()
     if not schedule_info:
