@@ -147,7 +147,8 @@ SPEED_TEXT = """<b>Max download:</b> {max_download}
 
 SCHEDULE_TEXT = """{}, alternative limits enabled from {from_hour} to {to_hour}. Days: {days}"""
 
-QUICK_INFO_TEXT = """<b>Completed:</b> {completed}
+QUICK_INFO_TEXT = """<b>Completed:</b>
+{completed}
 
 <b>Active:</b>
 {active}
@@ -396,7 +397,7 @@ def get_quick_info_text():
     current_speed_string = '<b>Current speed</b>: down: {0}/s, up: {1}/s'.format(*current_speed)
 
     text = QUICK_INFO_TEXT.format(
-        completed=', '.join(completed_torrents_strings_list),
+        completed='\n'.join(completed_torrents_strings_list),
         active='\n'.join(active_torrents_strings_list),
         schedule=schedule_string,
         alt_speed=alt_speed_string,
