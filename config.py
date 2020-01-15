@@ -6,5 +6,4 @@ class AttrDict(dict):
         super(AttrDict, self).__init__(*args, **kwargs)
         self.__dict__ = self
 
-
 config = toml.load('config.toml', AttrDict)

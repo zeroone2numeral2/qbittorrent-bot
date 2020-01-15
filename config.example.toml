@@ -8,7 +8,3 @@ timeout = 120 # requests timeout in seconds
 url = "http://127.0.0.1:8080/"
 login = "admin"
 secret = "adminadmin"
-
-[logging]
-config = "logging.json"
-path = "logs/qbtbot.log"

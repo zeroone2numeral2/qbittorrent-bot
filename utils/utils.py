@@ -3,7 +3,7 @@ from functools import wraps
 from html import escape as html_escape
 
 from telegram import Bot, ParseMode
-from telegram import Update
+from telegram import Update, MAX_MESSAGE_LENGTH
 from telegram.error import BadRequest, TelegramError
 
 from .permissions_storage import permissions
@@ -129,3 +129,11 @@ def custom_timeout(func):
         return func(*args, **kwargs)
 
     return wrapped
+
+
+def split_text(strings_list):
+    avg_len = sum(map(len, strings_list)) / len(strings_list)
+    elements_per_msg = int(MAX_MESSAGE_LENGTH / avg_len)
+
+    for i in range(0, len(strings_list), elements_per_msg):
+        yield strings_list[i:i + elements_per_msg]

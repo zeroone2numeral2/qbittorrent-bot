@@ -185,7 +185,6 @@ class CustomClient(Client):
         )
 
 
-
 class OfflineClient:
     """
     We use this calss when we can't connect to qbittorrent, so the bot would still run and let us
