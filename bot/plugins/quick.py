@@ -75,7 +75,7 @@ def get_quick_info_text():
     return text
 
 
-@u.check_permissions(required_permission=Permissions.READ)
+@u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 def on_quick_info_command(_, update):
     logger.info('/quick command from %s', update.message.from_user.first_name)
