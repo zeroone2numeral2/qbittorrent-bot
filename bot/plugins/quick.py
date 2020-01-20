@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 # noinspection PyPackageRequirements
@@ -21,7 +22,8 @@ QUICK_INFO_TEXT = """<b>Completed:</b>
 
 {schedule}
 {alt_speed}
-{current_speed}"""
+{current_speed}
+<b>Last refresh:</b> {last_refresh}"""
 
 TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress}% of {size}, {state}, <b>{dlspeed}/s</b>) \
 [<a href="{info_deeplink}">info</a>]"""
@@ -69,7 +71,8 @@ def get_quick_info_text():
         active='\n'.join(active_torrents_strings_list),
         schedule=schedule_string,
         alt_speed=alt_speed_string,
-        current_speed=current_speed_string
+        current_speed=current_speed_string,
+        last_refresh=datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     )
 
     return text
