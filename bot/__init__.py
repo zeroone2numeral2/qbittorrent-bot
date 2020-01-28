@@ -2,7 +2,7 @@ import logging
 import logging.config
 import json
 
-from telegram import ParseMode
+from telegram import ParseMode, Bot
 from telegram.utils.request import Request
 import requests
 
@@ -53,7 +53,7 @@ completed_torrents = Completed()
 
 
 @u.failwithmessage_job
-def notify_completed(bot, _):
+def notify_completed(bot: Bot, _):
     logger.info('executing completed job')
 
     completed = qb.torrents(filter='completed')
@@ -62,13 +62,21 @@ def notify_completed(bot, _):
         if completed_torrents.is_new(t.hash):
             torrent = qb.torrent(t.hash)
             text = '<code>{}</code> completed'.format(u.html_escape(torrent.name))
-            bot.send_message(
-                config.telegram.admins[0],
-                text,
-                reply_markup=torrent.short_markup(force_resume_button=False),
+
+            send_message_kwargs = dict(
+                text=text,
                 parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True
             )
+
+            bot.send_message(
+                config.telegram.admins[0],
+                reply_markup=torrent.short_markup(force_resume_button=False),
+                **send_message_kwargs
+            )
+
+            if config.telegram.get('completed_torrents_notification', None):
+                bot.send_message(config.telegram.completed_torrents_notification, **send_message_kwargs)
 
 
 def main():
