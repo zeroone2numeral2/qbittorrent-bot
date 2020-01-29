@@ -78,7 +78,7 @@ def get_quick_info_text():
     return text
 
 
-@u.check_permissions(required_permission=Permissions.EDIT)
+@u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 def on_quick_info_command(_, update):
     logger.info('/quick command from %s', update.message.from_user.first_name)
@@ -87,6 +87,7 @@ def on_quick_info_command(_, update):
     update.message.reply_html(text, reply_markup=kb.QUICK_MENU_BUTTON)
 
 
+@u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_refresh_button_quick(bot, update):
@@ -98,6 +99,7 @@ def on_refresh_button_quick(bot, update):
     update.callback_query.answer('Refreshed')
 
 
+@u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_alton_button_quick(_, update):
@@ -111,6 +113,7 @@ def on_alton_button_quick(_, update):
     update.callback_query.answer('Alternative speed enabled')
 
 
+@u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_altoff_button_quick(_, update):
@@ -124,6 +127,7 @@ def on_altoff_button_quick(_, update):
     update.callback_query.answer('Alternative speed disabled')
 
 
+@u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_schedon_button_quick(_, update):
@@ -136,6 +140,7 @@ def on_schedon_button_quick(_, update):
     update.callback_query.answer('Scheduled altenrative speed on')
 
 
+@u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_schedoff_button_quick(_, update):
