@@ -29,7 +29,7 @@ def check_permissions(required_permission='admin'):
                 # if admins_only: no one can use the bot but the admins
                 logger.info('unauthorized use by %d (%s)', user_id, update.effective_user.first_name)
                 
-                text = "You can't use this bot"
+                text = "You can't use this function"
                 if update.callback_query:
                     update.callback_query.answer(text)
                 elif update.message:
