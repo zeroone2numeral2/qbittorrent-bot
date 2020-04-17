@@ -12,7 +12,7 @@ from utils import kb
 
 logger = logging.getLogger(__name__)
 
-PRESETS = [10, 100, 200]
+PRESETS = [10, 50, 100, 200]
 
 
 @u.check_permissions(required_permission=Permissions.EDIT)

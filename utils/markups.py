@@ -22,6 +22,7 @@ QUICK_MENU_BUTTON = InlineKeyboardMarkup([
         InlineKeyboardButton('🐌', callback_data='quick:alton'),
         InlineKeyboardButton('🐇', callback_data='quick:altoff'),
         InlineKeyboardButton('10 🐌', callback_data='altdown:10'),  # change alternative download speed
+        InlineKeyboardButton('50 🐌', callback_data='altdown:50'),  # change alternative download speed
         InlineKeyboardButton('100 🐌', callback_data='altdown:100'),  # change alternative download speed
         InlineKeyboardButton('200 🐌', callback_data='altdown:200'),  # change alternative download speed
     ],
