@@ -19,13 +19,16 @@ LISTS_MENU = ReplyKeyboardMarkup(
 
 QUICK_MENU_BUTTON = InlineKeyboardMarkup([
     [
-        InlineKeyboardButton('refresh', callback_data='quick:refresh'),
         InlineKeyboardButton('alt speed on', callback_data='quick:alton'),
         InlineKeyboardButton('alt speed off', callback_data='quick:altoff'),
+        InlineKeyboardButton('10', callback_data='altdown:10'),  # change alternative download speed
+        InlineKeyboardButton('100', callback_data='altdown:100'),  # change alternative download speed
+        InlineKeyboardButton('200', callback_data='altdown:200'),  # change alternative download speed
     ],
     [
         InlineKeyboardButton('schedule on', callback_data='quick:schedon'),
         InlineKeyboardButton('schedule off', callback_data='quick:schedoff'),
+        InlineKeyboardButton('refresh', callback_data='quick:refresh'),
     ]
 ])
 
