@@ -39,7 +39,7 @@ def get_quick_info_text():
         active_torrents_strings_list = ['no active torrent']
 
     if completed_trnts:
-        completed_torrents_strings_list = ['{}'.format(t.short_name) for t in completed_trnts]
+        completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_trnts]
     else:
         completed_torrents_strings_list = ['no completed torrent']
 
