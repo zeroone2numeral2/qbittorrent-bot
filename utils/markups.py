@@ -90,3 +90,11 @@ def short_markup(torrent_hash, force_resume_button=True):
         markup[0].insert(0, InlineKeyboardButton('force-resume', callback_data='forceresume:{}'.format(torrent_hash)))
 
     return InlineKeyboardMarkup(markup)
+
+
+def alternative_download_limits(values: [list, tuple]):
+    markup = [[]]
+    for kbs in values:
+        markup[0].append(InlineKeyboardButton('{} kbs'.format(kbs), callback_data='altdown:{}'.format(kbs)))
+
+    return InlineKeyboardMarkup(markup)

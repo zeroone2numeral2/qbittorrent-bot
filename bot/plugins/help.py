@@ -26,6 +26,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 • magnet url: add a torrent by magnet url
 
 <i>EDIT commands</i>
+• /altdown: change the alternative max download speed from a keyboard
 • /altdown <code>[kb/s]</code>: change the alternative max download speed
 • /altup <code>[kb/s]</code>: change the alternative max upload speed
 • /pauseall: pause all torrents
