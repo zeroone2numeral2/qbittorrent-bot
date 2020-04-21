@@ -61,22 +61,24 @@ def notify_completed(bot: Bot, _):
     for t in completed:
         if completed_torrents.is_new(t.hash):
             torrent = qb.torrent(t.hash)
-            text = '<code>{}</code> completed'.format(u.html_escape(torrent.name))
+            text = '<code>{}</code> completed ({})'.format(u.html_escape(torrent.name), torrent.size)
 
             send_message_kwargs = dict(
                 text=text,
                 parse_mode=ParseMode.HTML,
-                disable_web_page_preview=True
-            )
-
-            bot.send_message(
-                config.telegram.admins[0],
-                reply_markup=torrent.short_markup(force_resume_button=False),
-                **send_message_kwargs
+                disable_web_page_preview=True,
+                disable_notification=True
             )
 
             if config.telegram.get('completed_torrents_notification', None):
+                # don't send the message in private if there's a notifications channel set
                 bot.send_message(config.telegram.completed_torrents_notification, **send_message_kwargs)
+            else:
+                bot.send_message(
+                    config.telegram.admins[0],
+                    reply_markup=torrent.short_markup(force_resume_button=False),
+                    **send_message_kwargs
+                )
 
 
 def main():
