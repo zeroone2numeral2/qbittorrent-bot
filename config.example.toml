@@ -9,3 +9,4 @@ completed_torrents_notification = 0 # id of an additional chat to notify when a 
 url = "http://127.0.0.1:8080/"
 login = "admin"
 secret = "adminadmin"
+pause_completed_torrents = false

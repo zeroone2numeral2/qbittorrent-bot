@@ -61,6 +61,11 @@ def notify_completed(bot: Bot, _):
     for t in completed:
         if completed_torrents.is_new(t.hash):
             torrent = qb.torrent(t.hash)
+
+            if config.qbittorrent.get('pause_completed_torrents', False):
+                logger.info('pausing %s (%s)', torrent.name, torrent.hash)
+                torrent.pause()
+
             text = '<code>{}</code> completed ({})'.format(u.html_escape(torrent.name), torrent.size)
 
             send_message_kwargs = dict(
