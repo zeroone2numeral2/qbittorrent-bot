@@ -142,7 +142,7 @@ class CustomClient(Client):
         torrents = self.torrents(filter='all')
 
         for torrent in torrents:
-            if torrent.hash == torrent_hash:
+            if torrent.hash.lower() == torrent_hash.lower():
                 return torrent
 
     # noinspection PyUnresolvedReferences
