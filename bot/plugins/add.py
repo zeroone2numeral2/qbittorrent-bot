@@ -33,6 +33,11 @@ def add_from_magnet(_, update):
         quote=True
     )
 
+    torrents = qb.torrents(filter='all')
+    logger.debug('all torrents hashes:')
+    for t in torrents:
+        logger.debug('%s - %s', t.hash, t.name)
+
 
 @u.check_permissions(required_permission=Permissions.WRITE)
 @u.failwithmessage
