@@ -34,8 +34,8 @@ except requests.exceptions.ConnectionError as e:
     qb = OfflineClient()
 
 
-class Completed:
-    def __init__(self, file_name='completed.json'):
+class HashesStorage:
+    def __init__(self, file_name):
         self._file_name = file_name
 
         try:
@@ -44,11 +44,20 @@ class Completed:
         except FileNotFoundError:
             self._data = list()
 
+    @staticmethod
+    def to_list(string):
+        if not isinstance(string, list):
+            return [string]
+
+        return string
+
     def save(self):
         with open(self._file_name, 'w+') as f:
             json.dump(self._data, f)
 
-    def insert_list(self, hashes_list: list):
+    def insert(self, hashes_list: [str, list]):
+        hashes_list = self.to_list(hashes_list)
+
         for h in hashes_list:
             if h in self._data:
                 continue
@@ -57,6 +66,8 @@ class Completed:
 
         self.save()
 
+
+class Completed(HashesStorage):
     def is_new(self, torrent_hash):
         if torrent_hash not in self._data:
             self._data.append(torrent_hash)
@@ -66,7 +77,16 @@ class Completed:
             return False
 
 
-completed_torrents = Completed()
+class DontNotify(HashesStorage):
+    def send_notification(self, torrent_hash):
+        if torrent_hash not in self._data:
+            return True
+
+        return False
+
+
+completed_torrents = Completed('completed.json')
+dont_notify_torrents = DontNotify('do_not_notify.json')
 
 
 @u.failwithmessage_job
@@ -82,6 +102,10 @@ def notify_completed(bot: Bot, _):
             if config.qbittorrent.get('pause_completed_torrents', False):
                 logger.info('pausing %s (%s)', torrent.name, torrent.hash)
                 torrent.pause()
+
+            if not dont_notify_torrents.send_notification(t.hash):
+                logger.info('we will not send a notification about %s (%s)', t.hash, t.name)
+                continue
 
             text = '<code>{}</code> completed ({})'.format(u.html_escape(torrent.name), torrent.size)
 
@@ -110,7 +134,7 @@ def main():
 
     logger.info('registering "completed torrents" job')
     try:
-        completed_torrents.insert_list([t.hash for t in qb.torrents(filter='completed')])
+        completed_torrents.insert([t.hash for t in qb.torrents(filter='completed')])
         updater.job_queue.run_repeating(notify_completed, interval=120, first=120)
     except ConnectionError:
         # catch the connection error raised by the OffilneClient, in case we are offline

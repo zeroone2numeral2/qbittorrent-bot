@@ -7,3 +7,4 @@ config.toml
 *.torrent
 permissions.json
 completed.json
+do_not_notify.json
