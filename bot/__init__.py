@@ -35,15 +35,32 @@ except requests.exceptions.ConnectionError as e:
 
 
 class Completed:
-    def __init__(self):
-        self._data = list()
+    def __init__(self, file_name='completed.json'):
+        self._file_name = file_name
 
-    def init(self, hashes_list):
-        self._data = hashes_list
+        try:
+            with open(self._file_name, 'r') as f:
+                self._data = json.load(f)
+        except FileNotFoundError:
+            self._data = list()
+
+    def save(self):
+        with open(self._file_name, 'w+') as f:
+            json.dump(self._data, f)
+
+    def insert_list(self, hashes_list: list):
+        for h in hashes_list:
+            if h in self._data:
+                continue
+
+            self._data.append(h)
+
+        self.save()
 
     def is_new(self, torrent_hash):
         if torrent_hash not in self._data:
             self._data.append(torrent_hash)
+            self.save()
             return True
         else:
             return False
@@ -93,7 +110,7 @@ def main():
 
     logger.info('registering "completed torrents" job')
     try:
-        completed_torrents.init([t.hash for t in qb.torrents(filter='completed')])
+        completed_torrents.insert_list([t.hash for t in qb.torrents(filter='completed')])
         updater.job_queue.run_repeating(notify_completed, interval=120, first=120)
     except ConnectionError:
         # catch the connection error raised by the OffilneClient, in case we are offline
