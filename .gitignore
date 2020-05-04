@@ -6,3 +6,4 @@ venv/
 config.toml
 *.torrent
 permissions.json
+completed.json
