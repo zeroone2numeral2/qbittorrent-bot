@@ -32,10 +32,10 @@ ATTR_FORMATTING = {
     'state': lambda state: STATES_DICT.get(state, state),
     'size': lambda size: u.get_human_readable(size),  # already a string apparently
     'total_size': lambda size: u.get_human_readable(size),
-    'dlspeed': lambda size: u.get_human_readable(size),  # no need for this, it's already a string
-    'dl_speed': lambda size: u.get_human_readable(size),
-    'upspeed': lambda size: u.get_human_readable(size),  # no need for this, it's already a string
-    'up_speed': lambda size: u.get_human_readable(size),
+    'dlspeed': lambda speed_bytes: u.get_human_readable(speed_bytes),  # no need for this, it's already a string
+    'dl_speed': lambda speed_bytes: u.get_human_readable(speed_bytes),
+    'upspeed': lambda speed_bytes: u.get_human_readable(speed_bytes),  # no need for this, it's already a string
+    'up_speed': lambda speed_bytes: u.get_human_readable(speed_bytes),
     'progress': lambda decimal_progress: round(decimal_progress * 100),
     'eta': lambda seconds: str(datetime.timedelta(seconds=seconds)), # apparently it's already a string?
     'force_start': lambda f_start: 'yes' if f_start else 'no'
