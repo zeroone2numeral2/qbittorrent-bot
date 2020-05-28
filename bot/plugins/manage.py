@@ -1,4 +1,5 @@
 import logging
+import time
 
 # noinspection PyPackageRequirements
 from telegram.ext import CallbackQueryHandler, RegexHandler
@@ -147,8 +148,9 @@ def force_resume_torrent_cb(_, update, groups):
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
-    torrent.toggle_force_start(True)
     torrent.resume()
+    time.sleep(1)
+    torrent.toggle_force_start(True)
 
     update.callback_query.answer('Force-resumed')
 
