@@ -25,8 +25,8 @@ QUICK_INFO_TEXT = """<b>Completed:</b>
 {current_speed}
 <b>Last refresh:</b> {last_refresh}"""
 
-TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress}% of {size}, {state}, <b>{dlspeed}/s</b>) \
-[<a href="{info_deeplink}">info</a>]"""
+TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of {size_pretty}, {state_pretty}, \
+<b>{generic_speed_pretty}/s</b>) [<a href="{info_deeplink}">info</a>]"""
 
 
 def get_quick_info_text():
@@ -56,11 +56,9 @@ def get_quick_info_text():
     else:
         schedule_string = '<b>Schedule</b>: on, from {from_hour} to {to_hour} ({days})'.format(**schedule_info)
 
-    alt_speed_info = qb.get_alt_speed()
-    alt_speed_string = '<b>Alt speed is {}</b> (down: {alt_dl_limit} kb/s, up: {alt_up_limit} kb/s)'.format(
-        'on' if alt_speed_info['status'] else 'off',
-        alt_dl_limit=alt_speed_info['alt_dl_limit'] if alt_speed_info['alt_dl_limit'] else 'none',
-        alt_up_limit=alt_speed_info['alt_up_limit'] if alt_speed_info['alt_up_limit'] else 'none',
+    alt_speed_info = qb.get_alt_speed(human_readable=True)
+    alt_speed_string = '<b>Alt speed is {status}</b> (down: {alt_dl_limit}/s, up: {alt_up_limit}/s)'.format(
+        **alt_speed_info
     )
 
     current_speed = qb.get_speed()

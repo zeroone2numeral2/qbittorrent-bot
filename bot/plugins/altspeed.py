@@ -39,7 +39,7 @@ def change_alternative_limits(_, update, args):
         update.message.reply_text('Please pass the alternative speed limit in kb/s, as an integer')
         return
 
-    preferences_to_edit[preference_key] = int(kbs)
+    preferences_to_edit[preference_key] = int(kbs) * 1014
     qb.set_preferences(**preferences_to_edit)
 
     update.message.reply_markdown('`{}` set to {} kb/s'.format(preference_key, kbs))
@@ -50,7 +50,7 @@ def change_alternative_limits(_, update, args):
 def altdown_speed_callback(_, update, groups):
     logger.info('remove buttons inline button')
 
-    speed_kbs = int(groups[0])
+    speed_kbs = int(groups[0]) * 1024
     preferences_to_edit = dict()
     preference_key = 'alt_dl_limit'
 

@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 STATES_DICT = {
     'error': 'error',
+    'missingFiles': 'missing files',
     'pausedUP': 'paused - download finished',
     'pausedDL': 'paused - download not finished',
     'queuedUP': 'queued for upload',
@@ -24,32 +25,47 @@ STATES_DICT = {
     'checkingUP': 'checking file (download completed)',
     'checkingDL': 'checking file (downloading)',
     'downloading': 'downloading',
+    'allocating': 'allocating disk space',
     'stalledDL': 'stalled (downloading)',
-    'metaDL': 'fetching metadata'
+    'metaDL': 'fetching metadata',
+    'checkingResumeData': 'startup: checking data',
+    'moving': 'moving',
+    'unknown': 'unknown status'
 }
 
-ATTR_FORMATTING = {
-    'state': lambda state: STATES_DICT.get(state, state),
-    'size': lambda size: u.get_human_readable(size),  # already a string apparently
-    'total_size': lambda size: u.get_human_readable(size),
-    'dlspeed': lambda speed_bytes: u.get_human_readable(speed_bytes),  # no need for this, it's already a string
-    'dl_speed': lambda speed_bytes: u.get_human_readable(speed_bytes),
-    'upspeed': lambda speed_bytes: u.get_human_readable(speed_bytes),  # no need for this, it's already a string
-    'up_speed': lambda speed_bytes: u.get_human_readable(speed_bytes),
-    'progress': lambda decimal_progress: round(decimal_progress * 100),
-    'eta': lambda seconds: str(datetime.timedelta(seconds=seconds)), # apparently it's already a string?
-    'force_start': lambda f_start: 'yes' if f_start else 'no'
+# https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-torrent-list
+# https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-torrent-generic-properties
+NEW_ATTRS = {
+    'state_pretty': lambda t: STATES_DICT.get(t['state'], t['state']),
+    'size_pretty': lambda t: u.get_human_readable(t['total_size']),  # already a string apparently
+    'dl_speed_pretty': lambda t: u.get_human_readable(t['dl_speed']),
+    'up_speed_pretty': lambda t: u.get_human_readable(t['up_speed']),
+    'dlspeed_pretty': lambda t: u.get_human_readable(t['dlspeed']),
+    'upspeed_pretty': lambda t: u.get_human_readable(t['upspeed']),
+    'generic_speed_pretty': lambda t: u.get_human_readable(t['generic_speed']),
+    'progress_pretty': lambda t: round(t['progress'] * 100),
+    'eta_pretty': lambda t: str(datetime.timedelta(seconds=t['eta'])),  # apparently it's already a string?
+    'time_elapsed_pretty': lambda t: str(datetime.timedelta(seconds=t['time_elapsed'])),
+    'force_start_pretty': lambda t: 'yes' if t['force_start'] else 'no',
+    'share_ratio_rounded': lambda t: round(t['share_ratio'], 5),
+    'dl_limit_pretty': lambda t: 'no limit' if t['dl_limit'] == -1 else u.get_human_readable(t['dl_limit'])
 }
 
 TORRENT_STRING = """• <code>{name}</code>
-  {progress_bar} {progress}%
-  <b>state</b>: {state}
-  <b>size</b>: {size}
-  <b>dl/up speed</b>: {dlspeed}/s, {upspeed}/s
-  <b>leechs/seeds</b> {num_leechs}/{num_seeds}
-  <b>eta</b>: {eta}
+  {progress_bar} {progress_pretty}%
+  <b>state</b>: {state_pretty}
+  <b>size</b>: {size_pretty}
+  <b>dl/up speed</b>: {dl_speed_pretty}/s, {up_speed_pretty}/s
+  <b>dl speed limit</b>: {dl_limit_pretty}
+  <b>leechs/seeds</b> {num_leechs}, {num_seeds}
+  <b>peers/seeds</b>: {peers_total} ({peers}), {seeds_total} ({seeds})
+  <b>connections</b>: {nb_connections}
+  <b>share rateo</b>: {share_ratio_rounded}
+  <b>eta</b>: {eta_pretty}
+  <b>elapsed</b>: {time_elapsed_pretty}
   <b>priority</b>: {priority}
-  <b>force start</b>: {force_start}"""
+  <b>category</b>: {category}
+  <b>force start</b>: {force_start_pretty}"""
 
 
 # noinspection PyUnresolvedReferences
@@ -131,10 +147,37 @@ class CustomClient(Client):
 
         torrent['short_name'] = torrent['name'] if len(torrent['name']) < 51 else torrent['name'][:51] + '...'
 
-        return {k: ATTR_FORMATTING.get(k, lambda x: x)(v) for k, v in torrent.items()}
+        torrent['generic_speed'] = torrent['dlspeed']
+        if torrent['state'] in ('uploading', 'forcedUP'):
+            torrent['generic_speed'] = torrent['upspeed']
 
-    def torrents(self, **kwargs):
+        for k, v in NEW_ATTRS.items():
+            try:
+                torrent[k] = v(torrent)
+            except KeyError:
+                # it might be that one of the lambdas uses a key that is not available in the torrent dict,
+                # eg. when we call CustomClient.torrents() with get_properties=False
+                continue
+
+        return {k: v for k, v in torrent.items()}
+
+    def torrents(self, get_properties=True, **kwargs):
         torrents = super(CustomClient, self).torrents(**kwargs) or []
+
+        if get_properties:
+            # asking for the torrents list will return a list of torrents with some details included,
+            # but we can get even more details by calling get_torrent() on each torrent
+            for torrent in torrents:
+                details = self.get_torrent(torrent['hash'])
+                if not details:
+                    continue
+
+                for k, v in details.items():
+                    if k in torrent:
+                        continue
+
+                    torrent[k] = v
+
         return [Torrent(self, self._polish_torrent(torrent)) for torrent in torrents]
 
     # noinspection PyUnresolvedReferences
@@ -167,14 +210,21 @@ class CustomClient(Client):
             days=str(p['scheduler_days'])
         )
 
-    def get_alt_speed(self):
+    def get_alt_speed(self, human_readable=True):
         p = self.preferences()
 
-        return dict(
-            status=bool(self.get_alternative_speed_status()),
-            alt_dl_limit=u.get_human_readable(p['alt_dl_limit']) if p['alt_dl_limit'] > -1 else None,
-            alt_up_limit=u.get_human_readable(p['alt_up_limit']) if p['alt_up_limit'] > -1 else None
-        )
+        result = dict()
+
+        if human_readable:
+            result['status'] = 'on' if self.get_alternative_speed_status() else 'off'
+            result['alt_dl_limit'] = u.get_human_readable(p['alt_dl_limit'], 0) if p['alt_dl_limit'] > -1 else 'none'
+            result['alt_up_limit'] = u.get_human_readable(p['alt_up_limit'], 0) if p['alt_up_limit'] > -1 else 'none'
+        else:
+            result['status'] = bool(self.get_alternative_speed_status())
+            result['alt_dl_limit'] = p['alt_dl_limit'] if p['alt_dl_limit'] > -1 else None
+            result['alt_up_limit'] = p['alt_up_limit'] if p['alt_up_limit'] > -1 else None
+
+        return result
 
     def get_speed(self):
         tinfo = self.global_transfer_info

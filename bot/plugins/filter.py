@@ -10,18 +10,6 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-TORRENT_STRING_FILTERED = """• <code>{name}</code>
-  {progress_bar} {progress}%
-  <b>state</b>: {state}
-  <b>size</b>: {size}
-  <b>dl/up speed</b>: {dlspeed}/s, {upspeed}/s
-  <b>leechs/seeds</b> {num_leechs}/{num_seeds}
-  <b>eta</b>: {eta}
-  <b>priority</b>: {priority}
-  <b>force start</b>: {force_start}
-  [<a href="{info_deeplink}">info</a>]"""
-
-
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 def on_filter_command(_, update, args):
@@ -39,7 +27,7 @@ def on_filter_command(_, update, args):
         update.message.reply_text('No results for "{}"'.format(query))
         return
 
-    strings_list = [TORRENT_STRING_FILTERED.format(**torrent.dict()) for torrent in torrents]
+    strings_list = [torrent.string() for torrent in torrents]
 
     for strings_chunk in u.split_text(strings_list):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
