@@ -20,6 +20,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
 • /settings or /s: get current settings list
 • /json: get a json file containing a list of all the torrents
+• /version: get qbittorrent and API version
 
 <i>WRITE commands</i>
 • <code>.torrent</code> document: add torrent by file
