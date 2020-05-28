@@ -172,8 +172,8 @@ class CustomClient(Client):
 
         return dict(
             status=bool(self.get_alternative_speed_status()),
-            alt_dl_limit=p['alt_dl_limit'] if p['alt_dl_limit'] > -1 else None,
-            alt_up_limit=p['alt_up_limit'] if p['alt_up_limit'] > -1 else None
+            alt_dl_limit=u.get_human_readable(p['alt_dl_limit']) if p['alt_dl_limit'] > -1 else None,
+            alt_up_limit=u.get_human_readable(p['alt_up_limit']) if p['alt_up_limit'] > -1 else None
         )
 
     def get_speed(self):

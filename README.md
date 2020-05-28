@@ -1,8 +1,6 @@
 ## qBittorrent Telegram interface
 
-Extremely simple Telegram bot I made to get some basic info about the currently active torrents on my home Raspberry, using the [qBittorrent WebUI APIs (v3.2.0-v4.0.4)](https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-Documentation) through the [python-qBittorrent](https://github.com/v1k45/python-qBittorrent) library.
-
-The interface is designed to work with an outdate version of qbittorrent's APIs because qbittorrent v3.3 was the most updated version availabe on [Raspbian Stretch's repos](https://packages.debian.org/stretch/qbittorrent), which was what I was running when I wrote the bot.
+Extremely simple Telegram bot I made to get some basic info about the currently active torrents on my home Raspberry, using the [qBittorrent WebUI APIs (v4.1+)](https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation) through the [python-qBittorrent](https://github.com/v1k45/python-qBittorrent) library.
 
 ### Features
 
