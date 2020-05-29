@@ -107,7 +107,7 @@ def notify_completed(bot: Bot, _):
                 logger.info('we will not send a notification about %s (%s)', t.hash, t.name)
                 continue
 
-            text = '<code>{}</code> completed ({})'.format(u.html_escape(torrent.name), torrent.size)
+            text = '<code>{}</code> completed ({})'.format(u.html_escape(torrent.name), torrent.size_pretty)
 
             send_message_kwargs = dict(
                 text=text,
