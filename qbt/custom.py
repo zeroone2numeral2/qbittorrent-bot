@@ -65,7 +65,8 @@ TORRENT_STRING = """• <code>{name}</code>
   <b>elapsed</b>: {time_elapsed_pretty}
   <b>priority</b>: {priority}
   <b>category</b>: {category}
-  <b>force start</b>: {force_start_pretty}"""
+  <b>force start</b>: {force_start_pretty}
+  [<a href="{info_deeplink}">info</a>]"""
 
 
 # noinspection PyUnresolvedReferences

@@ -16,10 +16,10 @@ from utils import Permissions
 logger = logging.getLogger(__name__)
 
 
-TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress}% of {size}, {state}, <b>{dlspeed}/s</b>) \
+TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of {size_pretty}, {state_pretty}, <b>{dl_speed_pretty}/s</b>) \
 [<a href="{info_deeplink}">info</a>]"""
 
-TORRENT_STRING_COMPLETED = '• <code>{name}</code> ({size})'
+TORRENT_STRING_COMPLETED = '• <code>{name}</code> ({size_pretty})'
 
 TORRENTS_CATEGORIES = [r'\/?all', r'\/?completed', r'\/?downloading', r'\/?paused', r'\/?inactive', r'\/?active', r'\/?tostart']
 
