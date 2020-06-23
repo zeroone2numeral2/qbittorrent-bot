@@ -29,7 +29,7 @@ def add_from_magnet(_, update):
 
     update.message.reply_html(
         'Magnet added',
-        reply_markup=kb.short_markup(torrent_hash, force_resume_button=False),
+        reply_markup=kb.short_markup(torrent_hash),
         quote=True
     )
 
