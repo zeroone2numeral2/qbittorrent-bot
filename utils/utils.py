@@ -66,10 +66,14 @@ def failwithmessage(func):
         try:
             return func(bot, update, *args, **kwargs)
         except Exception as e:
-            logger.info('error while running handler callback: %s', str(e), exc_info=True)
-            text = 'An error occurred while processing the message: <code>{}</code>'.format(html_escape(str(e)))
+            error_str = str(e)
+            logger.info('error while running handler callback: %s', error_str, exc_info=True)
+            text = 'An error occurred while processing the message: <code>{}</code>'.format(html_escape(error_str))
             if update.callback_query:
-                update.callback_query.message.reply_html(text)
+                if error_str.lower().startswith('query is too old'):
+                    update.callback_query.answer(error_str)
+                else:
+                    update.callback_query.message.reply_html(text)
             else:
                 update.message.reply_html(text)
 
