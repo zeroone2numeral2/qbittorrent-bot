@@ -30,13 +30,26 @@ TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of
 
 
 def get_quick_info_text():
-    active_trnts = qb.torrents(filter='active', sort='dlspeed', reverse=False)
+    active_torrents = qb.torrents(filter='active', sort='dlspeed', reverse=False)
     completed_trnts = qb.torrents(filter='completed')
 
-    if active_trnts:
-        active_torrents_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_trnts]
-    else:
+    if not active_torrents:
         active_torrents_strings_list = ['no active torrent']
+    else:
+        active_torrents_with_traffic = list()
+        active_torrents_without_traffic_count = 0
+
+        for active_torrent in active_torrents:
+            if active_torrent.generic_speed > 0:
+                active_torrents_with_traffic.append(active_torrent)
+            else:
+                active_torrents_without_traffic_count += 1
+
+        active_torrents_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_with_traffic]
+
+        if active_torrents_without_traffic_count > 0:
+            no_traffic_row = 'there are <b>{}</b> active torrents stalled'.format(active_torrents_without_traffic_count)
+            active_torrents_strings_list.append(no_traffic_row)
 
     if completed_trnts:
         completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_trnts]
