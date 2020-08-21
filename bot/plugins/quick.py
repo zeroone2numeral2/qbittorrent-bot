@@ -31,7 +31,7 @@ TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of
 
 def get_quick_info_text():
     active_torrents = qb.torrents(filter='active', sort='dlspeed', reverse=False)
-    completed_trnts = qb.torrents(filter='completed')
+    completed_torrents = qb.torrents(filter='completed')
 
     if not active_torrents:
         active_torrents_strings_list = ['no active torrent']
@@ -42,7 +42,7 @@ def get_quick_info_text():
         for active_torrent in active_torrents:
             if active_torrent.generic_speed > 0 or active_torrent.state not in ('forcedDL', 'forcedUP'):
                 # add to this list only torrents that are generating traffic OR active torrents
-                # that have not been force-started
+                # that have not been force-started (eg: "fetching metadata")
                 active_torrents_with_traffic.append(active_torrent)
             else:
                 active_torrents_without_traffic_count += 1
@@ -50,11 +50,11 @@ def get_quick_info_text():
         active_torrents_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_with_traffic]
 
         if active_torrents_without_traffic_count > 0:
-            no_traffic_row = 'there are other <b>{}</b> active torrents stalled'.format(active_torrents_without_traffic_count)
+            no_traffic_row = '• other <b>{}</b> active torrents stalled'.format(active_torrents_without_traffic_count)
             active_torrents_strings_list.append(no_traffic_row)
 
-    if completed_trnts:
-        completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_trnts]
+    if completed_torrents:
+        completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_torrents]
     else:
         completed_torrents_strings_list = ['no completed torrent']
 
