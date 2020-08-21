@@ -4,7 +4,7 @@ from html import escape as html_escape
 
 from telegram import Bot, ParseMode
 from telegram import Update, MAX_MESSAGE_LENGTH
-from telegram.error import BadRequest, TelegramError
+from telegram.error import BadRequest, TelegramError, TimedOut
 
 from .permissions_storage import permissions
 from config import config
@@ -68,14 +68,15 @@ def failwithmessage(func):
         except Exception as e:
             error_str = str(e)
             logger.info('error while running handler callback: %s', error_str, exc_info=True)
-            text = 'An error occurred while processing the message: <code>{}</code>'.format(html_escape(error_str))
-            if update.callback_query:
-                if error_str.lower().startswith('query is too old'):
-                    update.callback_query.answer(error_str)
-                else:
-                    update.callback_query.message.reply_html(text)
+            text = 'An error occurred while processing the {}: <code>{}</code>'.format(
+                'callback query' if update.callback_query else 'message',
+                html_escape(error_str)
+            )
+
+            if update.callback_query and error_str.lower().startswith('query is too old'):
+                update.callback_query.answer(error_str)
             else:
-                update.message.reply_html(text)
+                update.effective_message.reply_html(text)
 
     return wrapped
 
