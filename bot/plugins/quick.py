@@ -36,22 +36,32 @@ def get_quick_info_text():
     if not active_torrents:
         active_torrents_strings_list = ['no active torrent']
     else:
-        active_torrents_with_traffic = list()
+        active_torrents_filtered = list()
         active_torrents_without_traffic_count = 0
+        active_torrents_fetching_metadata_count = 0
 
         for active_torrent in active_torrents:
-            if active_torrent.generic_speed > 0 or active_torrent.state not in ('forcedDL', 'forcedUP'):
-                # add to this list only torrents that are generating traffic OR active torrents
-                # that have not been force-started (eg: "fetching metadata")
-                active_torrents_with_traffic.append(active_torrent)
-            else:
+            if active_torrent.state in ('metaDL',):
+                active_torrents_fetching_metadata_count += 1
+            elif active_torrent.state in ('forcedDL', 'forcedUP') and active_torrent.generic_speed <= 0:
+                # count torrents that are not generating traffic and that have not been force-started
                 active_torrents_without_traffic_count += 1
+            else:
+                active_torrents_filtered.append(active_torrent)
 
-        active_torrents_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_with_traffic]
+        active_torrents_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_filtered]
 
+        # the list contains the strings to concatenate as the last row of the active torrents list
+        other_torrents_counts_string = list()
         if active_torrents_without_traffic_count > 0:
-            no_traffic_row = '• other <b>{}</b> active torrents stalled'.format(active_torrents_without_traffic_count)
-            active_torrents_strings_list.append(no_traffic_row)
+            text = 'other <b>{}</b> active torrents stalled'.format(active_torrents_without_traffic_count)
+            other_torrents_counts_string.append(text)
+        if active_torrents_fetching_metadata_count > 0:
+            text = 'other <b>{}</b> active torrents fetching metadata'.format(active_torrents_fetching_metadata_count)
+            other_torrents_counts_string.append(text)
+
+        if other_torrents_counts_string:
+            active_torrents_strings_list.append('• ' + ', '.join(other_torrents_counts_string))
 
     if completed_torrents:
         completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_torrents]
