@@ -2,9 +2,9 @@ import datetime
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackQueryHandler
+from telegram.ext import CommandHandler, CallbackQueryHandler, RegexHandler
 # noinspection PyPackageRequirements
-from telegram import ParseMode, MAX_MESSAGE_LENGTH
+from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot
 
 from bot import qb
 from bot import updater
@@ -103,11 +103,34 @@ def get_quick_info_text():
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_info_command(_, update):
+def on_quick_info_command(_, update, user_data):
     logger.info('/quick command from %s', update.message.from_user.first_name)
 
     text = get_quick_info_text()
-    update.message.reply_html(text, reply_markup=kb.QUICK_MENU_BUTTON)
+    sent_message = update.message.reply_html(text, reply_markup=kb.QUICK_MENU_BUTTON)
+
+    user_data['last_quick_message_id'] = sent_message.message_id
+
+
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+def on_quick_info_refresh(bot: Bot, update, user_data):
+    logger.info('/quick refresh from %s', update.message.from_user.first_name)
+
+    message_id = user_data.get('last_quick_message_id', None)
+    if not message_id:
+        return
+
+    bot.delete_message(update.effective_chat.id, update.message.message_id)
+
+    text = get_quick_info_text()
+    bot.edit_message_text(
+        chat_id=update.effective_chat.id,
+        message_id=message_id,
+        text=text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=kb.QUICK_MENU_BUTTON
+    )
 
 
 @u.check_permissions(required_permission=Permissions.READ)
@@ -176,7 +199,8 @@ def on_schedoff_button_quick(_, update):
     update.callback_query.answer('Scheduled altenrative speed off')
 
 
-updater.add_handler(CommandHandler(['quick'], on_quick_info_command))
+updater.add_handler(CommandHandler(['quick'], on_quick_info_command, pass_user_data=True))
+updater.add_handler(RegexHandler(r'^[aA]$', on_quick_info_refresh, pass_user_data=True))
 updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh$'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_quick, pattern=r'^quick:altoff$'))
