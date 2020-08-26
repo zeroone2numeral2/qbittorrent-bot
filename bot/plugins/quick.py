@@ -54,10 +54,10 @@ def get_quick_info_text():
         # the list contains the strings to concatenate as the last row of the active torrents list
         other_torrents_counts_string = list()
         if active_torrents_without_traffic_count > 0:
-            text = 'other <b>{}</b> active torrents stalled'.format(active_torrents_without_traffic_count)
+            text = 'other <b>{}</b> stalled'.format(active_torrents_without_traffic_count)
             other_torrents_counts_string.append(text)
         if active_torrents_fetching_metadata_count > 0:
-            text = 'other <b>{}</b> active torrents fetching metadata'.format(active_torrents_fetching_metadata_count)
+            text = 'other <b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
             other_torrents_counts_string.append(text)
 
         if other_torrents_counts_string:
