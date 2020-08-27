@@ -14,10 +14,10 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-QUICK_INFO_TEXT = """<b>Completed:</b>
+QUICK_INFO_TEXT = """<b>Completed ({total_completed_count}):</b>
 {completed}
 
-<b>Active:</b>
+<b>Active ({total_active_count}):</b>
 {active}
 
 {schedule}
@@ -33,9 +33,14 @@ def get_quick_info_text():
     active_torrents = qb.torrents(filter='active', sort='dlspeed', reverse=False)
     completed_torrents = qb.torrents(filter='completed')
 
+    total_active_count = 0
+    total_completed_count = 0
+
     if not active_torrents:
         active_torrents_strings_list = ['no active torrent']
     else:
+        total_active_count = len(active_torrents)  # non-filtered count
+
         active_torrents_filtered = list()
         active_torrents_without_traffic_count = 0
         active_torrents_fetching_metadata_count = 0
@@ -54,16 +59,17 @@ def get_quick_info_text():
         # the list contains the strings to concatenate as the last row of the active torrents list
         other_torrents_counts_string = list()
         if active_torrents_without_traffic_count > 0:
-            text = 'other <b>{}</b> stalled'.format(active_torrents_without_traffic_count)
+            text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
             other_torrents_counts_string.append(text)
         if active_torrents_fetching_metadata_count > 0:
-            text = 'other <b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
+            text = '<b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
             other_torrents_counts_string.append(text)
 
         if other_torrents_counts_string:
             active_torrents_strings_list.append('• ' + ', '.join(other_torrents_counts_string))
 
     if completed_torrents:
+        total_completed_count = len(completed_torrents)
         completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_torrents]
     else:
         completed_torrents_strings_list = ['no completed torrent']
@@ -90,7 +96,9 @@ def get_quick_info_text():
     current_speed_string = '<b>Current speed</b>: down: {0}/s, up: {1}/s'.format(*current_speed)
 
     text = QUICK_INFO_TEXT.format(
+        total_completed_count=total_completed_count,
         completed='\n'.join(completed_torrents_strings_list),
+        total_active_count=total_active_count,
         active='\n'.join(active_torrents_strings_list),
         schedule=schedule_string,
         alt_speed=alt_speed_string,
