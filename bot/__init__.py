@@ -99,8 +99,10 @@ def notify_completed(bot: Bot, _):
         if completed_torrents.is_new(t.hash):
             torrent = qb.torrent(t.hash)
 
+            logger.info('completed: %s (%s)', torrent.hash, torrent.name)
+
             if config.qbittorrent.get('pause_completed_torrents', False):
-                logger.info('pausing %s (%s)', torrent.name, torrent.hash)
+                logger.info('pausing: %s (%s)', torrent.hash, torrent.name)
                 torrent.pause()
 
             if not dont_notify_torrents.send_notification(t.hash):
