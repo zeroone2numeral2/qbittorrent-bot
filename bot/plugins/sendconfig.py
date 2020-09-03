@@ -4,7 +4,7 @@ from pprint import pformat
 # noinspection PyPackageRequirements
 from telegram.ext import CommandHandler
 
-from bot import updater
+from bot.updater import updater
 from utils import u
 from utils import Permissions
 from config import config

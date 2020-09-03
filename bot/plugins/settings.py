@@ -5,10 +5,9 @@ from telegram.ext import CommandHandler, CallbackQueryHandler
 # noinspection PyPackageRequirements
 from telegram import ParseMode
 
-from bot import qb
-from bot import updater
+from bot.qbtinstance import qb
+from bot.updater import updater
 from utils import u
-from utils import kb
 from utils import Permissions
 
 logger = logging.getLogger(__name__)

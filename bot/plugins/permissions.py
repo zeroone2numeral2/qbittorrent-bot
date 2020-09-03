@@ -3,7 +3,7 @@ import logging
 # noinspection PyPackageRequirements
 from telegram.ext import CommandHandler
 
-from bot import updater
+from bot.updater import updater
 from utils import u
 from utils import Permissions
 from utils import permissions

@@ -8,8 +8,8 @@ from telegram import ParseMode, MAX_MESSAGE_LENGTH
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest
 
-from bot import qb
-from bot import updater
+from bot.qbtinstance import qb
+from bot.updater import updater
 from utils import u
 from utils import kb
 from utils import Permissions

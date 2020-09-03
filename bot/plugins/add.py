@@ -5,8 +5,8 @@ import re
 # noinspection PyPackageRequirements
 from telegram.ext import Filters, MessageHandler
 
-from bot import qb
-from bot import updater
+from bot.qbtinstance import qb
+from bot.updater import updater
 from utils import u
 from utils import kb
 from utils import Permissions

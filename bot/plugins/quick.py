@@ -6,8 +6,8 @@ from telegram.ext import CommandHandler, CallbackQueryHandler, RegexHandler
 # noinspection PyPackageRequirements
 from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot
 
-from bot import qb
-from bot import updater
+from bot.qbtinstance import qb
+from bot.updater import updater
 from utils import u
 from utils import kb
 from utils import Permissions
