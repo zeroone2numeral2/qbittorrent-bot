@@ -163,6 +163,10 @@ class CustomClient(Client):
 
         return {k: v for k, v in torrent.items()}
 
+    @property
+    def save_path(self):
+        return self.preferences()['save_path']
+
     def torrents(self, get_properties=True, **kwargs):
         torrents = super(CustomClient, self).torrents(**kwargs) or []
 

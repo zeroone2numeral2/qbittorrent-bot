@@ -2,12 +2,18 @@ import logging
 import json
 
 from telegram import ParseMode, Bot
+import psutil
 
 from .qbtinstance import qb
 from utils import u
 from config import config
 
 logger = logging.getLogger(__name__)
+
+
+def free_space(dir_path):
+    usage = psutil.disk_usage(dir_path)
+    return u.get_human_readable(usage.free)
 
 
 class HashesStorage:
@@ -71,6 +77,11 @@ except ConnectionError:
     logger.warning('cannot register the completed torrents job: qbittorrent is not online')
 
 
+def free_space(dir_path):
+    usage = psutil.disk_usage(dir_path)
+    print(u.get_human_readable(usage.free))
+
+
 @u.failwithmessage_job
 def notify_completed(bot: Bot, _):
     logger.info('executing completed job')
@@ -91,7 +102,12 @@ def notify_completed(bot: Bot, _):
                 logger.info('we will not send a notification about %s (%s)', t.hash, t.name)
                 continue
 
-            text = '<code>{}</code> completed ({})'.format(u.html_escape(torrent.name), torrent.size_pretty)
+            drive_free_space = free_space(qb.save_path)
+            text = '<code>{}</code> completed ({}, free space: {})'.format(
+                u.html_escape(torrent.name),
+                torrent.size_pretty,
+                drive_free_space
+            )
 
             send_message_kwargs = dict(
                 text=text,
