@@ -135,6 +135,7 @@ class CustomClient(Client):
     def __init__(self, url, bot_username):
         self._bot_username = bot_username
         super(CustomClient, self).__init__(url=url)
+        self.online = True
 
     def _polish_torrent(self, torrent):
         if 'progress' in torrent:
@@ -243,7 +244,7 @@ class OfflineClient:
     """
 
     def __init__(self):
-        pass
+        self.online = False
 
     def __getattr__(self, name):
         def internal(*args, **kwargs):
