@@ -5,6 +5,7 @@ from html import escape as html_escape
 from telegram import Bot, ParseMode
 from telegram import Update, MAX_MESSAGE_LENGTH
 from telegram.error import BadRequest, TelegramError, TimedOut
+import psutil
 
 from .permissions_storage import permissions
 from config import config
@@ -142,3 +143,20 @@ def split_text(strings_list):
 
     for i in range(0, len(strings_list), elements_per_msg):
         yield strings_list[i:i + elements_per_msg]
+
+
+def free_space(dir_path, human_readable=True) -> [str, int]:
+    usage = psutil.disk_usage(dir_path)
+
+    free_space_bytes = usage.free
+
+    if human_readable:
+        return get_human_readable(free_space_bytes)
+    else:
+        return free_space_bytes
+
+
+def send_admin(bot, text):
+    """debug function"""
+
+    return bot.send_message(config.telegram.admins, text)
