@@ -29,8 +29,13 @@ TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of
 <b>{generic_speed_pretty}/s</b>) [<a href="{info_deeplink}">info</a>]"""
 
 
-def get_quick_info_text():
-    active_torrents = qb.torrents(filter='active', sort='dlspeed', reverse=False)
+def get_quick_info_text(sort_active_by_dl_speed=True):
+    if sort_active_by_dl_speed:
+        active_torrents_sort = 'dlspeed'
+    else:
+        active_torrents_sort = 'progress'
+
+    active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False)
     completed_torrents = qb.torrents(filter='completed')
 
     total_active_count = 0
@@ -144,10 +149,14 @@ def on_quick_info_refresh(bot: Bot, update, user_data):
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_refresh_button_quick(bot, update):
+def on_refresh_button_quick(bot, update, groups=None):
     logger.info('quick info: refresh button')
 
-    text = get_quick_info_text()
+    sort_active_by_dl_speed = True
+    if groups[0] == 'percentage':
+        sort_active_by_dl_speed = False
+
+    text = get_quick_info_text(sort_active_by_dl_speed=sort_active_by_dl_speed)
 
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
     update.callback_query.answer('Refreshed')
@@ -209,7 +218,7 @@ def on_schedoff_button_quick(_, update):
 
 updater.add_handler(CommandHandler(['quick'], on_quick_info_command, pass_user_data=True))
 updater.add_handler(RegexHandler(r'^[aA]$', on_quick_info_refresh, pass_user_data=True))
-updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh$'))
+updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$', pass_groups=True))
 updater.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_quick, pattern=r'^quick:altoff$'))
 updater.add_handler(CallbackQueryHandler(on_schedon_button_quick, pattern=r'^quick:schedon'))

@@ -29,7 +29,8 @@ QUICK_MENU_BUTTON = InlineKeyboardMarkup([
     [
         InlineKeyboardButton('✅🕑', callback_data='quick:schedon'),
         InlineKeyboardButton('❌🕑', callback_data='quick:schedoff'),
-        InlineKeyboardButton('🔄', callback_data='quick:refresh'),
+        InlineKeyboardButton('🔄 %', callback_data='quick:refresh:percentage'),
+        InlineKeyboardButton('🔄 kb/s', callback_data='quick:refresh:dlspeed'),
     ]
 ])
 
