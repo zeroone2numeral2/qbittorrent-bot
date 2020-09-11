@@ -53,8 +53,11 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         for active_torrent in active_torrents:
             if active_torrent.state in ('metaDL',):
                 active_torrents_fetching_metadata_count += 1
+            elif active_torrent.state in ('stalledDL',):
+                # for some reasons, sometime in the active list we find also torrents in this state
+                active_torrents_without_traffic_count += 1
             elif active_torrent.state in ('forcedDL', 'forcedUP') and active_torrent.generic_speed <= 0:
-                # count torrents that are not generating traffic and that have not been force-started
+                # count torrents that are not generating traffic and that have been force-started
                 active_torrents_without_traffic_count += 1
             else:
                 active_torrents_filtered.append(active_torrent)
