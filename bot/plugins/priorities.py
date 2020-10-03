@@ -12,6 +12,8 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
+TORRENT_STRING = '{t.priority}. <code>{t.name}</code> (<b>{t.state_pretty}</b>, [<a href="{t.info_deeplink}">manage</a>])'
+
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
@@ -31,7 +33,7 @@ def on_priorities_command(_, update):
             # list must contain 25 torrents max
             break
 
-    lines = ['{t.priority}. <code>{t.name}</code> (<b>{t.state_pretty}</b>)'.format(t=t) for t in non_completed_torrents]
+    lines = [TORRENT_STRING.format(t=t) for t in non_completed_torrents]
 
     for strings_chunk in u.split_text(lines):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
