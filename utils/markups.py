@@ -85,11 +85,14 @@ def confirm_delete(torrent_hash):
     ]])
 
 
-def short_markup(torrent_hash, force_resume_button=True):
+def short_markup(torrent_hash, force_resume_button=True, max_priority_button=True):
     markup = [[
         InlineKeyboardButton('pause', callback_data='pause:{}'.format(torrent_hash)),
         InlineKeyboardButton('manage', callback_data='manage:{}'.format(torrent_hash)),
     ]]
+
+    if max_priority_button:
+        markup[0].insert(0, InlineKeyboardButton('max priority', callback_data='maxpriority:{}'.format(torrent_hash)))
 
     if force_resume_button:
         markup[0].insert(0, InlineKeyboardButton('force-resume', callback_data='forceresume:{}'.format(torrent_hash)))
