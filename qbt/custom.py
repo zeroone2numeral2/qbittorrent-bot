@@ -51,7 +51,7 @@ NEW_ATTRS = {
     'dl_limit_pretty': lambda t: 'no limit' if t['dl_limit'] == -1 else u.get_human_readable(t['dl_limit'])
 }
 
-TORRENT_STRING = """• <code>{name}</code>
+TORRENT_STRING = """• [{priority}] <code>{name}</code>
   {progress_bar} {progress_pretty}%
   <b>state</b>: {state_pretty}
   <b>size</b>: {size_pretty}
@@ -63,7 +63,6 @@ TORRENT_STRING = """• <code>{name}</code>
   <b>share rateo</b>: {share_ratio_rounded}
   <b>eta</b>: {eta_pretty}
   <b>elapsed</b>: {time_elapsed_pretty}
-  <b>priority</b>: {priority}
   <b>category</b>: {category}
   <b>force start</b>: {force_start_pretty}
   [<a href="{info_deeplink}">info</a>]"""
