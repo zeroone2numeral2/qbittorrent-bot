@@ -18,6 +18,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /tostart: show torrents that are not active or completed
 • /quick: overview of what we're downloading
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
+• /priorities: show the top 25 torrents by priority
 • /settings or /s: get current settings list
 • /json: get a json file containing a list of all the torrents
 • /version: get qbittorrent and API version
