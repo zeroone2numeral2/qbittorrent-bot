@@ -1,9 +1,10 @@
+import datetime
 import logging
 import logging.config
 import json
 
 from .updater import updater
-from .jobs import notify_completed
+from .jobs import notify_completed, toggle_queueing
 from .qbtinstance import qb
 
 
@@ -23,7 +24,8 @@ def main():
     updater.import_handlers(r'bot/plugins/')
 
     if qb.online:
-        logger.info('registering "completed torrents" job')
+        logger.info('registering jobs')
         updater.job_queue.run_repeating(notify_completed, interval=120, first=120)
+        updater.job_queue.run_daily(toggle_queueing, time=datetime.time(hour=2, minute=0))
 
     updater.run(clean=True)

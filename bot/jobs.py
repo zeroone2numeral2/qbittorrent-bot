@@ -1,5 +1,6 @@
 import logging
 import json
+import time
 
 from telegram import ParseMode, Bot
 
@@ -69,6 +70,20 @@ try:
 except ConnectionError:
     # catch the connection error raised by the OffilneClient, in case we are offline
     logger.warning('cannot register the completed torrents job: qbittorrent is not online')
+
+
+@u.failwithmessage_job
+def toggle_queueing(bot: Bot, _):
+    logger.info('executing toggle queueing job')
+
+    if not qb.torrents_queueing:
+        # do not run this job if queueing is disabled
+        logger.info('torrents queueing is disabled: not doing anything')
+        return
+
+    qb.disable_torrents_queueing()
+    time.sleep(10)  # we need to sleep some time
+    qb.enable_torrents_queueing()
 
 
 @u.failwithmessage_job

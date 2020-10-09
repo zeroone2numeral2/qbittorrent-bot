@@ -177,6 +177,10 @@ class CustomClient(Client):
     def disable_torrents_queueing(self):
         return self._set_torrents_queueing(False)
 
+    @property
+    def torrents_queueing(self):
+        return self.preferences()['queueing_enabled']
+
     def torrents(self, get_properties=True, **kwargs):
         torrents = super(CustomClient, self).torrents(**kwargs) or []
 
