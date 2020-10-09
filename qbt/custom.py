@@ -166,6 +166,17 @@ class CustomClient(Client):
     def save_path(self):
         return self.preferences()['save_path']
 
+    def _set_torrents_queueing(self, value):
+        value = bool(value)
+
+        return self.set_preferences(**{'queueing_enabled': value})
+
+    def enable_torrents_queueing(self):
+        return self._set_torrents_queueing(True)
+
+    def disable_torrents_queueing(self):
+        return self._set_torrents_queueing(False)
+
     def torrents(self, get_properties=True, **kwargs):
         torrents = super(CustomClient, self).torrents(**kwargs) or []
 
