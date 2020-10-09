@@ -76,9 +76,9 @@ except ConnectionError:
 def toggle_queueing(bot: Bot, _):
     logger.info('executing toggle queueing job')
 
-    if not qb.torrents_queueing:
+    if not config.qbittorrent.get('toggle_torrents_queueing_every_night', False) or not qb.torrents_queueing:
         # do not run this job if queueing is disabled
-        logger.info('torrents queueing is disabled: not doing anything')
+        logger.info('torrents queueing is disabled, or disabled from config: not doing anything')
         return
 
     qb.disable_torrents_queueing()

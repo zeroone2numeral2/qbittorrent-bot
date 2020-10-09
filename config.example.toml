@@ -10,3 +10,4 @@ url = "http://127.0.0.1:8080/"
 login = "admin"
 secret = "adminadmin"
 pause_completed_torrents = false
+toggle_torrents_queueing_every_night = false # if enabled, torrents queueing will be disabled and re-enabled every night
