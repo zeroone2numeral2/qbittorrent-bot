@@ -58,5 +58,18 @@ def add_from_file(bot, update):
     update.message.reply_text('Torrent added', quote=True)
 
 
+@u.check_permissions(required_permission=Permissions.WRITE)
+@u.failwithmessage
+def add_from_url(_, update):
+    logger.info('url from %s', update.effective_user.first_name)
+
+    magnet_link = update.message.text
+    qb.download_from_link(magnet_link)
+    # always returns an empty json:
+    # https://python-qbittorrent.readthedocs.io/en/latest/modules/api.html#qbittorrent.client.Client.download_from_link
+
+    update.message.reply_text('Torrent url added', quote=True)
+
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r'^magnet:\?.*'), add_from_magnet))
 updater.add_handler(MessageHandler(Filters.document, add_from_file))
+updater.add_handler(MessageHandler(Filters.text & Filters.regex(r"^https?:\/\/.*(jackett|\.torren).*"), add_from_url))
