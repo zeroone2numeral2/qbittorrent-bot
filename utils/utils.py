@@ -2,8 +2,8 @@ import logging
 from functools import wraps
 from html import escape as html_escape
 
-from telegram import Bot, ParseMode
-from telegram import Update, MAX_MESSAGE_LENGTH
+from telegram import Bot, ParseMode, Update, MAX_MESSAGE_LENGTH
+from telegram.ext import CallbackContext
 from telegram.error import BadRequest, TelegramError, TimedOut
 import psutil
 
@@ -19,12 +19,12 @@ logger = logging.getLogger(__name__)
 def check_permissions(required_permission='admin'):
     def real_decorator(func):
         @wraps(func)
-        def wrapped(bot: Bot, update: Update, *args, **kwargs):
+        def wrapped(update: Update, context: CallbackContext, *args, **kwargs):
             user_id = update.effective_user.id
             
             if user_id in config.telegram.admins:
                 # always give the green light for admins
-                return func(bot, update, *args, **kwargs)
+                return func(update, context, *args, **kwargs)
 
             if required_permission in ('a', 'admin') or permissions['admins_only']:
                 # if admins_only: no one can use the bot but the admins
@@ -40,12 +40,12 @@ def check_permissions(required_permission='admin'):
             
             # check if the config allows one of the operations for non-admin users
             if required_permission in ('r', 'read') and permissions['free_read']:
-                return func(bot, update, *args, **kwargs)
+                return func(update, context, *args, **kwargs)
             # "edit/write" permission require "read" permission to be enabled
             elif required_permission in ('w', 'write') and (permissions['free_read'] and permissions['free_write']):
-                return func(bot, update, *args, **kwargs)
+                return func(update, context, *args, **kwargs)
             elif required_permission in ('e', 'edit') and (permissions['free_read'] and permissions['free_edit']):
-                return func(bot, update, *args, **kwargs)
+                return func(update, context, *args, **kwargs)
             
             # all the permissions are disabled: unauthorized access
             logger.info('unauthorized command usage (%s) by %d (%s)', required_permission, user_id, update.effective_user.first_name)
@@ -63,9 +63,9 @@ def check_permissions(required_permission='admin'):
 
 def failwithmessage(func):
     @wraps(func)
-    def wrapped(bot, update, *args, **kwargs):
+    def wrapped(update: Update, context: CallbackContext, *args, **kwargs):
         try:
-            return func(bot, update, *args, **kwargs)
+            return func(update, context, *args, **kwargs)
         except Exception as e:
             error_str = str(e)
             logger.info('error while running handler callback: %s', error_str, exc_info=True)
@@ -84,9 +84,9 @@ def failwithmessage(func):
 
 def ignore_not_modified_exception(func):
     @wraps(func)
-    def wrapped(bot, update, *args, **kwargs):
+    def wrapped(update: Update, context: CallbackContext, *args, **kwargs):
         try:
-            return func(bot, update, *args, **kwargs)
+            return func(update, context, *args, **kwargs)
         except (BadRequest, TelegramError) as err:
             logger.info('"message is not modified" error ignored')
             if 'not modified' not in str(err).lower():
@@ -99,13 +99,13 @@ def ignore_not_modified_exception(func):
 
 def failwithmessage_job(func):
     @wraps(func)
-    def wrapped(bot, job, *args, **kwargs):
+    def wrapped(context: CallbackContext, *args, **kwargs):
         try:
-            return func(bot, job, *args, **kwargs)
+            return func(context, *args, **kwargs)
         except Exception as e:
             logger.info('error while running job: %s', str(e), exc_info=True)
             text = 'An error occurred while running a job: <code>{}</code>'.format(html_escape(str(e)))
-            bot.send_message(config.telegram.admins[0], text, parse_mode=ParseMode.HTML)
+            context.bot.send_message(config.telegram.admins[0], text, parse_mode=ParseMode.HTML)
 
     return wrapped
 

@@ -7,7 +7,7 @@ from pathlib import Path
 # noinspection PyPackageRequirements
 from telegram.ext import Updater, ConversationHandler
 # noinspection PyPackageRequirements
-from telegram import Bot
+from telegram import Bot, BotCommand
 
 from utils import u
 
@@ -26,6 +26,10 @@ class CustomBot(Bot):
 
 
 class CustomUpdater(Updater):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bot_commands = []
+
     @staticmethod
     def _load_manifest(manifest_path):
         if not manifest_path:
@@ -96,12 +100,30 @@ class CustomUpdater(Updater):
             logger.debug('importing module: %s', import_path)
             importlib.import_module(import_path)
 
+    def set_bot_commands(self, show_first: [list, None] = None):
+        if show_first:
+            show_first = [c.lower() for c in show_first]
+
+            new_list = []
+
+            for command_to_show_first in show_first:
+                command: BotCommand
+                for command in self.bot_commands:
+                    if command.command.lower() == command_to_show_first:
+                        new_list.append(command)
+
+            new_list.extend(self.bot_commands)  # we don't care about the duplicates
+            self.bot_commands = new_list
+
+        self.bot.set_my_commands(self.bot_commands)
+
     def run(self, *args, **kwargs):
         logger.info('running as @%s', self.bot.username)
+
         self.start_polling(*args, **kwargs)
         self.idle()
 
-    def add_handler(self, *args, **kwargs):
+    def add_handler(self, *args, bot_command=None, **kwargs):
         if isinstance(args[0], ConversationHandler):
             # ConverstaionHandler.name or the name of the first entry_point function
             logger.info('adding conversation handler: %s', args[0].name or args[0].entry_points[0].callback.__name__)
@@ -109,3 +131,9 @@ class CustomUpdater(Updater):
             logger.info('adding handler: %s', args[0].callback.__name__)
 
         self.dispatcher.add_handler(*args, **kwargs)
+
+        if bot_command:
+            if isinstance(bot_command, (list, tuple)):
+                self.bot_commands.extend(bot_command)
+            else:
+                self.bot_commands.append(bot_command)

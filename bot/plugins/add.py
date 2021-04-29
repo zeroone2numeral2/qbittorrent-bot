@@ -3,7 +3,8 @@ import os
 import re
 
 # noinspection PyPackageRequirements
-from telegram.ext import Filters, MessageHandler
+from telegram import Update, BotCommand
+from telegram.ext import Filters, MessageHandler, CallbackContext
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -36,7 +37,7 @@ def add_from_magnet(_, update):
 
 @u.check_permissions(required_permission=Permissions.WRITE)
 @u.failwithmessage
-def add_from_file(bot, update):
+def add_from_file(update: Update, context: CallbackContext):
     logger.info('document from %s', update.effective_user.first_name)
 
     if update.message.document.mime_type != 'application/x-bittorrent':
@@ -44,7 +45,7 @@ def add_from_file(bot, update):
         return
 
     file_id = update.message.document.file_id
-    torrent_file = bot.get_file(file_id)
+    torrent_file = context.bot.get_file(file_id)
 
     file_path = './downloads/{}'.format(update.message.document.file_name)
     torrent_file.download(file_path)
@@ -60,7 +61,7 @@ def add_from_file(bot, update):
 
 @u.check_permissions(required_permission=Permissions.WRITE)
 @u.failwithmessage
-def add_from_url(_, update):
+def add_from_url(update: Update, context: CallbackContext):
     logger.info('url from %s', update.effective_user.first_name)
 
     magnet_link = update.message.text
@@ -69,6 +70,7 @@ def add_from_url(_, update):
     # https://python-qbittorrent.readthedocs.io/en/latest/modules/api.html#qbittorrent.client.Client.download_from_link
 
     update.message.reply_text('Torrent url added', quote=True)
+
 
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r'^magnet:\?.*'), add_from_magnet))
 updater.add_handler(MessageHandler(Filters.document, add_from_file))

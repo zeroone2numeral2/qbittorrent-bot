@@ -1,7 +1,8 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler
+from telegram import Update, BotCommand
+from telegram.ext import CommandHandler, CallbackContext
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -10,16 +11,17 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
+
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_filter_command(_, update, args):
-    logger.info('/filter command used by %s (query: %s)', update.effective_user.first_name, args)
+def on_filter_command(update: Update, context: CallbackContext):
+    logger.info('/filter command used by %s (query: %s)', update.effective_user.first_name, context.args)
 
-    if not args[0:]:
+    if not context.args[0:]:
         update.message.reply_text('Please provide a search term')
         return
 
-    query = ' '.join(args[0:])
+    query = ' '.join(context.args[0:])
 
     torrents = qb.filter(query)
 
@@ -33,4 +35,4 @@ def on_filter_command(_, update, args):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
 
 
-updater.add_handler(CommandHandler(['filter', 'f'], on_filter_command, pass_args=True))
+updater.add_handler(CommandHandler(['filter', 'f'], on_filter_command), bot_command=BotCommand("filter", "filter torrents by substring"))

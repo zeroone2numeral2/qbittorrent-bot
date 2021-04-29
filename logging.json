@@ -30,6 +30,9 @@
         },
         "JobQueue": {
             "level": "WARNING"
+        },
+        "urllib3.connectionpool": {
+            "level": "WARNING"
         }
     },
     "formatters": {

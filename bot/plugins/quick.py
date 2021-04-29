@@ -2,9 +2,9 @@ import datetime
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackQueryHandler, RegexHandler
+from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, Filters
 # noinspection PyPackageRequirements
-from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot
+from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot, Update, BotCommand
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -14,10 +14,7 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-QUICK_INFO_TEXT = """<b>Completed ({total_completed_count}):</b>
-{completed}
-
-<b>Active ({total_active_count}):</b>
+QUICK_INFO_TEXT = """<b>Active ({total_active_count}):</b>
 {active}
 
 {schedule}
@@ -36,7 +33,6 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         active_torrents_sort = 'progress'
 
     active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False)
-    completed_torrents = qb.torrents(filter='completed')
 
     total_active_count = 0
     total_completed_count = 0
@@ -76,16 +72,9 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         if other_torrents_counts_string:
             active_torrents_strings_list.append('• ' + ', '.join(other_torrents_counts_string))
 
-    if completed_torrents:
-        total_completed_count = len(completed_torrents)
-        completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_torrents]
-    else:
-        completed_torrents_strings_list = ['no completed torrent']
-
     # shorten the message if it's too long to send
-    completed_torrents_string_len = sum(map(len, completed_torrents_strings_list))
     active_torrents_string_len = sum(map(len, active_torrents_strings_list))
-    if (completed_torrents_string_len + active_torrents_string_len) > MAX_MESSAGE_LENGTH:
+    if active_torrents_string_len > MAX_MESSAGE_LENGTH:
         # we assume the longest one between the two is the completed torrents list
         completed_torrents_strings_list = ['list too long, use /completed to see completed torrents']
 
@@ -105,7 +94,6 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
     text = QUICK_INFO_TEXT.format(
         total_completed_count=total_completed_count,
-        completed='\n'.join(completed_torrents_strings_list),
         total_active_count=total_active_count,
         active='\n'.join(active_torrents_strings_list),
         schedule=schedule_string,
@@ -119,28 +107,28 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_info_command(_, update, user_data):
+def on_quick_info_command(update: Update, context: CallbackContext):
     logger.info('/quick command from %s', update.message.from_user.first_name)
 
     text = get_quick_info_text()
     sent_message = update.message.reply_html(text, reply_markup=kb.QUICK_MENU_BUTTON)
 
-    user_data['last_quick_message_id'] = sent_message.message_id
+    context.user_data['last_quick_message_id'] = sent_message.message_id
 
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_info_refresh(bot: Bot, update, user_data):
+def on_quick_info_refresh(update: Update, context: CallbackContext):
     logger.info('/quick refresh from %s', update.message.from_user.first_name)
 
-    message_id = user_data.get('last_quick_message_id', None)
+    message_id = context.user_data.get('last_quick_message_id', None)
     if not message_id:
         return
 
-    bot.delete_message(update.effective_chat.id, update.message.message_id)
+    context.bot.delete_message(update.effective_chat.id, update.message.message_id)
 
     text = get_quick_info_text()
-    bot.edit_message_text(
+    context.bot.edit_message_text(
         chat_id=update.effective_chat.id,
         message_id=message_id,
         text=text,
@@ -152,11 +140,11 @@ def on_quick_info_refresh(bot: Bot, update, user_data):
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_refresh_button_quick(bot, update, groups=None):
+def on_refresh_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: refresh button')
 
     sort_active_by_dl_speed = True
-    if groups[0] == 'percentage':
+    if context.match[0] == 'percentage':
         sort_active_by_dl_speed = False
 
     text = get_quick_info_text(sort_active_by_dl_speed=sort_active_by_dl_speed)
@@ -168,7 +156,7 @@ def on_refresh_button_quick(bot, update, groups=None):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_alton_button_quick(_, update):
+def on_alton_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: alton button')
 
     if not bool(qb.get_alternative_speed_status()):
@@ -182,7 +170,7 @@ def on_alton_button_quick(_, update):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_altoff_button_quick(_, update):
+def on_altoff_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: altoff button')
 
     if bool(qb.get_alternative_speed_status()):
@@ -196,7 +184,7 @@ def on_altoff_button_quick(_, update):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_schedon_button_quick(_, update):
+def on_schedon_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: schedon button')
 
     qb.set_preferences(**{'scheduler_enabled': True})
@@ -209,7 +197,7 @@ def on_schedon_button_quick(_, update):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_schedoff_button_quick(_, update):
+def on_schedoff_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: schedoff button')
 
     qb.set_preferences(**{'scheduler_enabled': False})
@@ -219,9 +207,9 @@ def on_schedoff_button_quick(_, update):
     update.callback_query.answer('Scheduled altenrative speed off')
 
 
-updater.add_handler(CommandHandler(['quick'], on_quick_info_command, pass_user_data=True))
-updater.add_handler(RegexHandler(r'^[aA]$', on_quick_info_refresh, pass_user_data=True))
-updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$', pass_groups=True))
+updater.add_handler(CommandHandler(['quick'], on_quick_info_command), bot_command=BotCommand("quick", "quick overview"))
+updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_quick_info_refresh))
+updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_quick, pattern=r'^quick:altoff$'))
 updater.add_handler(CallbackQueryHandler(on_schedon_button_quick, pattern=r'^quick:schedon'))

@@ -1,9 +1,9 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackQueryHandler
+from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext
 # noinspection PyPackageRequirements
-from telegram import ParseMode
+from telegram import ParseMode, Update, BotCommand
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -17,7 +17,7 @@ TORRENT_STRING = '{t.priority}. <code>{t.name}</code> (<b>{t.state_pretty}</b>, 
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_priorities_command(_, update):
+def on_priorities_command(update: Update, context: CallbackContext):
     logger.info('/priorities from %s', update.effective_user.first_name)
 
     torrents = qb.torrents(sort='priority', reverse=False)
@@ -39,4 +39,4 @@ def on_priorities_command(_, update):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
 
 
-updater.add_handler(CommandHandler(['priorities'], on_priorities_command))
+updater.add_handler(CommandHandler(['priorities'], on_priorities_command), bot_command=BotCommand("priorities", "see the torrents list sorted by priority"))

@@ -2,9 +2,9 @@ import logging
 import re
 
 # noinspection PyPackageRequirements
-from telegram.ext import RegexHandler, CallbackQueryHandler
+from telegram.ext import CallbackQueryHandler, CallbackContext, MessageHandler, Filters
 # noinspection PyPackageRequirements
-from telegram import ParseMode
+from telegram import ParseMode, Update, BotCommand
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -27,10 +27,10 @@ TORRENT_CATEG_REGEX = re.compile(TORRENT_CATEG_REGEX_PATTERN, re.I)
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_torrents_list_selection(_, update, groups):
-    logger.info('torrents list menu button from %s: %s', update.message.from_user.first_name, groups[0])
+def on_torrents_list_selection(update: Update, context: CallbackContext):
+    logger.info('torrents list menu button from %s: %s', update.message.from_user.first_name, context.match[0])
 
-    qbfilter = groups[0]
+    qbfilter = context.match[0]
     if qbfilter.startswith('/'):
         # remove the "/" if the category has been used as command
         qbfilter = qbfilter.replace('/', '')
@@ -62,4 +62,11 @@ def on_torrents_list_selection(_, update, groups):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
 
 
-updater.add_handler(RegexHandler(TORRENT_CATEG_REGEX, on_torrents_list_selection, pass_groups=True))
+updater.add_handler(MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torrents_list_selection), bot_command=[
+    BotCommand("all", "show all torrents"),
+    BotCommand("completed", "show completed torrents"),
+    BotCommand("downloading", "show downloading torrents"),
+    BotCommand("paused", "show paused torrents"),
+    BotCommand("inactive", "show inactive torrents"),
+    BotCommand("tostart", "show torrents that can be started")
+])
