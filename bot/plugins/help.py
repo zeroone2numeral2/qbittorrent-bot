@@ -1,7 +1,8 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, RegexHandler
+from telegram import Update
+from telegram.ext import CommandHandler, RegexHandler, CallbackContext
 
 from bot.updater import updater
 from utils import u
@@ -47,7 +48,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_help(_, update):
+def on_help(update: Update, context: CallbackContext):
     logger.info('/help from %s', update.message.from_user.first_name)
 
     update.message.reply_html(HELP_MESSAGE)

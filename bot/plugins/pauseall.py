@@ -1,7 +1,8 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler
+from telegram import Update
+from telegram.ext import CommandHandler, CallbackContext
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def on_resume_all_command(_, update):
+def on_resume_all_command(update: Update, context: CallbackContext):
     logger.info('resume all command from %s', update.message.from_user.first_name)
 
     qb.resume_all()
@@ -23,7 +24,7 @@ def on_resume_all_command(_, update):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def on_pause_all_command(_, update):
+def on_pause_all_command(update: Update, context: CallbackContext):
     logger.info('pause all command from %s', update.message.from_user.first_name)
 
     qb.pause_all()

@@ -2,9 +2,9 @@ import logging
 import time
 
 # noinspection PyPackageRequirements
-from telegram.ext import CallbackQueryHandler, RegexHandler
+from telegram.ext import CallbackQueryHandler, RegexHandler, CallbackContext
 # noinspection PyPackageRequirements
-from telegram import ParseMode, MAX_MESSAGE_LENGTH
+from telegram import ParseMode, MAX_MESSAGE_LENGTH, Update
 # noinspection PyPackageRequirements
 from telegram.error import BadRequest
 
@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_info_deeplink(_, update, groups=[]):
+def on_info_deeplink(update: Update, context: CallbackContext):
     logger.info('info deeplink from %s', update.message.from_user.first_name)
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -32,10 +32,10 @@ def on_info_deeplink(_, update, groups=[]):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def manage_torrent_cb(_, update, groups):
+def manage_torrent_cb(update: Update, context: CallbackContext):
     logger.info('manage torrent inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -50,10 +50,10 @@ def manage_torrent_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def see_trackers_cb(_, update, groups):
+def see_trackers_cb(update: Update, context: CallbackContext):
     logger.info('trackers inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -91,10 +91,10 @@ def see_trackers_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def refresh_torrent_cb(_, update, groups):
+def refresh_torrent_cb(update: Update, context: CallbackContext):
     logger.info('refresh torrent inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -113,10 +113,10 @@ def refresh_torrent_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def pause_torrent_cb(_, update, groups):
+def pause_torrent_cb(update: Update, context: CallbackContext):
     logger.info('pause torrent inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -127,10 +127,10 @@ def pause_torrent_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def resume_torrent_cb(_, update, groups):
+def resume_torrent_cb(update: Update, context: CallbackContext):
     logger.info('resume torrent inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -141,10 +141,10 @@ def resume_torrent_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def force_resume_torrent_cb(_, update, groups):
+def force_resume_torrent_cb(update: Update, context: CallbackContext):
     logger.info('force-resume torrent inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -157,10 +157,10 @@ def force_resume_torrent_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def force_start_torrent_cb(_, update, groups):
+def force_start_torrent_cb(update: Update, context: CallbackContext):
     logger.info('force start torrent inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -171,10 +171,10 @@ def force_start_torrent_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def unforce_start_torrent_cb(_, update, groups):
+def unforce_start_torrent_cb(update: Update, context: CallbackContext):
     logger.info('unforce start torrent inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -185,10 +185,10 @@ def unforce_start_torrent_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def priority_up_cb(_, update, groups):
+def priority_up_cb(update: Update, context: CallbackContext):
     logger.info('priority up inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -199,10 +199,10 @@ def priority_up_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def max_priority_cb(_, update, groups):
+def max_priority_cb(update: Update, context: CallbackContext):
     logger.info('max priority inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -213,10 +213,10 @@ def max_priority_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def recheck_cb(_, update, groups):
+def recheck_cb(update: Update, context: CallbackContext):
     logger.info('recheck inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -227,10 +227,10 @@ def recheck_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def ask_confirm_delete_with_files_cb(_, update, groups):
+def ask_confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     logger.info('delete with files inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -247,10 +247,10 @@ def ask_confirm_delete_with_files_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def confirm_delete_with_files_cb(_, update, groups):
+def confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     logger.info('confirmation delete with files inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -261,10 +261,10 @@ def confirm_delete_with_files_cb(_, update, groups):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def reduce_buttons(_, update, groups):
+def reduce_buttons(update: Update, context: CallbackContext):
     logger.info('remove buttons inline button')
 
-    torrent_hash = groups[0]
+    torrent_hash = context.match[0]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -277,18 +277,18 @@ def reduce_buttons(_, update, groups):
     update.callback_query.answer('Inline keyboard reduced')
 
 
-updater.add_handler(RegexHandler(r'^\/start info(.*)$', on_info_deeplink, pass_groups=True))
-updater.add_handler(CallbackQueryHandler(manage_torrent_cb, pattern=r'^manage:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(see_trackers_cb, pattern=r'^trackers:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(refresh_torrent_cb, pattern=r'^refresh:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(pause_torrent_cb, pattern=r'^pause:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(resume_torrent_cb, pattern=r'^resume:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(force_resume_torrent_cb, pattern=r'^forceresume:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(force_start_torrent_cb, pattern=r'^forcestart:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(unforce_start_torrent_cb, pattern=r'^unforcestart:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(priority_up_cb, pattern=r'^priorityup:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(max_priority_cb, pattern=r'^maxpriority:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(recheck_cb, pattern=r'^recheck:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(ask_confirm_delete_with_files_cb, pattern=r'^deletewithfiles:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(confirm_delete_with_files_cb, pattern=r'^confirmdeletewithfiles:(.*)$', pass_groups=True))
-updater.add_handler(CallbackQueryHandler(reduce_buttons, pattern=r'^reduce:(.*)$', pass_groups=True))
+updater.add_handler(RegexHandler(r'^\/start info(.*)$', on_info_deeplink))
+updater.add_handler(CallbackQueryHandler(manage_torrent_cb, pattern=r'^manage:(.*)$'))
+updater.add_handler(CallbackQueryHandler(see_trackers_cb, pattern=r'^trackers:(.*)$'))
+updater.add_handler(CallbackQueryHandler(refresh_torrent_cb, pattern=r'^refresh:(.*)$'))
+updater.add_handler(CallbackQueryHandler(pause_torrent_cb, pattern=r'^pause:(.*)$'))
+updater.add_handler(CallbackQueryHandler(resume_torrent_cb, pattern=r'^resume:(.*)$'))
+updater.add_handler(CallbackQueryHandler(force_resume_torrent_cb, pattern=r'^forceresume:(.*)$'))
+updater.add_handler(CallbackQueryHandler(force_start_torrent_cb, pattern=r'^forcestart:(.*)$'))
+updater.add_handler(CallbackQueryHandler(unforce_start_torrent_cb, pattern=r'^unforcestart:(.*)$'))
+updater.add_handler(CallbackQueryHandler(priority_up_cb, pattern=r'^priorityup:(.*)$'))
+updater.add_handler(CallbackQueryHandler(max_priority_cb, pattern=r'^maxpriority:(.*)$'))
+updater.add_handler(CallbackQueryHandler(recheck_cb, pattern=r'^recheck:(.*)$'))
+updater.add_handler(CallbackQueryHandler(ask_confirm_delete_with_files_cb, pattern=r'^deletewithfiles:(.*)$'))
+updater.add_handler(CallbackQueryHandler(confirm_delete_with_files_cb, pattern=r'^confirmdeletewithfiles:(.*)$'))
+updater.add_handler(CallbackQueryHandler(reduce_buttons, pattern=r'^reduce:(.*)$'))

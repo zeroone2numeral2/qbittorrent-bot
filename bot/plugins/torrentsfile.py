@@ -4,7 +4,8 @@ import os
 from collections import defaultdict
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler
+from telegram import Update
+from telegram.ext import CommandHandler, CallbackContext
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_json_command(_, update):
+def on_json_command(update: Update, context: CallbackContext):
     logger.info('/json command from %s', update.message.from_user.first_name)
 
     torrents = qb.torrents(filter='all')

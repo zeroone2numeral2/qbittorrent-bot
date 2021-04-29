@@ -1,9 +1,9 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackQueryHandler
+from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext
 # noinspection PyPackageRequirements
-from telegram import ParseMode
+from telegram import ParseMode, Update
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_settings_command(_, update):
+def on_settings_command(update: Update, context: CallbackContext):
     logger.info('/settings from %s', update.effective_user.first_name)
 
     preferences = qb.preferences()
@@ -27,15 +27,15 @@ def on_settings_command(_, update):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def change_setting(_, update, args):
+def change_setting(update: Update, context: CallbackContext):
     logger.info('/set from %s', update.effective_user.first_name)
 
-    if len(args) < 2:
+    if len(context.args) < 2:
         update.message.reply_html('Usage: /set <code>[setting] [value]</code>')
         return
 
-    key = args[0].lower()
-    val = args[1]
+    key = context.args[0].lower()
+    val = context.args[1]
 
     qb.set_preferences(**{key: val})
 
@@ -43,4 +43,4 @@ def change_setting(_, update, args):
 
 
 updater.add_handler(CommandHandler(['settings', 's'], on_settings_command))
-updater.add_handler(CommandHandler(['set'], change_setting, pass_args=True))
+updater.add_handler(CommandHandler(['set'], change_setting))

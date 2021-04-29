@@ -2,9 +2,9 @@ import datetime
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackQueryHandler, RegexHandler
+from telegram.ext import CommandHandler, CallbackQueryHandler, RegexHandler, CallbackContext
 # noinspection PyPackageRequirements
-from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot
+from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot, Update
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -119,28 +119,28 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_info_command(_, update, user_data):
+def on_quick_info_command(update: Update, context: CallbackContext):
     logger.info('/quick command from %s', update.message.from_user.first_name)
 
     text = get_quick_info_text()
     sent_message = update.message.reply_html(text, reply_markup=kb.QUICK_MENU_BUTTON)
 
-    user_data['last_quick_message_id'] = sent_message.message_id
+    context.user_data['last_quick_message_id'] = sent_message.message_id
 
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_info_refresh(bot: Bot, update, user_data):
+def on_quick_info_refresh(update: Update, context: CallbackContext):
     logger.info('/quick refresh from %s', update.message.from_user.first_name)
 
-    message_id = user_data.get('last_quick_message_id', None)
+    message_id = context.user_data.get('last_quick_message_id', None)
     if not message_id:
         return
 
-    bot.delete_message(update.effective_chat.id, update.message.message_id)
+    context.bot.delete_message(update.effective_chat.id, update.message.message_id)
 
     text = get_quick_info_text()
-    bot.edit_message_text(
+    context.bot.edit_message_text(
         chat_id=update.effective_chat.id,
         message_id=message_id,
         text=text,
@@ -152,11 +152,11 @@ def on_quick_info_refresh(bot: Bot, update, user_data):
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_refresh_button_quick(bot, update, groups=None):
+def on_refresh_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: refresh button')
 
     sort_active_by_dl_speed = True
-    if groups[0] == 'percentage':
+    if context.match[0] == 'percentage':
         sort_active_by_dl_speed = False
 
     text = get_quick_info_text(sort_active_by_dl_speed=sort_active_by_dl_speed)
@@ -168,7 +168,7 @@ def on_refresh_button_quick(bot, update, groups=None):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_alton_button_quick(_, update):
+def on_alton_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: alton button')
 
     if not bool(qb.get_alternative_speed_status()):
@@ -182,7 +182,7 @@ def on_alton_button_quick(_, update):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_altoff_button_quick(_, update):
+def on_altoff_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: altoff button')
 
     if bool(qb.get_alternative_speed_status()):
@@ -196,7 +196,7 @@ def on_altoff_button_quick(_, update):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_schedon_button_quick(_, update):
+def on_schedon_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: schedon button')
 
     qb.set_preferences(**{'scheduler_enabled': True})
@@ -209,7 +209,7 @@ def on_schedon_button_quick(_, update):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_schedoff_button_quick(_, update):
+def on_schedoff_button_quick(update: Update, context: CallbackContext):
     logger.info('quick info: schedoff button')
 
     qb.set_preferences(**{'scheduler_enabled': False})
@@ -219,9 +219,9 @@ def on_schedoff_button_quick(_, update):
     update.callback_query.answer('Scheduled altenrative speed off')
 
 
-updater.add_handler(CommandHandler(['quick'], on_quick_info_command, pass_user_data=True))
-updater.add_handler(RegexHandler(r'^[aA]$', on_quick_info_refresh, pass_user_data=True))
-updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$', pass_groups=True))
+updater.add_handler(CommandHandler(['quick'], on_quick_info_command))
+updater.add_handler(RegexHandler(r'^[aA]$', on_quick_info_refresh))
+updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_quick, pattern=r'^quick:altoff$'))
 updater.add_handler(CallbackQueryHandler(on_schedon_button_quick, pattern=r'^quick:schedon'))

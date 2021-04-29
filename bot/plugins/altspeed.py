@@ -2,7 +2,8 @@ import logging
 import re
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackQueryHandler
+from telegram import Update
+from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -17,7 +18,7 @@ PRESETS = [10, 50, 100, 200]
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def change_alternative_limits(_, update, args):
+def change_alternative_limits(update: Update, context: CallbackContext):
     logger.info('/altdown or /altup from %s', update.message.from_user.first_name)
 
     if re.search(r'^[!/]altdown$', update.message.text, re.I):
@@ -34,7 +35,7 @@ def change_alternative_limits(_, update, args):
     if update.message.text.lower().startswith('/altup'):
         preference_key = 'alt_up_limit'
 
-    kbs: str = args[0]
+    kbs: str = context.args[0]
     if not kbs.isdigit():
         update.message.reply_text('Please pass the alternative speed limit in kb/s, as an integer')
         return
@@ -47,10 +48,10 @@ def change_alternative_limits(_, update, args):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def altdown_speed_callback(_, update, groups):
+def altdown_speed_callback(update: Update, context: CallbackContext):
     logger.info('remove buttons inline button')
 
-    speed_kbs = int(groups[0]) * 1024
+    speed_kbs = int(context.match[0]) * 1024
     preferences_to_edit = dict()
     preference_key = 'alt_dl_limit'
 
@@ -60,5 +61,5 @@ def altdown_speed_callback(_, update, groups):
     update.callback_query.answer('Alternative dl speed set to {} kb/s'.format(speed_kbs))
 
 
-updater.add_handler(CommandHandler(['altdown', 'altup'], change_alternative_limits, pass_args=True))
-updater.add_handler(CallbackQueryHandler(altdown_speed_callback, pattern=r'^altdown:(\d+)$', pass_groups=True))
+updater.add_handler(CommandHandler(['altdown', 'altup'], change_alternative_limits))
+updater.add_handler(CallbackQueryHandler(altdown_speed_callback, pattern=r'^altdown:(\d+)$'))
