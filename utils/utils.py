@@ -24,7 +24,7 @@ def check_permissions(required_permission='admin'):
             
             if user_id in config.telegram.admins:
                 # always give the green light for admins
-                return func(update, context.bot, *args, **kwargs)
+                return func(update, context, *args, **kwargs)
 
             if required_permission in ('a', 'admin') or permissions['admins_only']:
                 # if admins_only: no one can use the bot but the admins
