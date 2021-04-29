@@ -2,7 +2,7 @@ import logging
 from pprint import pformat
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import CommandHandler, CallbackContext
 
 from bot.updater import updater
@@ -21,4 +21,4 @@ def on_config_command(update: Update, context: CallbackContext):
     update.message.reply_html('<code>{}</code>'.format(pformat(config.qbittorrent)))
 
 
-updater.add_handler(CommandHandler('config', on_config_command))
+updater.add_handler(CommandHandler('config', on_config_command), bot_command=BotCommand("config", "get the current config"))

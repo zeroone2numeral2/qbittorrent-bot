@@ -1,7 +1,7 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import CommandHandler, CallbackContext
 
 from bot.qbtinstance import qb
@@ -35,4 +35,4 @@ def on_filter_command(update: Update, context: CallbackContext):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
 
 
-updater.add_handler(CommandHandler(['filter', 'f'], on_filter_command))
+updater.add_handler(CommandHandler(['filter', 'f'], on_filter_command), bot_command=BotCommand("filter", "filter torrents by substring"))

@@ -4,7 +4,7 @@ import os
 from collections import defaultdict
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import CommandHandler, CallbackContext
 
 from bot.qbtinstance import qb
@@ -42,4 +42,4 @@ def on_json_command(update: Update, context: CallbackContext):
     os.remove(file_path)
 
 
-updater.add_handler(CommandHandler('json', on_json_command))
+updater.add_handler(CommandHandler('json', on_json_command), bot_command=BotCommand("json", "backup the torrents list"))

@@ -3,7 +3,7 @@ import os
 import re
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import Filters, MessageHandler, CallbackContext
 
 from bot.qbtinstance import qb

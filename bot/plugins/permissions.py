@@ -1,7 +1,7 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import CommandHandler, CallbackContext
 
 from bot.updater import updater
@@ -45,5 +45,5 @@ def set_permission(update: Update, context: CallbackContext):
     update.message.reply_html('<b>New config</b>:\n\n<code>{}</code>'.format(str(permissions)))
 
 
-updater.add_handler(CommandHandler(['permissions', 'p'], get_permissions))
-updater.add_handler(CommandHandler(['pset'], set_permission))
+updater.add_handler(CommandHandler(['permissions', 'p'], get_permissions), bot_command=BotCommand("permissions", "see how permissions are configured"))
+updater.add_handler(CommandHandler(['pset'], set_permission), bot_command=BotCommand("pset", "change a permission"))

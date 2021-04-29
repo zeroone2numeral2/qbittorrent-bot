@@ -4,7 +4,7 @@ import logging
 # noinspection PyPackageRequirements
 from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, Filters
 # noinspection PyPackageRequirements
-from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot, Update
+from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot, Update, BotCommand
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -219,7 +219,7 @@ def on_schedoff_button_quick(update: Update, context: CallbackContext):
     update.callback_query.answer('Scheduled altenrative speed off')
 
 
-updater.add_handler(CommandHandler(['quick'], on_quick_info_command))
+updater.add_handler(CommandHandler(['quick'], on_quick_info_command), bot_command=BotCommand("quick", "quick overview"))
 updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_quick_info_refresh))
 updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))

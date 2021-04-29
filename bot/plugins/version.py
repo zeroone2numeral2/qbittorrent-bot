@@ -1,7 +1,7 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import CommandHandler, CallbackContext
 
 from bot.qbtinstance import qb
@@ -25,4 +25,4 @@ def on_version_command(update: Update, context: CallbackContext):
     update.message.reply_html(text)
 
 
-updater.add_handler(CommandHandler('version', on_version_command))
+updater.add_handler(CommandHandler('version', on_version_command), bot_command=BotCommand("version", "see qbittorrent's version"))

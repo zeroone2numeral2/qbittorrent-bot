@@ -3,7 +3,7 @@ import logging
 # noinspection PyPackageRequirements
 from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext
 # noinspection PyPackageRequirements
-from telegram import ParseMode, Update
+from telegram import ParseMode, Update, BotCommand
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -42,5 +42,5 @@ def change_setting(update: Update, context: CallbackContext):
     update.message.reply_html('<b>Setting changed</b>:\n\n<code>{}</code>'.format(val))
 
 
-updater.add_handler(CommandHandler(['settings', 's'], on_settings_command))
-updater.add_handler(CommandHandler(['set'], change_setting))
+updater.add_handler(CommandHandler(['settings', 's'], on_settings_command), bot_command=BotCommand("settings", "see qbittorrent's settings list"))
+updater.add_handler(CommandHandler(['set'], change_setting), bot_command=BotCommand("set", "change a qbittorrent setting"))

@@ -4,7 +4,7 @@ import re
 # noinspection PyPackageRequirements
 from telegram.ext import CallbackQueryHandler, CallbackContext, MessageHandler, Filters
 # noinspection PyPackageRequirements
-from telegram import ParseMode, Update
+from telegram import ParseMode, Update, BotCommand
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -62,4 +62,11 @@ def on_torrents_list_selection(update: Update, context: CallbackContext):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
 
 
-updater.add_handler(MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torrents_list_selection))
+updater.add_handler(MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torrents_list_selection), bot_command=[
+    BotCommand("all", "show all torrents"),
+    BotCommand("completed", "show completed torrents"),
+    BotCommand("downloading", "show downloading torrents"),
+    BotCommand("paused", "show paused torrents"),
+    BotCommand("inactive", "show inactive torrents"),
+    BotCommand("tostart", "show torrents that can be started")
+])

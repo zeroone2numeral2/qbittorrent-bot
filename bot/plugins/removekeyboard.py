@@ -1,7 +1,7 @@
 import logging
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import CommandHandler, CallbackContext
 
 from bot.updater import updater
@@ -18,4 +18,4 @@ def remove_keyboard(update: Update, context: CallbackContext):
     update.message.reply_text('Keyboard removed', reply_markup=kb.REMOVE)
 
 
-updater.add_handler(CommandHandler(['rmkb'], remove_keyboard))
+updater.add_handler(CommandHandler(['rmkb'], remove_keyboard), bot_command=BotCommand("rmkb", "force-remove the virtual keyboard"))

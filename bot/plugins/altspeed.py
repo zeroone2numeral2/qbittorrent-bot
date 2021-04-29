@@ -2,7 +2,7 @@ import logging
 import re
 
 # noinspection PyPackageRequirements
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext
 
 from bot.qbtinstance import qb
@@ -61,5 +61,8 @@ def altdown_speed_callback(update: Update, context: CallbackContext):
     update.callback_query.answer('Alternative dl speed set to {} kb/s'.format(speed_kbs))
 
 
-updater.add_handler(CommandHandler(['altdown', 'altup'], change_alternative_limits))
+updater.add_handler(CommandHandler(['altdown', 'altup'], change_alternative_limits), bot_command=[
+    BotCommand("altdown", "set the alternative download speed"),
+    BotCommand("altup", "set the alternative upload speed"),
+])
 updater.add_handler(CallbackQueryHandler(altdown_speed_callback, pattern=r'^altdown:(\d+)$'))
