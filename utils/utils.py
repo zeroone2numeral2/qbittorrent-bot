@@ -1,4 +1,5 @@
 import logging
+import re
 from functools import wraps
 from html import escape as html_escape
 
@@ -160,3 +161,9 @@ def send_admin(bot, text):
     """debug function"""
 
     return bot.send_message(config.telegram.admins, text)
+
+
+def hash_from_magnet(magnet_link: str):
+    torrent_hash = re.search(r'magnet:\?xt=urn:btih:([a-z0-9]+)(?:&.*)?', magnet_link, re.I).group(1)
+
+    return torrent_hash
