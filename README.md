@@ -38,32 +38,3 @@ You can see and change the current permissions configuration from the bot's chat
 ### Tested on...
 
 I made this bot to be able to manage what I'm downloading on my Raspberry running Raspbian (using qBittorrent's [headless version](https://github.com/qbittorrent/qBittorrent/wiki/Setting-up-qBittorrent-on-Ubuntu-server-as-daemon-with-Web-interface-(15.04-and-newer))), and that's the only environment I've tested this thing in. There's also the systemd file I'm using, `qbtbot.service` (which assumes you're going to run the bot in a python3 virtual environment)
-
-### BotFather commands
-
-Use the text below to set your bot's commands suggestions through [@BotFather](https://t.me/botfather)
-
-```
-quick - get an overview of what we're downloading
-active - list active torrents
-tostart - show torrents that are not active or completed
-help - see the help message
-completed - list completed torrents
-all - list all torrents
-downloading - list downloading torrents
-paused - list paused torrents
-inactive - list inactive torrents
-set - change a setting
-filter - filter torrents by name
-log - get the log file
-settings - get the settings list
-altdown - set the alternative download speed (in kb/s)
-altup - set the alternative upload speed (in kb/s)
-json - export the list of torrents
-permissions - get the current permissions configuration
-pset - change the value of a permission setting
-pauseall - pause all torrents
-resumeall - resume all torrents
-config - get the qbittorrent's section of the config file
-rmkb - remove the keyboard
-```
