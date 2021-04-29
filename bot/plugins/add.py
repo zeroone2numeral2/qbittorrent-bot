@@ -71,6 +71,7 @@ def add_from_url(update: Update, context: CallbackContext):
 
     update.message.reply_text('Torrent url added', quote=True)
 
+
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r'^magnet:\?.*'), add_from_magnet))
 updater.add_handler(MessageHandler(Filters.document, add_from_file))
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r"^https?:\/\/.*(jackett|\.torren|\/torrent).*"), add_from_url))
