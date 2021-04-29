@@ -105,10 +105,12 @@ class CustomUpdater(Updater):
             show_first = [c.lower() for c in show_first]
 
             new_list = []
-            command: BotCommand
-            for command in self.bot_commands:
-                if command.command.lower() in show_first:
-                    new_list.append(command)
+
+            for command_to_show_first in show_first:
+                command: BotCommand
+                for command in self.bot_commands:
+                    if command.command.lower() == command_to_show_first:
+                        new_list.append(command)
 
             new_list.extend(self.bot_commands)  # we don't care about the duplicates
             self.bot_commands = new_list
