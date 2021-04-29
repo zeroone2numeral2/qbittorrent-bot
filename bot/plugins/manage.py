@@ -2,7 +2,7 @@ import logging
 import time
 
 # noinspection PyPackageRequirements
-from telegram.ext import CallbackQueryHandler, RegexHandler, CallbackContext
+from telegram.ext import CallbackQueryHandler, CallbackContext, Filters, MessageHandler
 # noinspection PyPackageRequirements
 from telegram import ParseMode, MAX_MESSAGE_LENGTH, Update
 # noinspection PyPackageRequirements
@@ -277,7 +277,7 @@ def reduce_buttons(update: Update, context: CallbackContext):
     update.callback_query.answer('Inline keyboard reduced')
 
 
-updater.add_handler(RegexHandler(r'^\/start info(.*)$', on_info_deeplink))
+updater.add_handler(MessageHandler(Filters.regex(r'^\/start info(.*)$'), on_info_deeplink))
 updater.add_handler(CallbackQueryHandler(manage_torrent_cb, pattern=r'^manage:(.*)$'))
 updater.add_handler(CallbackQueryHandler(see_trackers_cb, pattern=r'^trackers:(.*)$'))
 updater.add_handler(CallbackQueryHandler(refresh_torrent_cb, pattern=r'^refresh:(.*)$'))

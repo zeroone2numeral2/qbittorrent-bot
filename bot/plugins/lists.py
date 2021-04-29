@@ -2,7 +2,7 @@ import logging
 import re
 
 # noinspection PyPackageRequirements
-from telegram.ext import RegexHandler, CallbackQueryHandler, CallbackContext
+from telegram.ext import CallbackQueryHandler, CallbackContext, MessageHandler, Filters
 # noinspection PyPackageRequirements
 from telegram import ParseMode, Update
 
@@ -62,4 +62,4 @@ def on_torrents_list_selection(update: Update, context: CallbackContext):
         update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
 
 
-updater.add_handler(RegexHandler(TORRENT_CATEG_REGEX, on_torrents_list_selection))
+updater.add_handler(MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torrents_list_selection))

@@ -2,7 +2,7 @@ import logging
 
 # noinspection PyPackageRequirements
 from telegram import Update
-from telegram.ext import CommandHandler, RegexHandler, CallbackContext
+from telegram.ext import CommandHandler, CallbackContext, MessageHandler, Filters
 
 from bot.updater import updater
 from utils import u
@@ -55,4 +55,4 @@ def on_help(update: Update, context: CallbackContext):
 
 
 updater.add_handler(CommandHandler('help', on_help))
-updater.add_handler(RegexHandler(r'^\/start$', on_help))
+updater.add_handler(MessageHandler(Filters.regex(r'^\/start$'), on_help))

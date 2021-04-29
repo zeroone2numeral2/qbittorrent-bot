@@ -2,7 +2,7 @@ import datetime
 import logging
 
 # noinspection PyPackageRequirements
-from telegram.ext import CommandHandler, CallbackQueryHandler, RegexHandler, CallbackContext
+from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, Filters
 # noinspection PyPackageRequirements
 from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot, Update
 
@@ -220,7 +220,7 @@ def on_schedoff_button_quick(update: Update, context: CallbackContext):
 
 
 updater.add_handler(CommandHandler(['quick'], on_quick_info_command))
-updater.add_handler(RegexHandler(r'^[aA]$', on_quick_info_refresh))
+updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_quick_info_refresh))
 updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_quick, pattern=r'^quick:altoff$'))
