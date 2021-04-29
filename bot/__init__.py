@@ -8,10 +8,10 @@ from .jobs import notify_completed, toggle_queueing
 from .qbtinstance import qb
 
 
-def load_logging_config(file_path='logging.json', logfile='logs/qbtbot.log'):
+def load_logging_config(file_path='logging.json'):
     with open(file_path, 'r') as f:
         logging_config = json.load(f)
-    logging_config['handlers']['file']['filename'] = logfile
+
     logging.config.dictConfig(logging_config)
 
 

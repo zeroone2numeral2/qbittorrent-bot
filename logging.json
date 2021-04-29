@@ -11,6 +11,7 @@
             "class" : "logging.handlers.RotatingFileHandler",
             "formatter": "standard",
             "level": "DEBUG",
+            "filename": "logs/qbtbot.log",
             "encoding": "utf8",
             "maxBytes": 524288,
             "backupCount": 25
