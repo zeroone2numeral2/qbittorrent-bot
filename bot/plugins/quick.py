@@ -14,10 +14,7 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-QUICK_INFO_TEXT = """<b>Completed ({total_completed_count}):</b>
-{completed}
-
-<b>Active ({total_active_count}):</b>
+QUICK_INFO_TEXT = """<b>Active ({total_active_count}):</b>
 {active}
 
 {schedule}
@@ -36,7 +33,6 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         active_torrents_sort = 'progress'
 
     active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False)
-    completed_torrents = qb.torrents(filter='completed')
 
     total_active_count = 0
     total_completed_count = 0
@@ -76,16 +72,9 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         if other_torrents_counts_string:
             active_torrents_strings_list.append('• ' + ', '.join(other_torrents_counts_string))
 
-    if completed_torrents:
-        total_completed_count = len(completed_torrents)
-        completed_torrents_strings_list = ['• {}'.format(t.short_name) for t in completed_torrents]
-    else:
-        completed_torrents_strings_list = ['no completed torrent']
-
     # shorten the message if it's too long to send
-    completed_torrents_string_len = sum(map(len, completed_torrents_strings_list))
     active_torrents_string_len = sum(map(len, active_torrents_strings_list))
-    if (completed_torrents_string_len + active_torrents_string_len) > MAX_MESSAGE_LENGTH:
+    if active_torrents_string_len > MAX_MESSAGE_LENGTH:
         # we assume the longest one between the two is the completed torrents list
         completed_torrents_strings_list = ['list too long, use /completed to see completed torrents']
 
@@ -105,7 +94,6 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
     text = QUICK_INFO_TEXT.format(
         total_completed_count=total_completed_count,
-        completed='\n'.join(completed_torrents_strings_list),
         total_active_count=total_active_count,
         active='\n'.join(active_torrents_strings_list),
         schedule=schedule_string,
