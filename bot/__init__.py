@@ -28,4 +28,4 @@ def main():
         updater.job_queue.run_repeating(notify_completed, interval=120, first=120)
         updater.job_queue.run_daily(toggle_queueing, time=datetime.time(hour=2, minute=0))
 
-    updater.run(clean=True)
+    updater.run(drop_pending_updates=True)
