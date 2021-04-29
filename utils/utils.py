@@ -99,13 +99,13 @@ def ignore_not_modified_exception(func):
 
 def failwithmessage_job(func):
     @wraps(func)
-    def wrapped(bot, job, *args, **kwargs):
+    def wrapped(context: CallbackContext, *args, **kwargs):
         try:
-            return func(bot, job, *args, **kwargs)
+            return func(context, *args, **kwargs)
         except Exception as e:
             logger.info('error while running job: %s', str(e), exc_info=True)
             text = 'An error occurred while running a job: <code>{}</code>'.format(html_escape(str(e)))
-            bot.send_message(config.telegram.admins[0], text, parse_mode=ParseMode.HTML)
+            context.bot.send_message(config.telegram.admins[0], text, parse_mode=ParseMode.HTML)
 
     return wrapped
 

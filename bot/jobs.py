@@ -3,6 +3,7 @@ import json
 import time
 
 from telegram import ParseMode, Bot
+from telegram.ext import CallbackContext
 
 from .qbtinstance import qb
 from utils import u
@@ -73,7 +74,7 @@ except ConnectionError:
 
 
 @u.failwithmessage_job
-def toggle_queueing(bot: Bot, _):
+def toggle_queueing(context: CallbackContext):
     logger.info('executing toggle queueing job')
 
     if not config.qbittorrent.get('toggle_torrents_queueing_every_night', False) or not qb.torrents_queueing:
@@ -87,7 +88,7 @@ def toggle_queueing(bot: Bot, _):
 
 
 @u.failwithmessage_job
-def notify_completed(bot: Bot, _):
+def notify_completed(context: CallbackContext):
     logger.info('executing completed job')
 
     completed = qb.torrents(filter='completed')
@@ -122,9 +123,9 @@ def notify_completed(bot: Bot, _):
 
             if config.telegram.get('completed_torrents_notification', None):
                 # don't send the message in private if there's a notifications channel set
-                bot.send_message(config.telegram.completed_torrents_notification, **send_message_kwargs)
+                context.bot.send_message(config.telegram.completed_torrents_notification, **send_message_kwargs)
             else:
-                bot.send_message(
+                context.bot.send_message(
                     config.telegram.admins[0],
                     reply_markup=torrent.short_markup(force_resume_button=False),
                     **send_message_kwargs
