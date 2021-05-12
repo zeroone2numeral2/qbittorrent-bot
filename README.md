@@ -17,6 +17,8 @@ For a list of commands, use `/help`
 
 ### Setup
 
+Requires Python >= 3.6.2
+
 1. [enable qBittorrent's Web UI](https://github.com/lgallard/qBittorrent-Controller/wiki/How-to-enable-the-qBittorrent-Web-UI)
 2. rename `config.example.toml` to `config.toml`
 3. edit `config.toml` in the following way:
