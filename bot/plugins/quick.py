@@ -73,8 +73,10 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         active_down_count = len(active_torrents_down_filtered)
         active_up_count = len(active_torrents_up_filtered)
 
-        active_torrents_down_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_down_filtered]
-        active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
+        if active_torrents_down_filtered:
+            active_torrents_down_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_down_filtered]
+        if active_torrents_up_filtered:
+            active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
 
         # the list contains the strings to concatenate as the last row of the active downloading torrents list
         other_torrents_string = list()
