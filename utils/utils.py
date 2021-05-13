@@ -118,7 +118,9 @@ def get_human_readable(size, precision=2):
         suffix_index += 1  # increment the index of the suffix
         size = size / 1024.0
 
-    return '%.*f %s' % (precision, size, suffixes[suffix_index])
+    string = '%.*f %s' % (precision, size, suffixes[suffix_index])
+
+    return string.replace(".00", "")  # always trim final ".00"
 
 
 def build_progress_bar(decimal_percentage, steps=10):

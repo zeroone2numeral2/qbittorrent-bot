@@ -20,9 +20,9 @@ QUICK_INFO_TEXT = """<b>Active, uploading ({active_up_count}):</b>
 <b>Active, downloading ({active_down_count}):</b>
 {active_down}
 
-{schedule}
-{alt_speed}
 {current_speed}
+
+{schedule}
 <b>Last refresh:</b> {last_refresh}"""
 
 TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of {size_pretty}, {state_pretty}, \
@@ -107,7 +107,23 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     )
 
     current_speed = qb.get_speed()
-    current_speed_string = '<b>Current speed</b>: down: {0}/s, up: {1}/s'.format(*current_speed)
+    speed_limit_global = qb.get_global_speed_limit()
+    speed_limit_global_set = any(speed_limit_global)
+    if alt_speed_info['status'] == 'on':
+        current_speed_string = '▲ <b>{current_up}/s</b> ({alt_up_limit}/s)\n▼ <b>{current_down}/s</b> ({alt_dl_limit}/s)\nalt speed is on'.format(
+            current_up=current_speed[1],
+            current_down=current_speed[0],
+            **alt_speed_info
+        )
+    else:
+        # add global limits in parenthesis only if they are set
+        current_speed_string = '▲ <b>{current_up}/s</b>{up_limit}\n▼ <b>{current_down}/s</b>{dl_limit}{global_speed_limit_are_set}'.format(
+            current_up=current_speed[1],
+            current_down=current_speed[0],
+            up_limit=f" ({speed_limit_global[1]}/s)" if speed_limit_global[1] else "",
+            dl_limit=f" ({speed_limit_global[0]}/s)" if speed_limit_global[0] else "",
+            global_speed_limit_are_set="\nsome global speed limits are set" if speed_limit_global_set else ""
+        )
 
     text = QUICK_INFO_TEXT.format(
         total_completed_count=total_completed_count,
@@ -116,7 +132,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         active_up='\n'.join(active_torrents_up_strings_list),
         active_down='\n'.join(active_torrents_down_strings_list),
         schedule=schedule_string,
-        alt_speed=alt_speed_string,
+        # alt_speed=alt_speed_string,
         current_speed=current_speed_string,
         last_refresh=datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     )
