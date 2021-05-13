@@ -14,8 +14,11 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-QUICK_INFO_TEXT = """<b>Active ({total_active_count}):</b>
-{active}
+QUICK_INFO_TEXT = """<b>Active, uploading ({active_up_count}):</b>
+{active_up}
+
+<b>Active, downloading ({active_down_count}):</b>
+{active_down}
 
 {schedule}
 {alt_speed}
@@ -37,12 +40,15 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     total_active_count = 0
     total_completed_count = 0
 
-    if not active_torrents:
-        active_torrents_strings_list = ['no active torrent']
-    else:
-        total_active_count = len(active_torrents)  # non-filtered count
+    active_torrents_down_strings_list = ['no active downloading torrent']
+    active_torrents_up_strings_list = ['no active uploading torrent']
+    active_down_count = 0
+    active_up_count = 0
 
-        active_torrents_filtered = list()
+    if active_torrents:
+        # lists without stalled torrents and torrents for which we are fetching the metadata
+        active_torrents_down_filtered = list()
+        active_torrents_up_filtered = list()
         active_torrents_without_traffic_count = 0
         active_torrents_fetching_metadata_count = 0
 
@@ -55,28 +61,28 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
             elif active_torrent.state in ('forcedDL', 'forcedUP') and active_torrent.generic_speed <= 0:
                 # count torrents that are not generating traffic and that have been force-started
                 active_torrents_without_traffic_count += 1
+            elif active_torrent.state in ('uploading',):
+                active_torrents_up_filtered.append(active_torrent)
             else:
-                active_torrents_filtered.append(active_torrent)
+                active_torrents_down_filtered.append(active_torrent)
 
-        active_torrents_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_filtered]
+        active_down_count = len(active_torrents_down_filtered)
+        active_up_count = len(active_torrents_up_filtered)
+
+        active_torrents_down_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_down_filtered]
+        active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
 
         # the list contains the strings to concatenate as the last row of the active torrents list
-        other_torrents_counts_string = list()
+        other_torrents_string = list()
         if active_torrents_without_traffic_count > 0:
             text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
-            other_torrents_counts_string.append(text)
+            other_torrents_string.append(text)
         if active_torrents_fetching_metadata_count > 0:
             text = '<b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
-            other_torrents_counts_string.append(text)
+            other_torrents_string.append(text)
 
-        if other_torrents_counts_string:
-            active_torrents_strings_list.append('• ' + ', '.join(other_torrents_counts_string))
-
-    # shorten the message if it's too long to send
-    active_torrents_string_len = sum(map(len, active_torrents_strings_list))
-    if active_torrents_string_len > MAX_MESSAGE_LENGTH:
-        # we assume the longest one between the two is the completed torrents list
-        completed_torrents_strings_list = ['list too long, use /completed to see completed torrents']
+        if other_torrents_string:
+            active_torrents_down_strings_list.append('• ' + ', '.join(other_torrents_string))
 
     schedule_info = qb.get_schedule()
     if not schedule_info:
@@ -94,8 +100,10 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
     text = QUICK_INFO_TEXT.format(
         total_completed_count=total_completed_count,
-        total_active_count=total_active_count,
-        active='\n'.join(active_torrents_strings_list),
+        active_down_count=active_down_count,
+        active_up_count=active_up_count,
+        active_up='\n'.join(active_torrents_up_strings_list),
+        active_down='\n'.join(active_torrents_down_strings_list),
         schedule=schedule_string,
         alt_speed=alt_speed_string,
         current_speed=current_speed_string,
