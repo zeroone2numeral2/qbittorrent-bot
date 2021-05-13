@@ -36,6 +36,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         active_torrents_sort = 'progress'
 
     active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False)
+    completed_torrents = qb.torrents(filter='completed')
 
     total_completed_count = 0
 
@@ -44,6 +45,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
     active_down_count = 0
     active_up_count = 0
+    completed_count = len(completed_torrents)
 
     if active_torrents:
         # lists without stalled torrents and torrents for which we are fetching the metadata
@@ -80,6 +82,9 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
         # the list contains the strings to concatenate as the last row of the active downloading torrents list
         other_torrents_string = list()
+        if completed_count:
+            text = '<b>{}</b> completed'.format(active_torrents_fetching_metadata_count)
+            other_torrents_string.append(text)
         if active_torrents_without_traffic_count > 0:
             text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
             other_torrents_string.append(text)
