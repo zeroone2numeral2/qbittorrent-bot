@@ -29,6 +29,10 @@ def change_alternative_limits(update: Update, context: CallbackContext):
 
         return
 
+    if not context.args:
+        update.message.reply_text("Speed must be provided after the command (in kb/s)")
+        return
+
     preferences_to_edit = dict()
 
     preference_key = 'alt_dl_limit'
