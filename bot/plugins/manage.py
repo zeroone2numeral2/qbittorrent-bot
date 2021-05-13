@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def on_info_deeplink(update: Update, context: CallbackContext):
     logger.info('info deeplink from %s', update.message.from_user.first_name)
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -35,7 +35,7 @@ def on_info_deeplink(update: Update, context: CallbackContext):
 def manage_torrent_cb(update: Update, context: CallbackContext):
     logger.info('manage torrent inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -53,7 +53,7 @@ def manage_torrent_cb(update: Update, context: CallbackContext):
 def see_trackers_cb(update: Update, context: CallbackContext):
     logger.info('trackers inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -94,7 +94,7 @@ def see_trackers_cb(update: Update, context: CallbackContext):
 def refresh_torrent_cb(update: Update, context: CallbackContext):
     logger.info('refresh torrent inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -116,7 +116,7 @@ def refresh_torrent_cb(update: Update, context: CallbackContext):
 def pause_torrent_cb(update: Update, context: CallbackContext):
     logger.info('pause torrent inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -130,7 +130,7 @@ def pause_torrent_cb(update: Update, context: CallbackContext):
 def resume_torrent_cb(update: Update, context: CallbackContext):
     logger.info('resume torrent inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -144,7 +144,7 @@ def resume_torrent_cb(update: Update, context: CallbackContext):
 def force_resume_torrent_cb(update: Update, context: CallbackContext):
     logger.info('force-resume torrent inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -160,7 +160,7 @@ def force_resume_torrent_cb(update: Update, context: CallbackContext):
 def force_start_torrent_cb(update: Update, context: CallbackContext):
     logger.info('force start torrent inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -174,7 +174,7 @@ def force_start_torrent_cb(update: Update, context: CallbackContext):
 def unforce_start_torrent_cb(update: Update, context: CallbackContext):
     logger.info('unforce start torrent inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -188,7 +188,7 @@ def unforce_start_torrent_cb(update: Update, context: CallbackContext):
 def priority_up_cb(update: Update, context: CallbackContext):
     logger.info('priority up inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -202,7 +202,7 @@ def priority_up_cb(update: Update, context: CallbackContext):
 def max_priority_cb(update: Update, context: CallbackContext):
     logger.info('max priority inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -216,7 +216,7 @@ def max_priority_cb(update: Update, context: CallbackContext):
 def recheck_cb(update: Update, context: CallbackContext):
     logger.info('recheck inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -230,7 +230,7 @@ def recheck_cb(update: Update, context: CallbackContext):
 def ask_confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     logger.info('delete with files inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -250,7 +250,7 @@ def ask_confirm_delete_with_files_cb(update: Update, context: CallbackContext):
 def confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     logger.info('confirmation delete with files inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
@@ -264,7 +264,7 @@ def confirm_delete_with_files_cb(update: Update, context: CallbackContext):
 def reduce_buttons(update: Update, context: CallbackContext):
     logger.info('remove buttons inline button')
 
-    torrent_hash = context.match[0]
+    torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
     torrent = qb.torrent(torrent_hash)
