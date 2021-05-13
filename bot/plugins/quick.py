@@ -39,8 +39,8 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
     total_completed_count = 0
 
-    active_torrents_down_strings_list = ['no active downloading torrent']
-    active_torrents_up_strings_list = ['no active uploading torrent']
+    active_torrents_down_strings_list = ['no active downloading torrents']
+    active_torrents_up_strings_list = ['no active uploading torrents']
 
     active_down_count = 0
     active_up_count = 0
