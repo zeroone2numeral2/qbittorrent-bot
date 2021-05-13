@@ -37,7 +37,6 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /set <code>[setting] [new value]</code>: change a setting
 
 <i>ADMIN commands</i>
-• /getlog or /log: get the log file
 • /permissions: get the current permissions configuration
 • /pset <code>[key] [val]</code>: change the value of a permission key
 • /config: get the qbittorrent's section of the config file
