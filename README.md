@@ -11,6 +11,7 @@ Only a small set of features of the qBittorrent web API has been implemented:
 - manage a torrent (pause/resume, set force-start, increase priority, force re-check, delete)
 - enable/disable/change your alternative speed limits
 - see your qBittorrent settings
+- see a pretty overview of your speed, queueing and share rateo settings
 - export your torrents list as a json file
 
 For a list of commands, use `/help`
