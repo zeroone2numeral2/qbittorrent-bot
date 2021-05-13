@@ -37,11 +37,11 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
     active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False)
 
-    total_active_count = 0
     total_completed_count = 0
 
     active_torrents_down_strings_list = ['no active downloading torrent']
     active_torrents_up_strings_list = ['no active uploading torrent']
+
     active_down_count = 0
     active_up_count = 0
 
@@ -49,11 +49,13 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         # lists without stalled torrents and torrents for which we are fetching the metadata
         active_torrents_down_filtered = list()
         active_torrents_up_filtered = list()
+
         active_torrents_without_traffic_count = 0
         active_torrents_fetching_metadata_count = 0
 
         for active_torrent in active_torrents:
             if active_torrent.state in ('metaDL',):
+                # torrents for which we are still fetching metadata
                 active_torrents_fetching_metadata_count += 1
             elif active_torrent.state in ('stalledDL',):
                 # for some reasons, sometime in the active list we find also torrents in this state
@@ -62,8 +64,10 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
                 # count torrents that are not generating traffic and that have been force-started
                 active_torrents_without_traffic_count += 1
             elif active_torrent.state in ('uploading',):
+                # active completed torrents we are uploading (or stalled torrents we are uploading)
                 active_torrents_up_filtered.append(active_torrent)
             else:
+                # all the rest
                 active_torrents_down_filtered.append(active_torrent)
 
         active_down_count = len(active_torrents_down_filtered)
@@ -72,7 +76,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         active_torrents_down_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_down_filtered]
         active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
 
-        # the list contains the strings to concatenate as the last row of the active torrents list
+        # the list contains the strings to concatenate as the last row of the active downloading torrents list
         other_torrents_string = list()
         if active_torrents_without_traffic_count > 0:
             text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
