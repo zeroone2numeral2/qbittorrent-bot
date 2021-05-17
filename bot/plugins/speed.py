@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 TEXT = """<b>Current speed</b>
-▲ {current_download_speed}/s
-▼ {current_upload_speed}/s
+▲ {current_upload_speed}/s
+▼ {current_download_speed}/s
 
 <b>Global speed limits</b>
 ▲ {global_up_limit}
