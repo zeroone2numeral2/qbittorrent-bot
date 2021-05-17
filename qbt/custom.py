@@ -254,6 +254,14 @@ class CustomClient(Client):
             u.get_human_readable(tinfo['up_info_speed'])
         )
 
+    def get_global_speed_limit(self):
+        p = self.preferences()
+
+        return (
+            u.get_human_readable(p['dl_limit']) if p['dl_limit'] else None,
+            u.get_human_readable(p['up_limit']) if p['up_limit'] else None
+        )
+
 
 class OfflineClient:
     """

@@ -27,8 +27,8 @@ QUICK_MENU_BUTTON = InlineKeyboardMarkup([
         InlineKeyboardButton('200 🐌', callback_data='altdown:200'),  # change alternative download speed
     ],
     [
-        InlineKeyboardButton('✅🕑', callback_data='quick:schedon'),
-        InlineKeyboardButton('❌🕑', callback_data='quick:schedoff'),
+        InlineKeyboardButton('✅ 🕑', callback_data='quick:schedon'),
+        InlineKeyboardButton('❌ 🕑', callback_data='quick:schedoff'),
         InlineKeyboardButton('🔄 %', callback_data='quick:refresh:percentage'),
         InlineKeyboardButton('🔄 kb/s', callback_data='quick:refresh:dlspeed'),
     ]
@@ -37,6 +37,8 @@ QUICK_MENU_BUTTON = InlineKeyboardMarkup([
 SPEEDCAP_MENU = InlineKeyboardMarkup([[InlineKeyboardButton('toggle', callback_data='togglespeedcap')]])
 
 REFRESH_ACTIVE = InlineKeyboardMarkup([[InlineKeyboardButton('refresh', callback_data='refreshactive')]])
+
+REFRESH_SPEED = InlineKeyboardMarkup([[InlineKeyboardButton('refresh', callback_data='refreshspeed')]])
 
 REMOVE = ReplyKeyboardRemove()
 

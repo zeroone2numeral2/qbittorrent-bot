@@ -21,6 +21,7 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
 • /priorities: show the top 25 torrents by priority
 • /settings or /s: get current settings list
+• /speed: get an overview of the current speed, queueing and share rateo settings 
 • /json: get a json file containing a list of all the torrents
 • /version: get qbittorrent and API version
 
