@@ -82,8 +82,9 @@ def add_from_file(update: Update, context: CallbackContext):
         # https://python-qbittorrent.readthedocs.io/en/latest/modules/api.html#qbittorrent.client.Client.download_from_file
         qb.download_from_file(f)
 
-    os.remove(file_path)
     update.message.reply_text('Torrent added', quote=True)
+
+    os.remove(file_path)
 
     target_chat_id = notify_addition(update.effective_chat.id)
     if not target_chat_id:
