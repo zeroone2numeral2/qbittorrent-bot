@@ -270,6 +270,9 @@ class CustomClient(Client):
 
         return self._post('torrents/createTags', data={'tags': tags_str})
 
+    def build_info(self):
+        return self._get('app/buildInfo')
+
 
 class OfflineClient:
     """
