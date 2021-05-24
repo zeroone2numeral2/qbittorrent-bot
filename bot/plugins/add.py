@@ -31,7 +31,12 @@ def add_from_magnet(update: Update, context: CallbackContext):
     logger.info('magnet url from %s', update.effective_user.first_name)
 
     magnet_link = update.message.text
-    qb.download_from_link(magnet_link)
+
+    kwargs = dict()
+    if config.qbittorrent.get("added_torrents_tag", None):
+        kwargs["tags"] = config.qbittorrent.added_torrents_tag
+
+    qb.download_from_link(magnet_link, **kwargs)
     # always returns an empty json:
     # https://python-qbittorrent.readthedocs.io/en/latest/modules/api.html#qbittorrent.client.Client.download_from_link
 
@@ -77,10 +82,14 @@ def add_from_file(update: Update, context: CallbackContext):
     file_path = './downloads/{}'.format(update.message.document.file_name)
     torrent_file.download(file_path)
 
+    kwargs = dict()
+    if config.qbittorrent.get("added_torrents_tag", None):
+        kwargs["tags"] = config.qbittorrent.added_torrents_tag
+
     with open(file_path, 'rb') as f:
         # this method always returns an empty json:
         # https://python-qbittorrent.readthedocs.io/en/latest/modules/api.html#qbittorrent.client.Client.download_from_file
-        qb.download_from_file(f)
+        qb.download_from_file(f, **kwargs)
 
     update.message.reply_text('Torrent added', quote=True)
 
@@ -103,7 +112,12 @@ def add_from_url(update: Update, context: CallbackContext):
     logger.info('url from %s', update.effective_user.first_name)
 
     torrent_url = update.message.text
-    qb.download_from_link(torrent_url)
+
+    kwargs = dict()
+    if config.qbittorrent.get("added_torrents_tag", None):
+        kwargs["tags"] = config.qbittorrent.added_torrents_tag
+
+    qb.download_from_link(torrent_url, **kwargs)
     # always returns an empty json:
     # https://python-qbittorrent.readthedocs.io/en/latest/modules/api.html#qbittorrent.client.Client.download_from_link
 

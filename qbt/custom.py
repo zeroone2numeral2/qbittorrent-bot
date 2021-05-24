@@ -262,6 +262,14 @@ class CustomClient(Client):
             u.get_human_readable(p['up_limit']) if p['up_limit'] else None
         )
 
+    def create_tags(self, tags):
+        if isinstance(tags, str):
+            tags = [tags]
+
+        tags_str = ",".join(tags)
+
+        return self._post('torrents/createTags', data={'tags': tags_str})
+
 
 class OfflineClient:
     """
