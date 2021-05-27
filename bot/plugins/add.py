@@ -69,12 +69,18 @@ def add_from_magnet(update: Update, context: CallbackContext):
 
 @u.check_permissions(required_permission=Permissions.WRITE)
 @u.failwithmessage
-def add_from_file(update: Update, context: CallbackContext):
-    logger.info('document from %s', update.effective_user.first_name)
+def on_invalid_mime_type(update: Update, context: CallbackContext):
+    logger.info('invalid document from %s', update.effective_user.first_name)
+    logger.debug("file name: %s", update.message.document.file_name)
+    logger.debug("mime type: %s", update.message.document.mime_type)
 
-    if update.message.document.mime_type != 'application/x-bittorrent':
-        update.message.reply_markdown('Please send me a `.torrent` file', quote=True)
-        return
+    update.message.reply_markdown('Please send me a `.torrent` file', quote=True)
+
+
+@u.check_permissions(required_permission=Permissions.WRITE)
+@u.failwithmessage
+def add_from_file(update: Update, context: CallbackContext):
+    logger.info('application/x-bittorrent document from %s', update.effective_user.first_name)
 
     file_id = update.message.document.file_id
     torrent_file = context.bot.get_file(file_id)
@@ -135,5 +141,6 @@ def add_from_url(update: Update, context: CallbackContext):
 
 
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r'^magnet:\?.*'), add_from_magnet))
-updater.add_handler(MessageHandler(Filters.document, add_from_file))
+updater.add_handler(MessageHandler(Filters.document.mime_type("application/x-bittorrent"), add_from_file))
+updater.add_handler(MessageHandler(Filters.document, on_invalid_mime_type))
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r"^https?:\/\/.*(jackett|\.torren|\/torrent).*"), add_from_url))
