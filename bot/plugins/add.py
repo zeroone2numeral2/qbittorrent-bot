@@ -73,7 +73,7 @@ def add_from_file(update: Update, context: CallbackContext):
     logger.info('document from %s', update.effective_user.first_name)
 
     if update.message.document.mime_type != 'application/x-bittorrent':
-        update.message.reply_markdown('Please send me a `.torrent` file')
+        update.message.reply_markdown('Please send me a `.torrent` file', quote=True)
         return
 
     file_id = update.message.document.file_id
