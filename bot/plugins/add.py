@@ -69,23 +69,24 @@ def add_from_magnet(update: Update, context: CallbackContext):
 
 @u.check_permissions(required_permission=Permissions.WRITE)
 @u.failwithmessage
-def on_document_invalid_mime_type(update: Update, context: CallbackContext):
-    logger.info('invalid document from %s', update.effective_user.first_name)
-    logger.debug("file name: %s", update.message.document.file_name)
-    logger.debug("mime type: %s", update.message.document.mime_type)
-
-    update.message.reply_markdown('Please send me a `.torrent` file', quote=True)
-
-
-@u.check_permissions(required_permission=Permissions.WRITE)
-@u.failwithmessage
 def add_from_file(update: Update, context: CallbackContext):
     logger.info('application/x-bittorrent document from %s', update.effective_user.first_name)
 
-    file_id = update.message.document.file_id
+    document = update.message.document
+    if document.mime_type != "application/x-bittorrent" and not document.file_name.lower().endswith(".torrent"):
+        logger.info('invalid document from %s (mime type: %s; file name: %s)', update.effective_user.full_name,
+                    document.mime_type, document.file_name)
+
+        update.message.reply_markdown(
+            'Please send me a valid torrent file (`.torrent` extension or `application/x-bittorrent` mime type)',
+            quote=True
+        )
+        return
+
+    file_id = document.file_id
     torrent_file = context.bot.get_file(file_id)
 
-    file_path = './downloads/{}'.format(update.message.document.file_name)
+    file_path = './downloads/{}'.format(document.file_name)
     torrent_file.download(file_path)
 
     kwargs = dict()
@@ -107,7 +108,7 @@ def add_from_file(update: Update, context: CallbackContext):
 
     text = "User {} [{}]  added torrent file {}".format(
         update.effective_user.full_name, update.effective_user.id,
-        update.message.document.file_name or "[unknown file name]"
+        document.file_name or "[unknown file name]"
     )
     context.bot.send_message(target_chat_id, text, disable_web_page_preview=True)
 
@@ -140,8 +141,6 @@ def add_from_url(update: Update, context: CallbackContext):
     context.bot.send_message(target_chat_id, text, disable_web_page_preview=True)
 
 
+updater.add_handler(MessageHandler(Filters.document, add_from_file))
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r'^magnet:\?.*'), add_from_magnet))
-updater.add_handler(MessageHandler(Filters.document.mime_type("application/x-bittorrent"), add_from_file))
 updater.add_handler(MessageHandler(Filters.text & Filters.regex(r"^https?:\/\/.*(jackett|\.torren|\/torrent).*"), add_from_url))
-
-updater.add_handler(MessageHandler(Filters.document, on_document_invalid_mime_type))
