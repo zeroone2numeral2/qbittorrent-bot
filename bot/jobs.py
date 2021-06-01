@@ -94,29 +94,31 @@ def notify_completed(context: CallbackContext):
     completed = qb.torrents(filter='completed')
 
     for t in completed:
-        if completed_torrents.is_new(t.hash):
-            torrent = qb.torrent(t.hash)
+        if not completed_torrents.is_new(t.hash):
+            continue
 
-            logger.info('completed: %s (%s)', torrent.hash, torrent.name)
+        torrent = qb.torrent(t.hash)
 
-            if not dont_notify_torrents.send_notification(t.hash):
-                logger.info('we will not send a notification about %s (%s)', t.hash, t.name)
-                continue
+        logger.info('completed: %s (%s)', torrent.hash, torrent.name)
 
-            drive_free_space = u.free_space(qb.save_path)
-            text = '<code>{}</code> completed ({}, free space: {})'.format(
-                u.html_escape(torrent.name),
-                torrent.size_pretty,
-                drive_free_space
-            )
+        if not config.telegram.get('completed_torrents_notification', None):
+            continue
 
-            send_message_kwargs = dict(
-                text=text,
-                parse_mode=ParseMode.HTML,
-                disable_web_page_preview=True,
-                disable_notification=True
-            )
+        if not dont_notify_torrents.send_notification(t.hash):
+            logger.info('notification disabled for torrent %s (%s)', t.hash, t.name)
+            continue
 
-            if config.telegram.get('completed_torrents_notification', None):
-                # don't send the message in private if there's a notifications channel set
-                context.bot.send_message(config.telegram.completed_torrents_notification, **send_message_kwargs)
+        drive_free_space = u.free_space(qb.save_path)
+        text = '<code>{}</code> completed ({}, free space: {})'.format(
+            u.html_escape(torrent.name),
+            torrent.size_pretty,
+            drive_free_space
+        )
+
+        context.bot.send_message(
+            chat_id=config.telegram.completed_torrents_notification,
+            text=text,
+            parse_mode=ParseMode.HTML,
+            disable_web_page_preview=True,
+            disable_notification=True
+        )
