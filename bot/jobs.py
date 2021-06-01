@@ -120,9 +120,3 @@ def notify_completed(context: CallbackContext):
             if config.telegram.get('completed_torrents_notification', None):
                 # don't send the message in private if there's a notifications channel set
                 context.bot.send_message(config.telegram.completed_torrents_notification, **send_message_kwargs)
-            else:
-                context.bot.send_message(
-                    config.telegram.admins[0],
-                    reply_markup=torrent.short_markup(force_resume_button=False),
-                    **send_message_kwargs
-                )
