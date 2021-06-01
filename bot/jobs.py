@@ -99,10 +99,6 @@ def notify_completed(context: CallbackContext):
 
             logger.info('completed: %s (%s)', torrent.hash, torrent.name)
 
-            if config.qbittorrent.get('pause_completed_torrents', False):
-                logger.info('pausing: %s (%s)', torrent.hash, torrent.name)
-                torrent.pause()
-
             if not dont_notify_torrents.send_notification(t.hash):
                 logger.info('we will not send a notification about %s (%s)', t.hash, t.name)
                 continue
