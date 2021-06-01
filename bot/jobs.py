@@ -2,7 +2,7 @@ import logging
 import json
 import time
 
-from telegram import ParseMode, Bot
+from telegram import ParseMode
 from telegram.ext import CallbackContext
 
 from .qbtinstance import qb
@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class HashesStorage:
-    def __init__(self, file_name):
-        self._file_name = file_name
+    def __init__(self, file_path):
+        self._file_path = file_path
 
         try:
-            with open(self._file_name, 'r') as f:
+            with open(self._file_path, 'r') as f:
                 self._data = json.load(f)
         except FileNotFoundError:
             self._data = list()
@@ -30,7 +30,7 @@ class HashesStorage:
         return string
 
     def save(self):
-        with open(self._file_name, 'w+') as f:
+        with open(self._file_path, 'w+') as f:
             json.dump(self._data, f)
 
     def insert(self, hashes_list: [str, list]):
@@ -46,10 +46,12 @@ class HashesStorage:
 
 
 class Completed(HashesStorage):
-    def is_new(self, torrent_hash):
+    def is_new(self, torrent_hash, append=True):
         if torrent_hash not in self._data:
-            self._data.append(torrent_hash)
-            self.save()
+            if append:
+                self._data.append(torrent_hash)
+                self.save()
+
             return True
         else:
             return False
