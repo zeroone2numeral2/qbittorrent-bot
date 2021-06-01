@@ -11,4 +11,4 @@ url = "http://127.0.0.1:8080/"
 login = "admin"
 secret = "adminadmin"
 toggle_torrents_queueing_every_night = false # if enabled, torrents queueing will be disabled and re-enabled every night
-added_torrents_tag = "telegram bot" # a tag to add to the torrents added through the bot. "false", 0, or empty to disable
+added_torrents_tag = "telegram bot" # a tag to add to the torrents added through the bot. 0 to disable
