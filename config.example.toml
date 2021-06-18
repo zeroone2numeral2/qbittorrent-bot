@@ -4,6 +4,7 @@ admins = [1234567]
 workers = 1 # number of python-telegram-bot workers. One worker is more than enough
 timeout = 120 # requests timeout in seconds
 completed_torrents_notification = 0 # id of a chat to notify when a torrent is completed. 0 to disable
+no_notification_tag = 0 # if a torrent has this tag, do not send the completed download notification in the notifications chat (if set). Case insensitive. 0 to disable
 new_torrents_notification = 0 # id of a chat to notify when a new torrent is added. 0 to disable
 
 [qbittorrent]

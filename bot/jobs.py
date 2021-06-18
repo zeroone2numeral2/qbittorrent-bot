@@ -110,6 +110,10 @@ def notify_completed(context: CallbackContext):
             logger.info('notification disabled for torrent %s (%s)', t.hash, t.name)
             continue
 
+        tags_lower = [tag.lower() for tag in torrent.tags]
+        if config.telegram.get("no_notification_tag", None) and config.telegram.no_notification_tag.lower() in tags_lower:
+            continue
+
         drive_free_space = u.free_space(qb.save_path)
         text = '<code>{}</code> completed ({}, free space: {})'.format(
             u.html_escape(torrent.name),
