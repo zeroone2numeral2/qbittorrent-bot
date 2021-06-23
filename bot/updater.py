@@ -1,7 +1,6 @@
 # noinspection PyPackageRequirements
 from telegram.ext import Defaults
 
-from .bot import CustomBot
 from .bot import CustomUpdater
 from config import config
 
