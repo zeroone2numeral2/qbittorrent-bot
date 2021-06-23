@@ -129,17 +129,6 @@ def build_progress_bar(decimal_percentage, steps=10):
     return '{}{}'.format(FULL * completed_steps, EMPTY * missing_steps)
 
 
-def custom_timeout(func):
-    @wraps(func)
-    def wrapped(*args, **kwargs):
-        if 'timeout' not in kwargs and config.telegram.get('timeout', None):
-            kwargs['timeout'] = config.telegram.timeout
-
-        return func(*args, **kwargs)
-
-    return wrapped
-
-
 def split_text(strings_list):
     avg_len = sum(map(len, strings_list)) / len(strings_list)
     elements_per_msg = int(MAX_MESSAGE_LENGTH / avg_len)

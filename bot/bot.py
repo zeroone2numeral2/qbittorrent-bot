@@ -7,22 +7,9 @@ from pathlib import Path
 # noinspection PyPackageRequirements
 from telegram.ext import Updater, ConversationHandler
 # noinspection PyPackageRequirements
-from telegram import Bot, BotCommand
-
-from utils import u
+from telegram import BotCommand
 
 logger = logging.getLogger(__name__)
-
-
-class CustomBot(Bot):
-    @u.custom_timeout
-    def send_message(self, *args, **kwargs):
-        # print(args, kwargs)
-        return super(CustomBot, self).send_message(*args, **kwargs)
-
-    @u.custom_timeout
-    def answer_callback_query(self, *args, **kwargs):
-        return super(CustomBot, self).answer_callback_query(*args, **kwargs)
 
 
 class CustomUpdater(Updater):

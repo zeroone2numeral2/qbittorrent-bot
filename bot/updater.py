@@ -1,9 +1,12 @@
 # noinspection PyPackageRequirements
-from telegram.utils.request import Request
+from telegram.ext import Defaults
 
 from .bot import CustomBot
 from .bot import CustomUpdater
 from config import config
 
-custom_bot = CustomBot(config.telegram.token, request=Request(con_pool_size=config.telegram.workers + 4))
-updater = CustomUpdater(bot=custom_bot, workers=config.telegram.get('workers', 1))
+updater = CustomUpdater(
+    token=config.telegram.token,
+    defauls=Defaults(timeout=config.telegram.timeout),
+    workers=config.telegram.get('workers', 1)
+)
