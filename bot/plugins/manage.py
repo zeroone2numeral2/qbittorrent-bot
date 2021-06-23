@@ -83,8 +83,7 @@ def see_trackers_cb(update: Update, context: CallbackContext):
     update.callback_query.edit_message_text(
         text or 'No trackers',
         reply_markup=torrent.actions_keyboard,
-        parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True
+        parse_mode=ParseMode.HTML
     )
     update.callback_query.answer('Trackers list')
 

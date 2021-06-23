@@ -110,7 +110,7 @@ def add_from_file(update: Update, context: CallbackContext):
         update.effective_user.full_name, update.effective_user.id,
         document.file_name or "[unknown file name]"
     )
-    context.bot.send_message(target_chat_id, text, disable_web_page_preview=True)
+    context.bot.send_message(target_chat_id, text)
 
 
 @u.check_permissions(required_permission=Permissions.WRITE)
@@ -138,7 +138,7 @@ def add_from_url(update: Update, context: CallbackContext):
         update.effective_user.full_name, update.effective_user.id,
         torrent_url
     )
-    context.bot.send_message(target_chat_id, text, disable_web_page_preview=True)
+    context.bot.send_message(target_chat_id, text)
 
 
 updater.add_handler(MessageHandler(Filters.document, add_from_file))

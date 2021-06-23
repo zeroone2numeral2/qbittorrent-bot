@@ -36,7 +36,7 @@ def on_priorities_command(update: Update, context: CallbackContext):
     lines = [TORRENT_STRING.format(t=t) for t in non_completed_torrents]
 
     for strings_chunk in u.split_text(lines):
-        update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
+        update.message.reply_html('\n'.join(strings_chunk))
 
 
 updater.add_handler(CommandHandler(['priorities'], on_priorities_command), bot_command=BotCommand("priorities", "see the torrents list sorted by priority"))

@@ -32,7 +32,7 @@ def on_filter_command(update: Update, context: CallbackContext):
     strings_list = [torrent.string() for torrent in torrents]
 
     for strings_chunk in u.split_text(strings_list):
-        update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
+        update.message.reply_html('\n'.join(strings_chunk))
 
 
 updater.add_handler(CommandHandler(['filter', 'f'], on_filter_command), bot_command=BotCommand("filter", "filter torrents by substring"))

@@ -59,7 +59,7 @@ def on_torrents_list_selection(update: Update, context: CallbackContext):
     strings_list = [base_string.format(**torrent.dict()) for torrent in torrents]
 
     for strings_chunk in u.split_text(strings_list):
-        update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
+        update.message.reply_html('\n'.join(strings_chunk))
 
 
 updater.add_handler(MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torrents_list_selection), bot_command=[

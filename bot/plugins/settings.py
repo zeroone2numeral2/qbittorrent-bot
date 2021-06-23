@@ -22,7 +22,7 @@ def on_settings_command(update: Update, context: CallbackContext):
     lines = sorted(['{}: <code>{}</code>'.format(k, v) for k, v in preferences.items()])
 
     for strings_chunk in u.split_text(lines):
-        update.message.reply_html('\n'.join(strings_chunk), disable_web_page_preview=True)
+        update.message.reply_html('\n'.join(strings_chunk))
 
 
 @u.check_permissions(required_permission=Permissions.EDIT)
