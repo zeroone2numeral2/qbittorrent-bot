@@ -1,4 +1,4 @@
-python-telegram-bot==13.4.1
+python-telegram-bot==13.7
 python-qbittorrent>=0.4.2
 toml
 requests
