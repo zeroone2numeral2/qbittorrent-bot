@@ -6,6 +6,6 @@ from config import config
 
 updater = CustomUpdater(
     token=config.telegram.token,
-    defauls=Defaults(timeout=config.telegram.timeout, disable_web_page_preview=True),
+    defaults=Defaults(timeout=config.telegram.timeout, disable_web_page_preview=True),
     workers=config.telegram.get('workers', 1)
 )
