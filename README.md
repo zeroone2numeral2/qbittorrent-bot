@@ -29,7 +29,7 @@ Requires Python >= 3.6.2
 
 ### Permissions
 
-By default, read-only commands (viewing the torrents list, filtering torrents, viewing the settings) are available to anyone, but there's a couple of values in the `permissions.json` file (`default_permissions.json` if you have not started the bot yet) that can be toggled to set who can use the bot:
+By default, only _admins_ are allowed to use the bot (users listed under `telegram.admins` in `config.toml`), but there's a couple of values in the `permissions.json` file (`default_permissions.json` if you have not started the bot yet) that can be toggled to set who can use the bot:
 
 - `free_read`: when `true`, anyone can use read-only commands (viewing the torrents list, the torrents info and the current settings)
 - `free_write`: when `true`, anyone can add torrents by magnet link and file. Only works if `free_read` is `true`
