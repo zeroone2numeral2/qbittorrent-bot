@@ -15,7 +15,7 @@ from utils import Permissions
 logger = logging.getLogger(__name__)
 
 
-@u.check_permissions(required_permission=Permissions.READ)
+@u.check_permissions(required_permission=Permissions.ADMIN)
 @u.failwithmessage
 def on_json_command(update: Update, context: CallbackContext):
     logger.info('/json command from %s', update.message.from_user.first_name)
