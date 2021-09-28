@@ -13,7 +13,7 @@ from utils import Permissions
 logger = logging.getLogger(__name__)
 
 
-@u.check_permissions(required_permission=Permissions.READ)
+@u.check_permissions(required_permission=Permissions.ADMIN)
 @u.failwithmessage
 def on_settings_command(update: Update, context: CallbackContext):
     logger.info('/settings from %s', update.effective_user.first_name)
@@ -25,7 +25,7 @@ def on_settings_command(update: Update, context: CallbackContext):
         update.message.reply_html('\n'.join(strings_chunk))
 
 
-@u.check_permissions(required_permission=Permissions.EDIT)
+@u.check_permissions(required_permission=Permissions.ADMIN)
 @u.failwithmessage
 def change_setting(update: Update, context: CallbackContext):
     logger.info('/set from %s', update.effective_user.first_name)
