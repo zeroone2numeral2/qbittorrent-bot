@@ -27,7 +27,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - 
+      -
         name: Get tag
         id: tag
         uses: dawidd6/action-get-tag@v1
@@ -38,3 +38,6 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.tag.outputs.tag }}
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

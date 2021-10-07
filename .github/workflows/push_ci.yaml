@@ -31,3 +31,6 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
