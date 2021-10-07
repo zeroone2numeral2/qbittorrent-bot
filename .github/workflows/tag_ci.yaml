@@ -33,4 +33,4 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ github.repository }}:${{ ${GITHUB_REF/refs\/tags\//} }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ ${GITHUB_REF/refs\/tags\//} }}
