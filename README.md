@@ -38,6 +38,28 @@ By default, only _admins_ are allowed to use the bot (users listed under `telegr
 
 You can see and change the current permissions configuration from the bot's chat, using the `/permissions` and `/pset` commands
 
+### Use in Docker
+
+Docker function is only tested on Linux, I guess it will work on macOS too but not Windows, because Docker in Windows does not create docker0 network interface
+
+#### Build your own image
+
+1. clone the source code
+2. rename `config.example.toml` to `config.toml`
+3. edit `config.toml` in the following way:
+  - `[telegram]` section: place your API token in `token` and your user ID in `admins`
+  - `[qbitttorrent]` section: fill the three values according to your qBittorrent WebUI settings. IMPORTANT read the config file comment about docker0 network!
+4. build your image use `docker build . -t {YOUR_TAG}`
+5. run docker `docker run -d -v ${PWD}/config.toml:/app/config.toml {YOUR_TAG}`
+
+#### Use prebuild Image
+1. Download `config.example.toml` to dir you prefer, etc: "/etc/qbbot/config.toml"
+2. edit `config.toml` in the following way:
+  - `[telegram]` section: place your API token in `token` and your user ID in `admins`
+  - `[qbitttorrent]` section: fill the three values according to your qBittorrent WebUI settings. IMPORTANT read the config file comment about docker0 network!
+3. Pull image: `docker pull {the image name is not determind}`
+5. run docker `docker run -d -v ${PWD}/config.toml:/app/config.toml {then image name is not determind}`
+
 ### Tested on...
 
 I made this bot to be able to manage what I'm downloading on my Raspberry running Raspbian (using qBittorrent's [headless version](https://github.com/qbittorrent/qBittorrent/wiki/Setting-up-qBittorrent-on-Ubuntu-server-as-daemon-with-Web-interface-(15.04-and-newer))), and that's the only environment I've tested this thing in. There's also the systemd file I'm using, `qbtbot.service` (which assumes you're going to run the bot in a python3 virtual environment)
