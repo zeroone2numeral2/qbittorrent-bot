@@ -70,8 +70,9 @@ def failwithmessage(func):
         except Exception as e:
             error_str = str(e)
             logger.info('error while running handler callback: %s', error_str, exc_info=True)
-            text = 'An error occurred while processing the {}: <code>{}</code>'.format(
+            text = 'An error occurred while processing the {} (<code>{}()</code>): <code>{}</code>'.format(
                 'callback query' if update.callback_query else 'message',
+                func.__name__,
                 html_escape(error_str)
             )
 
