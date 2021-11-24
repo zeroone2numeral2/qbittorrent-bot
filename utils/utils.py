@@ -106,7 +106,10 @@ def failwithmessage_job(func):
             return func(context, *args, **kwargs)
         except Exception as e:
             logger.info('error while running job: %s', str(e), exc_info=True)
-            text = 'An error occurred while running a job: <code>{}</code>'.format(html_escape(str(e)))
+            text = 'An error occurred while running the job <code>{}()</code>: <code>{}</code>'.format(
+                func.__name__,
+                html_escape(str(e))
+            )
             context.bot.send_message(config.telegram.admins[0], text, parse_mode=ParseMode.HTML)
 
     return wrapped
