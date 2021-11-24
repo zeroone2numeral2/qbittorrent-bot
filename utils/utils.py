@@ -106,11 +106,13 @@ def failwithmessage_job(func):
             return func(context, *args, **kwargs)
         except Exception as e:
             logger.info('error while running job: %s', str(e), exc_info=True)
-            text = 'An error occurred while running the job <code>{}()</code>: <code>{}</code>'.format(
-                func.__name__,
-                html_escape(str(e))
-            )
-            context.bot.send_message(config.telegram.admins[0], text, parse_mode=ParseMode.HTML)
+            chat_id = config.telegram.admins[0]
+            if "errors_log_chat" in config.telegram and config.telegram.errors_log_chat:
+                chat_id = config.telegram.errors_log_chat
+
+            text = f'#{context.bot.username} exception: an error occurred while running the job ' \
+                   f'<code>{func.__name__}()</code>: <code>{html_escape(str(e))}</code>'
+            context.bot.send_message(chat_id, text, parse_mode=ParseMode.HTML)
 
     return wrapped
 
