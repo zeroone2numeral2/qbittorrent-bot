@@ -30,7 +30,8 @@ def main():
         updater.job_queue.run_daily(toggle_queueing, time=datetime.time(hour=2, minute=0))
 
         # create the tag on startup
-        if config.qbittorrent.get("added_torrents_tag", None) and config.qbittorrent.added_torrents_tag:
+        if "added_torrents_tag" in config.qbittorrent and config.qbittorrent.added_torrents_tag:
+            logger.debug("creating tags: %s", config.qbittorrent.added_torrents_tag)
             qb.create_tags(config.qbittorrent.added_torrents_tag)
 
     updater.set_bot_commands(show_first=["quick", "active", "tostart"])
