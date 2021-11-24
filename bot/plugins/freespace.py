@@ -18,7 +18,7 @@ def on_freespace_command(update: Update, context: CallbackContext):
     logger.info('/space from %s', update.message.from_user.first_name)
 
     drive_free_space = u.free_space(qb.save_path)
-    text = f"<code>{drive_free_space}</code> free, save path: <code>{qb.save_path}</code>"
+    text = f"{drive_free_space} free, save path: <code>{qb.save_path}</code>"
 
     update.message.reply_html(text)
 
