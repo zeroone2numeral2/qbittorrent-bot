@@ -57,7 +57,7 @@ Docker function is only tested on Linux, I guess it will work on macOS too but n
 2. edit `config.toml` in the following way:
   - `[telegram]` section: place your API token in `token` and your user ID in `admins`
   - `[qbitttorrent]` section: fill the three values according to your qBittorrent WebUI settings. IMPORTANT read the config file comment about docker0 network!
-3. Pull image: `docker pull {the image name is not determind}`
+3. Pull image: `docker pull 0one2/qbittorrent-bot`
 5. run docker `docker run -d -v ${PWD}/config.toml:/app/config.toml {then image name is not determind}`
 
 ### Tested on...
