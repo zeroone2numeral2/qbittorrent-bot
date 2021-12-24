@@ -149,7 +149,7 @@ def on_quick_info_command(update: Update, context: CallbackContext):
     logger.info('/quick command from %s', update.message.from_user.first_name)
 
     text = get_quick_info_text()
-    sent_message = update.message.reply_html(text, reply_markup=kb.QUICK_MENU_BUTTON)
+    sent_message = update.message.reply_html(text, reply_markup=kb.get_quick_menu_markup())
 
     context.user_data['last_quick_message_id'] = sent_message.message_id
 
@@ -171,7 +171,7 @@ def on_quick_info_refresh(update: Update, context: CallbackContext):
         message_id=message_id,
         text=text,
         parse_mode=ParseMode.HTML,
-        reply_markup=kb.QUICK_MENU_BUTTON
+        reply_markup=kb.get_quick_menu_markup()
     )
 
 
@@ -187,7 +187,7 @@ def on_refresh_button_quick(update: Update, context: CallbackContext):
 
     text = get_quick_info_text(sort_active_by_dl_speed=sort_active_by_dl_speed)
 
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
     update.callback_query.answer('Refreshed')
 
 
@@ -201,7 +201,7 @@ def on_alton_button_quick(update: Update, context: CallbackContext):
         qb.toggle_alternative_speed()
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
     update.callback_query.answer('Alternative speed enabled')
 
 
@@ -215,7 +215,7 @@ def on_altoff_button_quick(update: Update, context: CallbackContext):
         qb.toggle_alternative_speed()
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
     update.callback_query.answer('Alternative speed disabled')
 
 
@@ -228,7 +228,7 @@ def on_schedon_button_quick(update: Update, context: CallbackContext):
     qb.set_preferences(**{'scheduler_enabled': True})
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
     update.callback_query.answer('Scheduled altenrative speed on')
 
 
@@ -241,7 +241,7 @@ def on_schedoff_button_quick(update: Update, context: CallbackContext):
     qb.set_preferences(**{'scheduler_enabled': False})
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.QUICK_MENU_BUTTON)
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
     update.callback_query.answer('Scheduled altenrative speed off')
 
 
