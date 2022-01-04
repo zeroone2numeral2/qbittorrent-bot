@@ -37,6 +37,17 @@ def notify_addition(current_chat_id: int, bot: Bot, user: User, torrent_descript
     )
 
 
+def get_qbt_request_kwargs() -> dict:
+    kwargs = dict()
+    if config.qbittorrent.get("added_torrents_tag", None):
+        # string with tags separated by ",", but since it's only one tehre's no need to join
+        kwargs["tags"] = config.qbittorrent.added_torrents_tag
+    if config.qbittorrent.get("added_torrents_category", None):
+        kwargs["category"] = config.qbittorrent.added_torrents_category
+
+    return kwargs
+
+
 @u.check_permissions(required_permission=Permissions.WRITE)
 @u.failwithmessage
 def add_from_magnet(update: Update, context: CallbackContext):
@@ -44,9 +55,7 @@ def add_from_magnet(update: Update, context: CallbackContext):
 
     magnet_link = update.message.text
 
-    kwargs = dict()
-    if config.qbittorrent.get("added_torrents_tag", None):
-        kwargs["tags"] = config.qbittorrent.added_torrents_tag
+    kwargs = get_qbt_request_kwargs()
 
     qb.download_from_link(magnet_link, **kwargs)
     # always returns an empty json:
@@ -87,9 +96,7 @@ def add_from_file(update: Update, context: CallbackContext):
     file_path = './downloads/{}'.format(document.file_name)
     torrent_file.download(file_path)
 
-    kwargs = dict()
-    if config.qbittorrent.get("added_torrents_tag", None):
-        kwargs["tags"] = config.qbittorrent.added_torrents_tag
+    kwargs = get_qbt_request_kwargs()
 
     with open(file_path, 'rb') as f:
         # this method always returns an empty json:
@@ -110,9 +117,7 @@ def add_from_url(update: Update, context: CallbackContext):
 
     torrent_url = update.message.text
 
-    kwargs = dict()
-    if config.qbittorrent.get("added_torrents_tag", None):
-        kwargs["tags"] = config.qbittorrent.added_torrents_tag
+    kwargs = get_qbt_request_kwargs()
 
     qb.download_from_link(torrent_url, **kwargs)
     # always returns an empty json:

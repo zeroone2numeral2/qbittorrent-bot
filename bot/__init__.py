@@ -3,6 +3,8 @@ import logging
 import logging.config
 import json
 
+from requests import HTTPError
+
 from .updater import updater
 from .jobs import notify_completed, toggle_queueing
 from .qbtinstance import qb
@@ -33,6 +35,16 @@ def main():
         if "added_torrents_tag" in config.qbittorrent and config.qbittorrent.added_torrents_tag:
             logger.debug("creating tags: %s", config.qbittorrent.added_torrents_tag)
             qb.create_tags(config.qbittorrent.added_torrents_tag)
+        # create the category on startup
+        if "added_torrents_category" in config.qbittorrent and config.qbittorrent.added_torrents_category:
+            logger.debug("creating category: %s", config.qbittorrent.added_torrents_category)
+            try:
+                qb.create_category(config.qbittorrent.added_torrents_category)
+            except HTTPError as e:
+                if "409" in str(e):
+                    logger.debug("category already exists (%s)", str(e))
+                else:
+                    raise e
 
     updater.set_bot_commands(show_first=["overview", "active"])
     updater.run(drop_pending_updates=True)
