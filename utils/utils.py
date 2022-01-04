@@ -164,3 +164,27 @@ def hash_from_magnet(magnet_link: str):
     torrent_hash = re.search(r'magnet:\?xt=urn:btih:([a-z0-9]+)(?:&.*)?', magnet_link, re.I).group(1)
 
     return torrent_hash
+
+
+def check_version(min_version: str, version: str):
+    min_version = [int(v) for v in min_version.split(".")]
+    version = [int(v) for v in version.split(".")]
+
+    for i, v in enumerate(version):
+        try:
+            if v > min_version[i]:
+                return True
+
+            if v < min_version[i]:
+                return False
+        except IndexError:
+            # eg: min version: 2.3, version: 2.3.1
+            return True
+
+    if len(min_version) > len(version):
+        # eg. min version: 4.3.1, version: 4.3
+        # we need to run this check after the loop, because if we ran this before, this case
+        # would incorrectly return False: min version 4.3.1, version 5.1
+        return False
+
+    return True
