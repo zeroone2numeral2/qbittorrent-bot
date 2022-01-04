@@ -145,21 +145,21 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_info_command(update: Update, context: CallbackContext):
-    logger.info('/quick command from %s', update.message.from_user.first_name)
+def on_overview_command(update: Update, context: CallbackContext):
+    logger.info('/overview command from %s', update.message.from_user.first_name)
 
     text = get_quick_info_text()
     sent_message = update.message.reply_html(text, reply_markup=kb.get_quick_menu_markup())
 
-    context.user_data['last_quick_message_id'] = sent_message.message_id
+    context.user_data['last_overview_message_id'] = sent_message.message_id
 
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def on_quick_info_refresh(update: Update, context: CallbackContext):
-    logger.info('/quick refresh from %s', update.message.from_user.first_name)
+def on_overview_refresh(update: Update, context: CallbackContext):
+    logger.info('/overview refresh from %s', update.message.from_user.first_name)
 
-    message_id = context.user_data.get('last_quick_message_id', None)
+    message_id = context.user_data.get('last_overview_message_id', None)
     if not message_id:
         return
 
@@ -178,8 +178,8 @@ def on_quick_info_refresh(update: Update, context: CallbackContext):
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_refresh_button_quick(update: Update, context: CallbackContext):
-    logger.info('quick info: refresh button')
+def on_refresh_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: refresh button')
 
     sort_active_by_dl_speed = True
     if context.match[0] == 'percentage':
@@ -194,8 +194,8 @@ def on_refresh_button_quick(update: Update, context: CallbackContext):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_alton_button_quick(update: Update, context: CallbackContext):
-    logger.info('quick info: alton button')
+def on_alton_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: alton button')
 
     if not bool(qb.get_alternative_speed_status()):
         qb.toggle_alternative_speed()
@@ -208,8 +208,8 @@ def on_alton_button_quick(update: Update, context: CallbackContext):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_altoff_button_quick(update: Update, context: CallbackContext):
-    logger.info('quick info: altoff button')
+def on_altoff_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: altoff button')
 
     if bool(qb.get_alternative_speed_status()):
         qb.toggle_alternative_speed()
@@ -222,8 +222,8 @@ def on_altoff_button_quick(update: Update, context: CallbackContext):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_schedon_button_quick(update: Update, context: CallbackContext):
-    logger.info('quick info: schedon button')
+def on_schedon_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: schedon button')
 
     qb.set_preferences(**{'scheduler_enabled': True})
 
@@ -235,8 +235,8 @@ def on_schedon_button_quick(update: Update, context: CallbackContext):
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
-def on_schedoff_button_quick(update: Update, context: CallbackContext):
-    logger.info('quick info: schedoff button')
+def on_schedoff_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: schedoff button')
 
     qb.set_preferences(**{'scheduler_enabled': False})
 
@@ -245,10 +245,11 @@ def on_schedoff_button_quick(update: Update, context: CallbackContext):
     update.callback_query.answer('Scheduled altenrative speed off')
 
 
-updater.add_handler(CommandHandler(['quick'], on_quick_info_command), bot_command=BotCommand("quick", "quick overview"))
-updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_quick_info_refresh))
-updater.add_handler(CallbackQueryHandler(on_refresh_button_quick, pattern=r'^quick:refresh:(\w+)$'))
-updater.add_handler(CallbackQueryHandler(on_alton_button_quick, pattern=r'^quick:alton$'))
-updater.add_handler(CallbackQueryHandler(on_altoff_button_quick, pattern=r'^quick:altoff$'))
-updater.add_handler(CallbackQueryHandler(on_schedon_button_quick, pattern=r'^quick:schedon'))
-updater.add_handler(CallbackQueryHandler(on_schedoff_button_quick, pattern=r'^quick:schedoff'))
+updater.add_handler(CommandHandler(['overview', 'ov'], on_overview_command), bot_command=BotCommand("overview", "overview of what we're downloading and uploading"))
+updater.add_handler(CommandHandler(['quick'], on_overview_command))
+updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_overview_refresh))
+updater.add_handler(CallbackQueryHandler(on_refresh_button_overview, pattern=r'^(?:quick|overview):refresh:(\w+)$'))
+updater.add_handler(CallbackQueryHandler(on_alton_button_overview, pattern=r'^(?:quick|overview):alton$'))
+updater.add_handler(CallbackQueryHandler(on_altoff_button_overview, pattern=r'^(?:quick|overview):altoff$'))
+updater.add_handler(CallbackQueryHandler(on_schedon_button_overview, pattern=r'^(?:quick|overview):schedon'))
+updater.add_handler(CallbackQueryHandler(on_schedoff_button_overview, pattern=r'^(?:quick|overview):schedoff'))
