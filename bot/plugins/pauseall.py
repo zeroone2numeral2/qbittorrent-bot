@@ -32,5 +32,5 @@ def on_pause_all_command(update: Update, context: CallbackContext):
     update.message.reply_text('Paused all torrents')
 
 
-updater.add_handler(CommandHandler(['resumeall'], on_resume_all_command), bot_command=BotCommand("resumeall", "start all torrents"))
+updater.add_handler(CommandHandler(['resumeall'], on_resume_all_command), bot_command=BotCommand("resumeall", "resume all torrents"))
 updater.add_handler(CommandHandler(['pauseall'], on_pause_all_command), bot_command=BotCommand("pauseall", "pause all torrents"))
