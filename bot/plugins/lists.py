@@ -2,7 +2,7 @@ import logging
 import re
 
 # noinspection PyPackageRequirements
-from telegram.ext import CallbackQueryHandler, CallbackContext, MessageHandler, Filters
+from telegram.ext import CallbackQueryHandler, CallbackContext, MessageHandler, Filters, CommandHandler
 # noinspection PyPackageRequirements
 from telegram import ParseMode, Update, BotCommand
 
@@ -19,9 +19,23 @@ TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of
 
 TORRENT_STRING_COMPLETED = '• <code>{name}</code> ({size_pretty})'
 
-TORRENTS_CATEGORIES = [r'\/?all', r'\/?completed', r'\/?downloading', r'\/?paused', r'\/?inactive', r'\/?active']
+# https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-torrent-list
+TORRENTS_CATEGORIES = (
+    'all',
+    'downloading',
+    'seeding',
+    'completed',
+    'paused',
+    'active',
+    'inactive',
+    'resumed',
+    'stalled',
+    'stalled_uploading',
+    'stalled_downloading',
+    'errored',
+)
 
-TORRENT_CATEG_REGEX_PATTERN = r'^({})'.format('|'.join(TORRENTS_CATEGORIES))
+TORRENT_CATEG_REGEX_PATTERN = r'^\/({})$'.format(r'|'.join(TORRENTS_CATEGORIES))
 TORRENT_CATEG_REGEX = re.compile(TORRENT_CATEG_REGEX_PATTERN, re.I)
 
 
@@ -31,10 +45,6 @@ def on_torrents_list_selection(update: Update, context: CallbackContext):
     logger.info('torrents list menu button from %s: %s', update.message.from_user.first_name, context.match[0])
 
     qbfilter = context.match[0]
-    if qbfilter.startswith('/'):
-        # remove the "/" if the category has been used as command
-        qbfilter = qbfilter.replace('/', '')
-
     logger.info('torrents status: %s', qbfilter)
 
     torrents = qb.torrents(filter=qbfilter, sort='dlspeed', reverse=False) or []
@@ -55,10 +65,19 @@ def on_torrents_list_selection(update: Update, context: CallbackContext):
         update.message.reply_html('\n'.join(strings_chunk))
 
 
-updater.add_handler(MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torrents_list_selection), bot_command=[
-    BotCommand("all", "show all torrents"),
-    BotCommand("completed", "show completed torrents"),
-    BotCommand("downloading", "show downloading torrents"),
-    BotCommand("paused", "show paused torrents"),
-    BotCommand("inactive", "show inactive torrents")
-])
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+def on_available_filters_command(update: Update, context: CallbackContext):
+    logger.info('/available_filters from %s')
+
+    update.message.reply_text("\n".join([f"/{c}" for c in TORRENTS_CATEGORIES]))
+
+
+updater.add_handler(
+    MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torrents_list_selection),
+    bot_command=[BotCommand(c, f"filter only {c} torrents") for c in TORRENTS_CATEGORIES],
+)
+updater.add_handler(
+    CommandHandler(["available_filters", "af"], on_available_filters_command),
+    bot_command=[BotCommand("available_filters", "show commands to filter the torrents list by status")],
+)
