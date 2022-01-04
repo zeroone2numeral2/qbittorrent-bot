@@ -34,5 +34,5 @@ def main():
             logger.debug("creating tags: %s", config.qbittorrent.added_torrents_tag)
             qb.create_tags(config.qbittorrent.added_torrents_tag)
 
-    updater.set_bot_commands(show_first=["overview", "active", "tostart"])
+    updater.set_bot_commands(show_first=["overview", "active"])
     updater.run(drop_pending_updates=True)

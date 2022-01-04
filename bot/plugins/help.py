@@ -16,7 +16,6 @@ HELP_MESSAGE = """<b>Commands</b>:
 <i>READ commands</i>
 • /start or /help: show this message
 • /completed, /active, /paused, /downloading, /inactive, /all: show the torrents list by status
-• /tostart: show torrents that are not active or completed
 • /overview: overview of what we're downloading/uploading
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
 • /priorities: show the top 25 torrents by priority

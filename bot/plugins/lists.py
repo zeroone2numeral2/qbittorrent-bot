@@ -19,7 +19,7 @@ TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of
 
 TORRENT_STRING_COMPLETED = '• <code>{name}</code> ({size_pretty})'
 
-TORRENTS_CATEGORIES = [r'\/?all', r'\/?completed', r'\/?downloading', r'\/?paused', r'\/?inactive', r'\/?active', r'\/?tostart']
+TORRENTS_CATEGORIES = [r'\/?all', r'\/?completed', r'\/?downloading', r'\/?paused', r'\/?inactive', r'\/?active']
 
 TORRENT_CATEG_REGEX_PATTERN = r'^({})'.format('|'.join(TORRENTS_CATEGORIES))
 TORRENT_CATEG_REGEX = re.compile(TORRENT_CATEG_REGEX_PATTERN, re.I)
@@ -38,13 +38,6 @@ def on_torrents_list_selection(update: Update, context: CallbackContext):
     logger.info('torrents status: %s', qbfilter)
 
     torrents = qb.torrents(filter=qbfilter, sort='dlspeed', reverse=False) or []
-    if qbfilter == 'tostart':
-        all_torrents = qb.torrents(filter='all')
-        completed_torrents = [t.hash for t in qb.torrents(filter='completed')]
-        active_torrents = [t.hash for t in qb.torrents(filter='active')]
-
-        torrents = [t for t in all_torrents if t.hash not in completed_torrents and t.hash not in active_torrents]
-
     logger.info('qbittirrent request returned %d torrents', len(torrents))
 
     if not torrents:
@@ -67,6 +60,5 @@ updater.add_handler(MessageHandler(Filters.regex(TORRENT_CATEG_REGEX), on_torren
     BotCommand("completed", "show completed torrents"),
     BotCommand("downloading", "show downloading torrents"),
     BotCommand("paused", "show paused torrents"),
-    BotCommand("inactive", "show inactive torrents"),
-    BotCommand("tostart", "show torrents that can be started")
+    BotCommand("inactive", "show inactive torrents")
 ])
