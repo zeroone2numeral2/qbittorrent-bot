@@ -1,9 +1,12 @@
 import logging
 import os
 import re
+from html import escape
 
 # noinspection PyPackageRequirements
-from telegram import Update, BotCommand, ParseMode
+from typing import Optional
+
+from telegram import Update, BotCommand, ParseMode, User, Bot
 from telegram.ext import Filters, MessageHandler, CallbackContext
 
 from bot.qbtinstance import qb
@@ -16,13 +19,22 @@ from config import config
 logger = logging.getLogger(__name__)
 
 
-def notify_addition(current_chat_id: int):
+def notify_addition(current_chat_id: int, bot: Bot, user: User, torrent_description: str):
     if not config.telegram.get("new_torrents_notification", 0):
         return
 
     target_chat_id = config.telegram.new_torrents_notification
     if target_chat_id != current_chat_id:  # do not send if the target chat is the current chat
-        return target_chat_id
+        return
+
+    text = f"User {escape(user.full_name)} [<code>{user.id}</code>] added a torrent: " \
+           f"<code>{escape(torrent_description)}</code>"
+    bot.send_message(
+        target_chat_id,
+        text,
+        parse_mode=ParseMode.HTML,
+        disable_web_page_preview=True
+    )
 
 
 @u.check_permissions(required_permission=Permissions.WRITE)
@@ -50,21 +62,7 @@ def add_from_magnet(update: Update, context: CallbackContext):
         quote=True
     )
 
-    target_chat_id = notify_addition(update.effective_chat.id)
-    if not target_chat_id:
-        return
-
-    text = "User {} [{}] added a magnet link, hash: <code>{}</code>".format(
-        update.effective_user.full_name, update.effective_user.id,
-        torrent_hash
-    )
-    context.bot.send_message(
-        target_chat_id,
-        text,
-        reply_markup=torrent_keyboard_markup,
-        parse_mode=ParseMode.HTML,
-        disable_web_page_preview=True
-    )
+    notify_addition(update.effective_chat.id, context.bot, update.effective_user, torrent_hash)
 
 
 @u.check_permissions(required_permission=Permissions.WRITE)
@@ -102,15 +100,7 @@ def add_from_file(update: Update, context: CallbackContext):
 
     os.remove(file_path)
 
-    target_chat_id = notify_addition(update.effective_chat.id)
-    if not target_chat_id:
-        return
-
-    text = "User {} [{}]  added torrent file {}".format(
-        update.effective_user.full_name, update.effective_user.id,
-        document.file_name or "[unknown file name]"
-    )
-    context.bot.send_message(target_chat_id, text)
+    notify_addition(update.effective_chat.id, context.bot, update.effective_user, document.file_name or "[unknown file name]")
 
 
 @u.check_permissions(required_permission=Permissions.WRITE)
@@ -130,15 +120,7 @@ def add_from_url(update: Update, context: CallbackContext):
 
     update.message.reply_text('Torrent url added', quote=True)
 
-    target_chat_id = notify_addition(update.effective_chat.id)
-    if not target_chat_id:
-        return
-
-    text = "User {} [{}] added a torrent from an url: {}".format(
-        update.effective_user.full_name, update.effective_user.id,
-        torrent_url
-    )
-    context.bot.send_message(target_chat_id, text)
+    notify_addition(update.effective_chat.id, context.bot, update.effective_user, torrent_url)
 
 
 updater.add_handler(MessageHandler(Filters.document, add_from_file))
