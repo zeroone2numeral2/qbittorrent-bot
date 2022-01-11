@@ -14,7 +14,7 @@ from utils import Permissions
 logger = logging.getLogger(__name__)
 
 
-TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of {size_pretty}, {state_pretty}, <b>{dl_speed_pretty}/s</b>) \
+TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of {size_pretty}, {state_pretty}, <b>{generic_speed_pretty}/s</b>) \
 [<a href="{info_deeplink}">info</a>]"""
 
 TORRENT_STRING_COMPLETED = '• <code>{name}</code> ({size_pretty})'
@@ -44,7 +44,7 @@ TORRENT_CATEG_REGEX = re.compile(TORRENT_CATEG_REGEX_PATTERN, re.I)
 def on_torrents_list_selection(update: Update, context: CallbackContext):
     logger.info('torrents list menu button from %s: %s', update.message.from_user.first_name, context.match[0])
 
-    qbfilter = context.match[0]
+    qbfilter = context.match[0].replace("/", "")
     logger.info('torrents status: %s', qbfilter)
 
     update.message.reply_html(f"Listing torrents with status <code>{qbfilter}</code> (migth take some seconds):")
