@@ -98,6 +98,13 @@ def refresh_torrent_cb(update: Update, context: CallbackContext):
 
     torrent = qb.torrent(torrent_hash)
 
+    if not torrent:
+        update.callback_query.edit_message_text(
+            f"can't find torrent with hash <code>{torrent_hash}</code>",
+            parse_mode=ParseMode.HTML
+        )
+        return
+
     try:
         update.callback_query.edit_message_text(
             torrent.string(),
