@@ -209,8 +209,8 @@ class CustomClient(Client):
         return [Torrent(self, self._polish_torrent(torrent)) for torrent in torrents]
 
     # noinspection PyUnresolvedReferences
-    def torrent(self, torrent_hash):
-        torrents = self.torrents(filter='all')
+    def torrent(self, torrent_hash, get_properties=True):
+        torrents = self.torrents(filter='all', get_properties=get_properties)
 
         for torrent in torrents:
             if torrent.hash.lower() == torrent_hash.lower():
