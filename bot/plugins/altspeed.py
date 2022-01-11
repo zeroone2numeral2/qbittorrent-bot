@@ -52,21 +52,27 @@ def change_alternative_limits(update: Update, context: CallbackContext):
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
-def altdown_speed_callback(update: Update, context: CallbackContext):
-    logger.info('remove buttons inline button')
+def alt_speed_callback(update: Update, context: CallbackContext):
+    logger.info('alternative speed inline button')
 
-    speed_kbs = int(context.match[0]) * 1024
-    preferences_to_edit = dict()
-    preference_key = 'alt_dl_limit'
+    speed_up_kbs = int(context.match[1]) * 1024
+    speed_down_kbs = int(context.match[2]) * 1024
 
-    preferences_to_edit[preference_key] = speed_kbs
+    preferences_to_edit = dict(
+        alt_up_limit=speed_up_kbs,
+        alt_dl_limit=speed_down_kbs
+    )
+
     qb.set_preferences(**preferences_to_edit)
 
-    update.callback_query.answer('Alternative dl speed set to {} kb/s'.format(speed_kbs))
+    update.callback_query.answer(
+        f'Alternative speed set to:\n▲ {context.match[1]} kb/s\n▼ {context.match[2]} kb/s',
+        show_alert=True
+    )
 
 
 updater.add_handler(CommandHandler(['altdown', 'altup'], change_alternative_limits), bot_command=[
     BotCommand("altdown", "set the alternative download speed"),
     BotCommand("altup", "set the alternative upload speed"),
 ])
-updater.add_handler(CallbackQueryHandler(altdown_speed_callback, pattern=r'^altdown:(\d+)$'))
+updater.add_handler(CallbackQueryHandler(alt_speed_callback, pattern=r'^altspeed:(\d+):(\d+)$'))

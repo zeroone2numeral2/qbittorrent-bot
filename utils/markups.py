@@ -46,15 +46,14 @@ REMOVE = ReplyKeyboardRemove()
 
 
 def get_quick_menu_markup():
-    altspeed = [10, 50, 100, 200]
+    altspeed = [(5, 10), (5, 50), (5, 200)]  # (up, down)
 
     base_keyboard = [[
-        InlineKeyboardButton('🐇', callback_data='quick:altoff'),
-        InlineKeyboardButton('🐌', callback_data='quick:alton'),
-    ],
-    [
-        InlineKeyboardButton('✅ 🕑', callback_data='quick:schedon'),
-        InlineKeyboardButton('❌ 🕑', callback_data='quick:schedoff'),
+        InlineKeyboardButton('alt ✅', callback_data='quick:alton'),
+        InlineKeyboardButton('alt ❌', callback_data='quick:altoff'),
+    ], [
+        InlineKeyboardButton('🕑 ✅', callback_data='quick:schedon'),
+        InlineKeyboardButton('🕑 ❌', callback_data='quick:schedoff'),
         InlineKeyboardButton('🔄 %', callback_data='quick:refresh:percentage'),
         InlineKeyboardButton('🔄 kb/s', callback_data='quick:refresh:dlspeed'),
     ]]
@@ -62,8 +61,8 @@ def get_quick_menu_markup():
     if "altspeed_presets" in config.qbittorrent and config.qbittorrent.altspeed_presets:
         altspeed = config.qbittorrent.altspeed_presets
 
-    for speed in altspeed:
-        inline_button = InlineKeyboardButton(f'{speed} 🐌', callback_data=f'altdown:{speed}')
+    for up, down in altspeed:
+        inline_button = InlineKeyboardButton(f'▲{up}/▼{down}', callback_data=f'altspeed:{up}:{down}')
         base_keyboard[0].append(inline_button)
 
     return InlineKeyboardMarkup(base_keyboard)
