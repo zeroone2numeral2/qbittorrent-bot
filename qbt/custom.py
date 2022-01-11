@@ -49,7 +49,8 @@ NEW_ATTRS = {
     'time_elapsed_pretty': lambda t: str(datetime.timedelta(seconds=t['time_elapsed'])),
     'force_start_pretty': lambda t: 'yes' if t['force_start'] else 'no',
     'share_ratio_rounded': lambda t: round(t['share_ratio'], 5),
-    'dl_limit_pretty': lambda t: 'no limit' if t['dl_limit'] == -1 else u.get_human_readable(t['dl_limit'])
+    'dl_limit_pretty': lambda t: 'no limit' if t['dl_limit'] == -1 else u.get_human_readable(t['dl_limit']),
+    'auto_tmm_string': lambda t: 'yes' if t['auto_tmm'] else 'no',
 }
 
 TORRENT_STRING = """• [{priority}] <code>{name}</code>
@@ -69,6 +70,7 @@ TORRENT_STRING = """• [{priority}] <code>{name}</code>
   <b>category</b>: {category}
   <b>force start</b>: {force_start_pretty}
   <b>tags</b>: <code>{tags}</code>
+  <b>auto torrent management</b>: {auto_tmm_string}
   [<a href="{info_deeplink}">info</a>]"""
 
 
