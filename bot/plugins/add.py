@@ -64,10 +64,9 @@ def add_from_magnet(update: Update, context: CallbackContext):
     torrent_hash = u.hash_from_magnet(magnet_link)
     logger.info('torrent hash from regex: %s', torrent_hash)
 
-    torrent_keyboard_markup = kb.short_markup(torrent_hash)
     update.message.reply_html(
         'Magnet added',
-        reply_markup=torrent_keyboard_markup,
+        reply_markup=kb.short_markup(torrent_hash),
         quote=True
     )
 
