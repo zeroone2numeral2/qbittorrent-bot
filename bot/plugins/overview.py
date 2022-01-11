@@ -38,8 +38,8 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     else:
         active_torrents_sort = 'progress'
 
-    active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False)
-    completed_torrents = qb.torrents(filter='completed')
+    active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False, get_properties=False)
+    completed_torrents = qb.torrents(filter='completed', get_properties=False)
 
     total_completed_count = 0
 
