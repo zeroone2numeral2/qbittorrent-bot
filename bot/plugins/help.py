@@ -20,7 +20,9 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
 • /priorities: show the top 25 torrents by priority
 • /settings or /s: get current settings list
-• /speed: get an overview of the current speed, queueing and share rateo settings 
+• /speed: overview of the current speed, queueing and share rateo settings
+• /atm: overview of the current Automatic Torrent Management settings
+• /atmyes or /atmno: list torrents with Automatic Torrent Management enabled/disabled
 • /json: get a json file containing a list of all the torrents
 • /version: get qbittorrent and API version
 
