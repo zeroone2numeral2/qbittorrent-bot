@@ -93,7 +93,7 @@ def toggle_queueing(context: CallbackContext):
 def notify_completed(context: CallbackContext):
     logger.info('executing completed job')
 
-    completed = qb.torrents(filter='completed')
+    completed = qb.torrents(filter='completed', get_properties=False)
 
     for t in completed:
         if not completed_torrents.is_new(t.hash):
