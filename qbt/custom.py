@@ -216,6 +216,7 @@ class CustomClient(Client):
     # noinspection PyUnresolvedReferences
     def filter(self, query):
         filtered = list()
+        query = query.lower()
 
         for torrent in self.torrents(filter='all'):
             if query in torrent.name.lower():
