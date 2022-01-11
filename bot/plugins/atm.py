@@ -44,6 +44,10 @@ def on_atm_list_command(update: Update, context: CallbackContext):
         f"Automatic Torrent Management {'enabled' if atm_enabled else 'disabled'}:"
     )
 
+    if not strings_list:
+        update.message.reply_text("-")
+        return
+
     for strings_chunk in u.split_text(strings_list):
         update.message.reply_html('\n'.join(strings_chunk))
 
