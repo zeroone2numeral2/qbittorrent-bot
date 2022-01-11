@@ -29,7 +29,8 @@ def on_filter_command(update: Update, context: CallbackContext):
         update.message.reply_text('No results for "{}"'.format(query))
         return
 
-    strings_list = [torrent.string() for torrent in torrents]
+    base_string = "• <code>{short_name}</code> ({size_pretty}, {state_pretty}) [<a href=\"{info_deeplink}\">info</a>]"
+    strings_list = [torrent.string(base_string=base_string) for torrent in torrents]
 
     for strings_chunk in u.split_text(strings_list):
         update.message.reply_html('\n'.join(strings_chunk))
