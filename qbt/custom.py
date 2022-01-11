@@ -98,11 +98,11 @@ class Torrent:
     def __getitem__(self, item):
         return getattr(self, item)
 
-    def string(self, refresh_properties=False, string: Optional[str] = None):
+    def string(self, refresh_properties=False, base_string: Optional[str] = None):
         if refresh_properties:
             self.refresh_properties(refresh_torrent_dict=True)
 
-        base_string = string or TORRENT_STRING
+        base_string = base_string or TORRENT_STRING
         
         return base_string.format(**self._torrent_dict)
 
