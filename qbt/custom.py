@@ -97,11 +97,13 @@ class Torrent:
     def __getitem__(self, item):
         return getattr(self, item)
 
-    def string(self, refresh_properties=False):
+    def string(self, refresh_properties=False, string: Optional[str] = None):
         if refresh_properties:
             self.refresh_properties(refresh_torrent_dict=True)
+
+        base_string = string or TORRENT_STRING
         
-        return TORRENT_STRING.format(**self._torrent_dict)
+        return base_string.format(**self._torrent_dict)
 
     def pause(self):
         return self._qbt.pause(self.hash)
