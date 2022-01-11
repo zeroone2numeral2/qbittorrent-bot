@@ -58,7 +58,8 @@ TORRENT_STRING = """• [{priority}] <code>{name}</code>
   <b>dl/up speed</b>: {dl_speed_pretty}/s, {up_speed_pretty}/s
   <b>dl speed limit</b>: {dl_limit_pretty}
   <b>leechs/seeds</b> {num_leechs}, {num_seeds}
-  <b>peers/seeds</b>: {peers_total} ({peers}), {seeds_total} ({seeds})
+  <b>peers</b>: {peers} connected ({peers_total} in the swarm)
+  <b>seeds</b>: {seeds} connected ({seeds_total} in the swarm)
   <b>connections</b>: {nb_connections}
   <b>share rateo</b>: {share_ratio_rounded}
   <b>eta</b>: {eta_pretty}
