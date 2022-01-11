@@ -61,11 +61,12 @@ TORRENT_STRING = """• [{priority}] <code>{name}</code>
   <b>peers</b>: {peers} connected ({peers_total} in the swarm)
   <b>seeds</b>: {seeds} connected ({seeds_total} in the swarm)
   <b>connections</b>: {nb_connections}
-  <b>share rateo</b>: {share_ratio_rounded}
+  <b>share ratio</b>: {share_ratio_rounded} (max: {max_ratio})
   <b>eta</b>: {eta_pretty}
   <b>elapsed</b>: {time_elapsed_pretty}
   <b>category</b>: {category}
   <b>force start</b>: {force_start_pretty}
+  <b>tags</b>: <code>{tags}</code>
   [<a href="{info_deeplink}">info</a>]"""
 
 
