@@ -93,7 +93,8 @@ def actions_markup(torrent_hash):
         ],
         [
             InlineKeyboardButton('priority up', callback_data='priorityup:{}'.format(torrent_hash)),
-            InlineKeyboardButton('max priority', callback_data='maxpriority:{}'.format(torrent_hash))
+            InlineKeyboardButton('max priority', callback_data='maxpriority:{}'.format(torrent_hash)),
+            InlineKeyboardButton('atm on/off', callback_data='toggleatm:{}'.format(torrent_hash)),
         ],
         [
             InlineKeyboardButton('delete', callback_data='deletewithfiles:{}'.format(torrent_hash)),

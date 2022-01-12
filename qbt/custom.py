@@ -94,7 +94,7 @@ TORRENT_STRING = """• [{priority}] <code>{name}</code>
 class Torrent:
     def __init__(self, qbt, torrent_dict):
         self._torrent_dict = torrent_dict
-        self._qbt = qbt
+        self._qbt: CustomClient = qbt
 
         self.refresh_properties(refresh_torrent_dict=False)
 
@@ -134,6 +134,9 @@ class Torrent:
     def toggle_force_start(self, value=True):
         # 'force_start' method name cannot be used because it is already a property
         return self._qbt.force_start([self.hash], value=value)
+
+    def toggle_atm(self, value: bool):
+        return self._qbt.set_automatic_torrent_management(self.hash, enable=value)
 
     def increase_priority(self):
         return self._qbt.increase_priority([self.hash])

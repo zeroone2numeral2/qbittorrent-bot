@@ -147,6 +147,21 @@ def resume_torrent_cb(update: Update, context: CallbackContext):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
+def toggle_atm_cb(update: Update, context: CallbackContext):
+    logger.info('toggle ATM inline button')
+
+    torrent_hash = context.match[1]
+    logger.info('torrent hash: %s', torrent_hash)
+
+    torrent = qb.torrent(torrent_hash, get_properties=False)
+    atm_status = torrent['auto_tmm']
+    torrent.toggle_atm(not atm_status)
+
+    update.callback_query.answer(f'Automatic Torrent Management {"disabled" if atm_status else "enabled"}')
+
+
+@u.check_permissions(required_permission=Permissions.EDIT)
+@u.failwithmessage
 def force_resume_torrent_cb(update: Update, context: CallbackContext):
     logger.info('force-resume torrent inline button')
 
@@ -289,6 +304,7 @@ updater.add_handler(CallbackQueryHandler(see_trackers_cb, pattern=r'^trackers:(.
 updater.add_handler(CallbackQueryHandler(refresh_torrent_cb, pattern=r'^refresh:(.*)$'))
 updater.add_handler(CallbackQueryHandler(pause_torrent_cb, pattern=r'^pause:(.*)$'))
 updater.add_handler(CallbackQueryHandler(resume_torrent_cb, pattern=r'^resume:(.*)$'))
+updater.add_handler(CallbackQueryHandler(toggle_atm_cb, pattern=r'^toggleatm:(.*)$'))
 updater.add_handler(CallbackQueryHandler(force_resume_torrent_cb, pattern=r'^forceresume:(.*)$'))
 updater.add_handler(CallbackQueryHandler(force_start_torrent_cb, pattern=r'^forcestart:(.*)$'))
 updater.add_handler(CallbackQueryHandler(unforce_start_torrent_cb, pattern=r'^unforcestart:(.*)$'))
