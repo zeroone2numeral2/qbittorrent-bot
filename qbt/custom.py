@@ -12,6 +12,22 @@ from config import config
 logger = logging.getLogger(__name__)
 
 
+# https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-torrent-list
+TORRENTS_CATEGORIES = (
+    'all',
+    'downloading',
+    'seeding',
+    'completed',
+    'paused',
+    'active',
+    'inactive',
+    'resumed',
+    'stalled',
+    'stalled_uploading',
+    'stalled_downloading',
+    'errored',
+)
+
 STATES_DICT = {
     'error': 'error',
     'missingFiles': 'missing files',

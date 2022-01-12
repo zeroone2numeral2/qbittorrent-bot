@@ -6,6 +6,7 @@ from telegram.ext import CallbackQueryHandler, CallbackContext, MessageHandler, 
 # noinspection PyPackageRequirements
 from telegram import ParseMode, Update, BotCommand
 
+from qbt.custom import TORRENTS_CATEGORIES
 from bot.qbtinstance import qb
 from bot.updater import updater
 from utils import u
@@ -18,22 +19,6 @@ TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of
 [<a href="{info_deeplink}">info</a>]"""
 
 TORRENT_STRING_COMPLETED = '• <code>{name}</code> ({size_pretty})'
-
-# https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-torrent-list
-TORRENTS_CATEGORIES = (
-    'all',
-    'downloading',
-    'seeding',
-    'completed',
-    'paused',
-    'active',
-    'inactive',
-    'resumed',
-    'stalled',
-    'stalled_uploading',
-    'stalled_downloading',
-    'errored',
-)
 
 TORRENT_CATEG_REGEX_PATTERN = r'^\/({})$'.format(r'|'.join(TORRENTS_CATEGORIES))
 TORRENT_CATEG_REGEX = re.compile(TORRENT_CATEG_REGEX_PATTERN, re.I)
