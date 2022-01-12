@@ -161,6 +161,13 @@ class Torrent:
     def __getattr__(self, item):
         return self._torrent_dict[item]
 
+    def tags_list(self, lower=False):
+        if not self.tags:
+            return []
+
+        tags_list = self.tags.split(",")
+        return tags_list if not lower else [tag.lower() for tag in tags_list]
+
     def string(self, refresh=False, base_string: Optional[str] = None):
         if refresh:
             # always get all the available properties when getting the torrent string

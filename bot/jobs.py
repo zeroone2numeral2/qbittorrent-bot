@@ -108,8 +108,7 @@ def notify_completed(context: CallbackContext):
             logger.info('notification disabled for torrent %s (%s)', torrent.hash, torrent.name)
             continue
 
-        tags_lower = [tag.lower().strip() for tag in torrent.tags.split(",")]
-        if "no_notification_tag" in config.telegram and config.telegram.no_notification_tag.lower() in tags_lower:
+        if "no_notification_tag" in config.telegram and config.telegram.no_notification_tag.lower() in torrent.tags_list(lower=True):
             continue
 
         drive_free_space = u.free_space(qb.save_path)
