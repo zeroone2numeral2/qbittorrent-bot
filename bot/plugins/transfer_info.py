@@ -26,6 +26,10 @@ TEXT = """<b>Current speed</b>
 ▲ {alt_speed_down}
 ▼ {alt_speed_up}
 
+<b>Data uploaded/downloaded during this session</b>
+▲ {session_total_upload}
+▼ {session_total_download}
+
 <b>Torrents queueing</b>
 • max active: {queueing_max_active_downloads} down, {queueing_max_active_uploads} up, \
 {queueing_max_active_torrents} total
@@ -45,6 +49,9 @@ def get_speed_text():
     transfer_info = qb.global_transfer_info
     fdict['current_download_speed'] = u.get_human_readable(transfer_info['dl_info_speed'])
     fdict['current_upload_speed'] = u.get_human_readable(transfer_info['up_info_speed'])
+
+    fdict['session_total_upload'] = u.get_human_readable(transfer_info['up_info_data'])
+    fdict['session_total_download'] = u.get_human_readable(transfer_info['dl_info_data'])
 
     preferences = qb.preferences()
 
@@ -77,7 +84,7 @@ def get_speed_text():
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 def on_speed_command(update: Update, context: CallbackContext):
-    logger.info('/speed from %s', update.effective_user.first_name)
+    logger.info('/transferinfo from %s', update.effective_user.first_name)
 
     text = get_speed_text()
 
@@ -88,7 +95,7 @@ def on_speed_command(update: Update, context: CallbackContext):
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_refresh_button_speed(update: Update, context: CallbackContext):
-    logger.info('speed: refresh button')
+    logger.info('transfer info: refresh button')
 
     text = get_speed_text()
 
@@ -96,5 +103,5 @@ def on_refresh_button_speed(update: Update, context: CallbackContext):
     update.callback_query.answer('Refreshed')
 
 
-updater.add_handler(CommandHandler(['speed'], on_speed_command), bot_command=BotCommand("speed", "overview about the current speed, queueing and rateo settings"))
-updater.add_handler(CallbackQueryHandler(on_refresh_button_speed, pattern=r'^refreshspeed$'))
+updater.add_handler(CommandHandler(['transferinfo', 'ti', 'speed'], on_speed_command), bot_command=BotCommand("transferinfo", "overview about the current speed, queueing and rateo settings"))
+updater.add_handler(CallbackQueryHandler(on_refresh_button_speed, pattern=r'^refreshtransferinfo$'))
