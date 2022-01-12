@@ -87,7 +87,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         # the list contains the strings to concatenate as the last row of the active downloading torrents list
         other_torrents_list = list()
         if completed_count:
-            text = '<b>{}</b> completed'.format(active_torrents_fetching_metadata_count)
+            text = '<b>{}</b> completed'.format(completed_count)
             other_torrents_list.append(text)
         if active_torrents_without_traffic_count > 0:
             text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
