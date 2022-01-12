@@ -1,11 +1,13 @@
 import datetime
 import logging
+from collections import Counter
 
 # noinspection PyPackageRequirements
 from telegram.ext import CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, Filters
 # noinspection PyPackageRequirements
 from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot, Update, BotCommand
 
+from qbt.custom import STATES_DICT
 from bot.qbtinstance import qb
 from bot.updater import updater
 from utils import u
@@ -14,8 +16,10 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-QUICK_INFO_TEXT = """➤ <b>Other:</b>
+QUICK_INFO_TEXT = """➤ <b>Counters:</b>
 {other_torrents}
+➤ <b>By category:</b>
+{categories_counts}
 
 ➤ <b>Active, uploading ({active_up_count}):</b>
 {active_up}
@@ -38,6 +42,10 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     else:
         active_torrents_sort = 'progress'
 
+    all_torrents = qb.torrents(filter='all', get_properties=False)
+    states_count = Counter([t.state for t in all_torrents])
+    categories_count = Counter([t.category for t in all_torrents])
+
     active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False, get_properties=False)
     completed_torrents = qb.torrents(filter='completed', get_properties=False)
 
@@ -46,6 +54,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     active_torrents_down_strings_list = ['no active downloading torrents']
     active_torrents_up_strings_list = ['no active uploading torrents']
     other_torrents_string = 'none'
+    categories_counts_string = 'none'
 
     active_down_count = 0
     active_up_count = 0
@@ -84,20 +93,29 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         if active_torrents_up_filtered:
             active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
 
-        # the list contains the strings to concatenate as the last row of the active downloading torrents list
-        other_torrents_list = list()
-        if completed_count:
-            text = '<b>{}</b> completed'.format(completed_count)
-            other_torrents_list.append(text)
-        if active_torrents_without_traffic_count > 0:
-            text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
-            other_torrents_list.append(text)
-        if active_torrents_fetching_metadata_count > 0:
-            text = '<b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
-            other_torrents_list.append(text)
+    # the list contains the strings to concatenate as the last row of the active downloading torrents list
+    other_torrents_list = list()
+    if completed_count:
+        text = '<b>{}</b> completed'.format(completed_count)
+        other_torrents_list.append(text)
+    """
+    if active_torrents_without_traffic_count > 0:
+        text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
+        other_torrents_list.append(text)
+    if active_torrents_fetching_metadata_count > 0:
+        text = '<b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
+        other_torrents_list.append(text)
+    """
+    for state in states_count.elements():
+        other_torrents_list.append(f"<b>{states_count[state]}</b> {STATES_DICT[state]}")
+    if other_torrents_list:
+        other_torrents_string = '• ' + ', '.join(other_torrents_list)
 
-        if other_torrents_list:
-            other_torrents_string = '• ' + ', '.join(other_torrents_list)
+    categories_counts_list = list()
+    for category in categories_count.elements():
+        categories_counts_list.append(f"<b>{categories_count[category]}</b> {category}")
+    if categories_counts_list:
+        categories_counts_string = '• ' + ', '.join(categories_counts_list)
 
     schedule_info = qb.get_schedule()
     if not schedule_info:
@@ -131,6 +149,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
 
     text = QUICK_INFO_TEXT.format(
         other_torrents=other_torrents_string,
+        categories_counts=categories_counts_string,
         active_down_count=active_down_count,
         active_up_count=active_up_count,
         active_up='\n'.join(active_torrents_up_strings_list),
