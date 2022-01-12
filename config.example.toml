@@ -18,7 +18,7 @@ toggle_torrents_queueing_every_night = false # if enabled, torrents queueing wil
 added_torrents_tag = "telegram bot" # a tag to add to the torrents added through the bot. 0 to disable
 added_torrents_category = 0 # the category to set for torrents added through the bot. 0 to disable
 altspeed_presets = [
-    # alspeed buttons (in kb/s) to show when /overview is used. Set this to 0 to show no altspeed button
+    # alternative speed buttons (in kb/s) to show when /overview is used. Set this to 0 to show no altspeed button
     # [upload, download],
     [5, 10],
     [5, 50],
