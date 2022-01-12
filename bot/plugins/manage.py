@@ -41,7 +41,7 @@ def manage_torrent_cb(update: Update, context: CallbackContext):
     torrent = qb.torrent(torrent_hash)
 
     update.callback_query.edit_message_text(
-        torrent.string(refresh_properties=True),
+        torrent.string(refresh=True),
         reply_markup=torrent.actions_keyboard,
         parse_mode=ParseMode.HTML
     )
@@ -125,7 +125,7 @@ def pause_torrent_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.pause()
 
     update.callback_query.answer('Paused')
@@ -139,7 +139,7 @@ def resume_torrent_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.resume()
 
     update.callback_query.answer('Resumed')
@@ -153,7 +153,7 @@ def toggle_atm_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     atm_status = torrent['auto_tmm']
     torrent.toggle_atm(not atm_status)
 
@@ -168,7 +168,7 @@ def force_resume_torrent_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.resume()
     time.sleep(1)
     torrent.toggle_force_start(True)
@@ -184,7 +184,7 @@ def force_start_torrent_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.toggle_force_start(True)
 
     update.callback_query.answer('Force-start set to "true"')
@@ -198,7 +198,7 @@ def unforce_start_torrent_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.toggle_force_start(False)
 
     update.callback_query.answer('Force-start set to "false"')
@@ -212,7 +212,7 @@ def priority_up_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.increase_priority()
 
     update.callback_query.answer('Increased priority')
@@ -226,7 +226,7 @@ def max_priority_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.max_priority()
 
     update.callback_query.answer('Max priority set')
@@ -240,7 +240,7 @@ def recheck_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.recheck()
 
     update.callback_query.answer('Re-check started')
@@ -254,7 +254,7 @@ def ask_confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     # torrent.delete(with_files=True)
 
     update.callback_query.edit_message_text(
@@ -274,7 +274,7 @@ def confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 
-    torrent = qb.torrent(torrent_hash, get_properties=False)
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.delete(with_files=True)
 
     update.callback_query.edit_message_text('{} deleted (with files)'.format(torrent.name))
@@ -291,7 +291,7 @@ def reduce_buttons(update: Update, context: CallbackContext):
     torrent = qb.torrent(torrent_hash)
 
     update.callback_query.edit_message_text(
-        torrent.string(refresh_properties=True),
+        torrent.string(refresh=True),
         reply_markup=torrent.short_markup(),
         parse_mode=ParseMode.HTML
     )

@@ -34,7 +34,7 @@ def on_torrents_list_selection(update: Update, context: CallbackContext):
 
     update.message.reply_html(f"Listing torrents with status <code>{qbfilter}</code> (migth take some seconds):")
 
-    torrents = qb.torrents(filter=qbfilter, sort='dlspeed', reverse=False, get_properties=False) or []
+    torrents = qb.torrents(filter=qbfilter, sort='dlspeed', reverse=False, get_torrent_generic_properties=False) or []
     logger.info('qbittirrent request returned %d torrents', len(torrents))
 
     if not torrents:

@@ -50,8 +50,8 @@ STATES_DICT = {
     'unknown': 'unknown status'
 }
 
-# https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-torrent-list
-# https://github.com/qbittorrent/qBittorrent/wiki/Web-API-Documentation#get-torrent-generic-properties
+# https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-torrent-list
+# https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-4.1)#get-torrent-generic-properties
 NEW_ATTRS = {
     'state_pretty': lambda t: STATES_DICT.get(t['state'], t['state']),
     'size_pretty': lambda t: u.get_human_readable(t['total_size']),  # already a string apparently
@@ -90,15 +90,64 @@ TORRENT_STRING = """• [{priority}] <code>{name}</code>
   [<a href="{info_deeplink}">info</a>]"""
 
 
-# noinspection PyUnresolvedReferences
 class Torrent:
-    def __init__(self, qbt, torrent_dict):
-        self._torrent_dict = torrent_dict
+    def __init__(self, qbt, torrent_dict: dict, get_torrent_generic_properties: bool = False):
+        self._torrent_dict: dict = torrent_dict
         self._qbt: CustomClient = qbt
+        self.hash = self._torrent_dict['hash']
 
-        self.refresh_properties(refresh_torrent_dict=False)
+        self.refresh(
+            get_torrent_generic_properties=get_torrent_generic_properties,
+            refresh_torrent_dict=False
+        )
 
         self.actions_keyboard = kb.actions_markup(self.hash)
+
+    def refresh(self, refresh_torrent_dict: bool = True, get_torrent_generic_properties: bool = False):
+        if refresh_torrent_dict:
+            self._torrent_dict = self._qbt.torrent(self.hash, get_torrent_generic_properties=False).dict()
+
+        if get_torrent_generic_properties:
+            self.get_additional_torrent_properties()
+
+        self._enrich_torrent_dict()
+
+    def get_additional_torrent_properties(self):
+        additional_properties = self._qbt.get_torrent(self.hash)
+        if additional_properties:
+            for key, val in additional_properties.items():
+                if key in self._torrent_dict:
+                    continue
+
+                self._torrent_dict[key] = val
+
+    def _enrich_torrent_dict(self):
+        if 'progress' in self._torrent_dict:
+            self._torrent_dict['eta'] = 0 if self._torrent_dict['progress'] == 1 else self._torrent_dict['eta']  # set eta = 0 for completed torrents
+            self._torrent_dict['progress_bar'] = u.build_progress_bar(self._torrent_dict['progress'])
+        if 'hash' in self._torrent_dict:
+            self._torrent_dict['manage_deeplink'] = 'https://t.me/{}?start=manage{}'.format(
+                self._qbt._bot_username,
+                self._torrent_dict['hash']
+            )
+            self._torrent_dict['info_deeplink'] = 'https://t.me/{}?start=info{}'.format(
+                self._qbt._bot_username,
+                self._torrent_dict['hash']
+            )
+
+        self._torrent_dict['short_name'] = self._torrent_dict['name'] if len(self._torrent_dict['name']) < 51 else self._torrent_dict['name'][:51] + '...'
+
+        self._torrent_dict['generic_speed'] = self._torrent_dict['dlspeed']
+        if self._torrent_dict['state'] in ('uploading', 'forcedUP'):
+            self._torrent_dict['generic_speed'] = self._torrent_dict['upspeed']
+
+        for k, v in NEW_ATTRS.items():
+            try:
+                self._torrent_dict[k] = v(self._torrent_dict)
+            except KeyError:
+                # it might be that one of the lambdas uses a key that is not available in the torrent dict,
+                # eg. when get_additional_torrent_properties is not True
+                continue
 
     def short_markup(self, *args, **kwargs):
         return kb.short_markup(self.hash, *args, **kwargs)
@@ -106,20 +155,16 @@ class Torrent:
     def dict(self):
         return self._torrent_dict
 
-    def refresh_properties(self, refresh_torrent_dict=True):
-        if refresh_torrent_dict:
-            logger.debug('refreshing torrent dict')
-            self._torrent_dict = self._qbt.torrent(self.hash).dict()
-        
-        for key, val in self._torrent_dict.items():
-            setattr(self, key, val)
-
     def __getitem__(self, item):
-        return getattr(self, item)
+        return self._torrent_dict[item]
 
-    def string(self, refresh_properties=False, base_string: Optional[str] = None):
-        if refresh_properties:
-            self.refresh_properties(refresh_torrent_dict=True)
+    def __getattr__(self, item):
+        return self._torrent_dict[item]
+
+    def string(self, refresh=False, base_string: Optional[str] = None):
+        if refresh:
+            # always get all the available properties when getting the torrent string
+            self.refresh(refresh_torrent_dict=True, get_torrent_generic_properties=True)
 
         base_string = base_string or TORRENT_STRING
         
@@ -163,32 +208,6 @@ class CustomClient(Client):
         super(CustomClient, self).__init__(url=url)
         self.online = True
 
-    def _polish_torrent(self, torrent):
-        if 'progress' in torrent:
-            torrent['eta'] = 0 if torrent['progress'] == 1 else torrent['eta']  # set eta = 0 for completed torrents
-            torrent['progress_bar'] = u.build_progress_bar(torrent['progress'])
-        if 'hash' in torrent:
-            # torrent['resume_deeplink'] = 'https://t.me/{}?start=resume{}'.format(self._bot_username, torrent['hash'])
-            # torrent['pause_deeplink'] = 'https://t.me/{}?start=pause{}'.format(self._bot_username, torrent['hash'])
-            torrent['manage_deeplink'] = 'https://t.me/{}?start=manage{}'.format(self._bot_username, torrent['hash'])
-            torrent['info_deeplink'] = 'https://t.me/{}?start=info{}'.format(self._bot_username, torrent['hash'])
-
-        torrent['short_name'] = torrent['name'] if len(torrent['name']) < 51 else torrent['name'][:51] + '...'
-
-        torrent['generic_speed'] = torrent['dlspeed']
-        if torrent['state'] in ('uploading', 'forcedUP'):
-            torrent['generic_speed'] = torrent['upspeed']
-
-        for k, v in NEW_ATTRS.items():
-            try:
-                torrent[k] = v(torrent)
-            except KeyError:
-                # it might be that one of the lambdas uses a key that is not available in the torrent dict,
-                # eg. when we call CustomClient.torrents() with get_properties=False
-                continue
-
-        return {k: v for k, v in torrent.items()}
-
     @property
     def save_path(self):
         return self.preferences()['save_path']
@@ -208,32 +227,20 @@ class CustomClient(Client):
     def torrents_queueing(self):
         return self.preferences()['queueing_enabled']
 
-    def torrents(self, get_properties=True, **kwargs):
+    def torrents(self, get_torrent_generic_properties=True, **kwargs):
         torrents = super(CustomClient, self).torrents(**kwargs) or []
 
-        if get_properties:
-            # asking for the torrents list will return a list of torrents with some details included,
-            # but we can get even more details by calling get_torrent() on each torrent
-            for torrent in torrents:
-                details = self.get_torrent(torrent['hash'])
-                if not details:
-                    continue
-
-                for k, v in details.items():
-                    if k in torrent:
-                        continue
-
-                    torrent[k] = v
-
-        return [Torrent(self, self._polish_torrent(torrent)) for torrent in torrents]
+        return [Torrent(self, torrent_dict, get_torrent_generic_properties) for torrent_dict in torrents]
 
     # noinspection PyUnresolvedReferences
-    def torrent(self, torrent_hash, get_properties=True):
-        torrents = self.torrents(filter='all', get_properties=get_properties)
+    def torrent(self, torrent_hash, get_torrent_generic_properties=True):
+        # always set get_additional_torrent_properties to False in the following request,
+        # we will get the additional properties later, just for the correct torrent
+        torrents = super(CustomClient, self).torrents(filter='all') or []
 
-        for torrent in torrents:
-            if torrent.hash.lower() == torrent_hash.lower():
-                return torrent
+        for torrent_dict in torrents:
+            if torrent_dict['hash'].lower() == torrent_hash.lower():
+                return Torrent(self, torrent_dict, get_torrent_generic_properties)
 
     # noinspection PyUnresolvedReferences
     def filter(self, query):

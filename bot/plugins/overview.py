@@ -40,12 +40,12 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     else:
         active_torrents_sort = 'progress'
 
-    all_torrents = qb.torrents(filter='all', get_properties=False)
+    all_torrents = qb.torrents(filter='all', get_torrent_generic_properties=False)
     states_counter = Counter([t.state for t in all_torrents])
     categories_counter = Counter([t.category for t in all_torrents])
 
-    active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False, get_properties=False)
-    completed_torrents = qb.torrents(filter='completed', get_properties=False)
+    active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False, get_torrent_generic_properties=False)
+    completed_torrents = qb.torrents(filter='completed', get_torrent_generic_properties=False)
 
     active_torrents_down_strings_list = ['no active downloading torrents']
     active_torrents_up_strings_list = ['no active uploading torrents']

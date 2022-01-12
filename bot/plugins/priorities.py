@@ -20,7 +20,7 @@ TORRENT_STRING = '{t.priority}. <code>{t.name}</code> (<b>{t.state_pretty}</b>, 
 def on_priorities_command(update: Update, context: CallbackContext):
     logger.info('/priorities from %s', update.effective_user.first_name)
 
-    torrents = qb.torrents(sort='priority', reverse=False, get_properties=False)
+    torrents = qb.torrents(sort='priority', reverse=False, get_torrent_generic_properties=False)
 
     # filter out paused completed torrents
     non_completed_torrents = list()
