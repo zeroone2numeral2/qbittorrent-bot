@@ -2,12 +2,14 @@ import logging
 import os
 import re
 from html import escape
+import hashlib
 
 # noinspection PyPackageRequirements
 from typing import Optional
 
 from telegram import Update, BotCommand, ParseMode, User, Bot
 from telegram.ext import Filters, MessageHandler, CallbackContext
+import bencoding
 
 from bot.qbtinstance import qb
 from bot.updater import updater
@@ -98,11 +100,21 @@ def add_from_file(update: Update, context: CallbackContext):
     kwargs = get_qbt_request_kwargs()
 
     with open(file_path, 'rb') as f:
+        # https://stackoverflow.com/a/46270711
+        decoded_dict = bencoding.bdecode(f.read())
+        torrent_hash = hashlib.sha1(bencoding.bencode(decoded_dict[b"info"])).hexdigest()
+
+        f.seek(0)
+
         # this method always returns an empty json:
         # https://python-qbittorrent.readthedocs.io/en/latest/modules/api.html#qbittorrent.client.Client.download_from_file
         qb.download_from_file(f, **kwargs)
 
-    update.message.reply_text('Torrent added', quote=True)
+    update.message.reply_text(
+        'Torrent added',
+        quote=True,
+        reply_markup=kb.short_markup(torrent_hash)
+    )
 
     os.remove(file_path)
 

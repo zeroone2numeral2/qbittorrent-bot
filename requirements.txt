@@ -3,3 +3,4 @@ python-qbittorrent>=0.4.2
 toml
 requests
 psutil
+bencoding
