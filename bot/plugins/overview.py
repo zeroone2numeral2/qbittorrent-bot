@@ -16,10 +16,8 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-QUICK_INFO_TEXT = """➤ <b>Counters:</b>
-{other_torrents}
-➤ <b>By category:</b>
-{categories_counts}
+QUICK_INFO_TEXT = """<b>by torrent state:</b> {states_count}
+<b>by category:</b> {categories_count}
 
 ➤ <b>Active, uploading ({active_up_count}):</b>
 {active_up}
@@ -43,25 +41,26 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         active_torrents_sort = 'progress'
 
     all_torrents = qb.torrents(filter='all', get_properties=False)
-    states_count = Counter([t.state for t in all_torrents])
-    categories_count = Counter([t.category for t in all_torrents])
+    states_counter = Counter([t.state for t in all_torrents])
+    categories_counter = Counter([t.category for t in all_torrents])
 
     active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False, get_properties=False)
     completed_torrents = qb.torrents(filter='completed', get_properties=False)
 
-    total_completed_count = 0
-
     active_torrents_down_strings_list = ['no active downloading torrents']
     active_torrents_up_strings_list = ['no active uploading torrents']
-    other_torrents_string = 'none'
-    categories_counts_string = 'none'
+    states_count_string = 'none'
+    categories_count_string = 'none'
 
     active_down_count = 0
     active_up_count = 0
     completed_count = len(completed_torrents)
 
     if active_torrents:
-        # lists without stalled torrents and torrents for which we are fetching the metadata
+        # exclude:
+        # - stalled torrents
+        # - torrents for which we are fetching the metadata
+
         active_torrents_down_filtered = list()
         active_torrents_up_filtered = list()
 
@@ -73,7 +72,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
                 # torrents for which we are still fetching metadata
                 active_torrents_fetching_metadata_count += 1
             elif active_torrent.state in ('stalledDL',):
-                # for some reasons, sometime in the active list we find also torrents in this state
+                # for some reasons, sometimes in the active torrents list there are some in this state
                 active_torrents_without_traffic_count += 1
             elif active_torrent.state in ('forcedDL', 'forcedUP') and active_torrent.generic_speed <= 0:
                 # count torrents that are not generating traffic and that have been force-started
@@ -94,10 +93,10 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
             active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
 
     # the list contains the strings to concatenate as the last row of the active downloading torrents list
-    other_torrents_list = list()
+    states_count_list = list()
     if completed_count:
-        text = '<b>{}</b> completed'.format(completed_count)
-        other_torrents_list.append(text)
+        text = f'<b>{completed_count}</b> completed'
+        states_count_list.append(text)
     """
     if active_torrents_without_traffic_count > 0:
         text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
@@ -106,16 +105,16 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         text = '<b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
         other_torrents_list.append(text)
     """
-    for state in states_count.elements():
-        other_torrents_list.append(f"<b>{states_count[state]}</b> {STATES_DICT[state]}")
-    if other_torrents_list:
-        other_torrents_string = '• ' + ', '.join(other_torrents_list)
+    for state in states_counter.elements():
+        states_count_list.append(f"<b>{states_counter[state]}</b> {STATES_DICT[state]}")
+    if states_count_list:
+        states_count_string = ', '.join(states_count_list)
 
-    categories_counts_list = list()
-    for category in categories_count.elements():
-        categories_counts_list.append(f"<b>{categories_count[category]}</b> {category}")
-    if categories_counts_list:
-        categories_counts_string = '• ' + ', '.join(categories_counts_list)
+    categories_count_list = list()
+    for category in categories_counter.elements():
+        categories_count_list.append(f"<b>{categories_counter[category]}</b> {category}")
+    if categories_count_list:
+        categories_count_string = ', '.join(categories_count_list)
 
     schedule_info = qb.get_schedule()
     if not schedule_info:
@@ -124,32 +123,26 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         schedule_string = '<b>Schedule</b>: on, from {from_hour} to {to_hour} ({days})'.format(**schedule_info)
 
     alt_speed_info = qb.get_alt_speed(human_readable=True)
-    alt_speed_string = '<b>Alt speed is {status}</b> (down: {alt_dl_limit}/s, up: {alt_up_limit}/s)'.format(
-        **alt_speed_info
-    )
 
     current_speed = qb.get_speed()
     speed_limit_global = qb.get_global_speed_limit()
     speed_limit_global_set = any(speed_limit_global)
     if alt_speed_info['status'] == 'on':
-        current_speed_string = '▲ <b>{current_up}/s</b> ({alt_up_limit}/s)\n▼ <b>{current_down}/s</b> ({alt_dl_limit}/s)\nalt speed is on'.format(
-            current_up=current_speed[1],
-            current_down=current_speed[0],
-            **alt_speed_info
-        )
+        current_speed_string = f'▲ <b>{current_speed[1]}/s</b> ({alt_speed_info["alt_up_limit"]}/s)\n' \
+                               f'▼ <b>{current_speed[0]}/s</b> ({alt_speed_info["alt_dl_limit"]}/s)\n' \
+                               f'alt speed is <b>on</b>'
     else:
         # add global limits in parenthesis only if they are set
-        current_speed_string = '▲ <b>{current_up}/s</b>{up_limit}\n▼ <b>{current_down}/s</b>{dl_limit}{global_speed_limit_are_set}'.format(
-            current_up=current_speed[1],
-            current_down=current_speed[0],
-            up_limit=f" ({speed_limit_global[1]}/s)" if speed_limit_global[1] else "",
-            dl_limit=f" ({speed_limit_global[0]}/s)" if speed_limit_global[0] else "",
-            global_speed_limit_are_set="\nsome global speed limits are set" if speed_limit_global_set else ""
-        )
+        global_speed_limit_are_set = "\nsome global speed limits are set" if speed_limit_global_set else ""
+        up_limit = f" ({speed_limit_global[1]}/s)" if speed_limit_global[1] else ""
+        dl_limit = f" ({speed_limit_global[0]}/s)" if speed_limit_global[0] else ""
+        current_speed_string = f'▲ <b>{current_speed[1]}/s</b>{up_limit}\n' \
+                               f'▼ <b>{current_speed[0]}/s</b>{dl_limit}' \
+                               f'{global_speed_limit_are_set}'
 
     text = QUICK_INFO_TEXT.format(
-        other_torrents=other_torrents_string,
-        categories_counts=categories_counts_string,
+        states_count=states_count_string,
+        categories_count=categories_count_string,
         active_down_count=active_down_count,
         active_up_count=active_up_count,
         active_up='\n'.join(active_torrents_up_strings_list),
