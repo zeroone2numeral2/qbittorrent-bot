@@ -95,23 +95,21 @@ def notify_completed(context: CallbackContext):
 
     completed = qb.torrents(filter='completed', get_torrent_generic_properties=False)
 
-    for t in completed:
-        if not completed_torrents.is_new(t.hash):
+    for torrent in completed:
+        if not completed_torrents.is_new(torrent.hash):
             continue
-
-        torrent = qb.torrent(t.hash)
 
         logger.info('completed: %s (%s)', torrent.hash, torrent.name)
 
         if not config.telegram.get('completed_torrents_notification', None):
             continue
 
-        if not dont_notify_torrents.send_notification(t.hash):
-            logger.info('notification disabled for torrent %s (%s)', t.hash, t.name)
+        if not dont_notify_torrents.send_notification(torrent.hash):
+            logger.info('notification disabled for torrent %s (%s)', torrent.hash, torrent.name)
             continue
 
-        tags_lower = [tag.lower() for tag in torrent.tags]
-        if config.telegram.get("no_notification_tag", None) and config.telegram.no_notification_tag.lower() in tags_lower:
+        tags_lower = [tag.lower().strip() for tag in torrent.tags.split(",")]
+        if "no_notification_tag" in config.telegram and config.telegram.no_notification_tag.lower() in tags_lower:
             continue
 
         drive_free_space = u.free_space(qb.save_path)
