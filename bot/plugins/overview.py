@@ -16,8 +16,9 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-QUICK_INFO_TEXT = """<b>by torrent state:</b> {states_count}
-<b>by category:</b> {categories_count}
+QUICK_INFO_TEXT = """• <b>completed:</b> {completed_count}
+• <b>torrent states:</b> {states_count}
+• <b>categories:</b> {categories_count}
 
 ➤ <b>Active, uploading ({active_up_count}):</b>
 {active_up}
@@ -92,27 +93,15 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
         if active_torrents_up_filtered:
             active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
 
-    # the list contains the strings to concatenate as the last row of the active downloading torrents list
     states_count_list = list()
-    if completed_count:
-        text = f'<b>{completed_count}</b> completed'
-        states_count_list.append(text)
-    """
-    if active_torrents_without_traffic_count > 0:
-        text = '<b>{}</b> stalled'.format(active_torrents_without_traffic_count)
-        other_torrents_list.append(text)
-    if active_torrents_fetching_metadata_count > 0:
-        text = '<b>{}</b> fetching metadata'.format(active_torrents_fetching_metadata_count)
-        other_torrents_list.append(text)
-    """
-    for state in states_counter.elements():
-        states_count_list.append(f"<b>{states_counter[state]}</b> {STATES_DICT[state]}")
+    for state, count in states_counter.most_common():
+        states_count_list.append(f"{count} {STATES_DICT[state]}")
     if states_count_list:
         states_count_string = ', '.join(states_count_list)
 
     categories_count_list = list()
-    for category in categories_counter.elements():
-        categories_count_list.append(f"<b>{categories_counter[category]}</b> {category}")
+    for category, count in categories_counter.most_common():
+        categories_count_list.append(f"{count} {category or 'not set'}")
     if categories_count_list:
         categories_count_string = ', '.join(categories_count_list)
 
@@ -141,6 +130,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
                                f'{global_speed_limit_are_set}'
 
     text = QUICK_INFO_TEXT.format(
+        completed_count=completed_count,
         states_count=states_count_string,
         categories_count=categories_count_string,
         active_down_count=active_down_count,
