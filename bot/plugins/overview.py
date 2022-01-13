@@ -45,53 +45,25 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     states_counter = Counter([t.state for t in all_torrents])
     categories_counter = Counter([t.category for t in all_torrents])
 
-    active_torrents = qb.torrents(filter='active', sort=active_torrents_sort, reverse=False, get_torrent_generic_properties=False)
-    completed_torrents = qb.torrents(filter='completed', get_torrent_generic_properties=False)
+    active_torrents_up = [torrent for torrent in all_torrents if torrent.state in ("uploading",)]
+    active_torrents_up.sort(key=lambda t: t[active_torrents_sort])
+
+    active_torrents_down = [torrent for torrent in all_torrents if torrent.state in ("downloading",)]
+    active_torrents_down.sort(key=lambda t: t[active_torrents_sort])
 
     active_torrents_down_strings_list = ['no active downloading torrents']
     active_torrents_up_strings_list = ['no active uploading torrents']
     states_count_string = 'none'
     categories_count_string = 'none'
 
-    active_down_count = 0
-    active_up_count = 0
-    completed_count = len(completed_torrents)
+    active_up_count = len(active_torrents_up)
+    active_down_count = len(active_torrents_down)
+    completed_count = len([t for t in all_torrents if t.progress == 1.00])
 
-    if active_torrents:
-        # exclude:
-        # - stalled torrents
-        # - torrents for which we are fetching the metadata
-
-        active_torrents_down_filtered = list()
-        active_torrents_up_filtered = list()
-
-        active_torrents_without_traffic_count = 0
-        active_torrents_fetching_metadata_count = 0
-
-        for active_torrent in active_torrents:
-            if active_torrent.state in ('metaDL',):
-                # torrents for which we are still fetching metadata
-                active_torrents_fetching_metadata_count += 1
-            elif active_torrent.state in ('stalledDL',):
-                # for some reasons, sometimes in the active torrents list there are some in this state
-                active_torrents_without_traffic_count += 1
-            elif active_torrent.state in ('forcedDL', 'forcedUP') and active_torrent.generic_speed <= 0:
-                # count torrents that are not generating traffic and that have been force-started
-                active_torrents_without_traffic_count += 1
-            elif active_torrent.state in ('uploading',):
-                # active completed torrents we are uploading (or stalled torrents we are uploading)
-                active_torrents_up_filtered.append(active_torrent)
-            else:
-                # all the rest
-                active_torrents_down_filtered.append(active_torrent)
-
-        active_down_count = len(active_torrents_down_filtered)
-        active_up_count = len(active_torrents_up_filtered)
-
-        if active_torrents_down_filtered:
-            active_torrents_down_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_down_filtered]
-        if active_torrents_up_filtered:
-            active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up_filtered]
+    if active_torrents_down:
+        active_torrents_down_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_down]
+    if active_torrents_up:
+        active_torrents_up_strings_list = [TORRENT_STRING_COMPACT.format(**t.dict()) for t in active_torrents_up]
 
     states_count_list = list()
     for state, count in states_counter.most_common():
