@@ -1,6 +1,5 @@
 import logging
 import json
-import time
 
 from telegram import ParseMode
 from telegram.ext import CallbackContext
@@ -9,7 +8,7 @@ from .qbtinstance import qb
 from utils import u
 from config import config
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("jobs")
 
 
 class HashesStorage:
@@ -77,7 +76,7 @@ except ConnectionError:
 
 @u.failwithmessage_job
 def notify_completed(context: CallbackContext):
-    logger.info('executing completed job')
+    logger.info('executing completed job...')
 
     completed = qb.torrents(filter='completed', get_torrent_generic_properties=False)
 
@@ -85,17 +84,21 @@ def notify_completed(context: CallbackContext):
         if not completed_torrents.is_new(torrent.hash):
             continue
 
-        logger.info('completed: %s (%s)', torrent.hash, torrent.name)
+        logger.info('new completed torrent: %s (%s)', torrent.hash, torrent.name)
 
         if not config.telegram.get('completed_torrents_notification', None):
+            logger.info("notifications chat not set in the config file")
             continue
 
         if not dont_notify_torrents.send_notification(torrent.hash):
-            logger.info('notification disabled for torrent %s (%s)', torrent.hash, torrent.name)
+            logger.info('notification disabled for this torrent', torrent.hash, torrent.name)
             continue
 
-        if "no_notification_tag" in config.telegram and config.telegram.no_notification_tag.lower() in torrent.tags_list(lower=True):
-            continue
+        if "no_notification_tag" in config.telegram and isinstance(config.telegram.no_notification_tag, str):
+            tag_lower = config.telegram.no_notification_tag.lower()
+            if tag_lower in torrent.tags_list(lower=True):
+                logger.info('the torrent has been tagged "%s": no notification will be sent', tag_lower)
+                continue
 
         drive_free_space = u.free_space(qb.save_path)
         text = '<code>{}</code> completed ({}, free space: {})'.format(
@@ -104,6 +107,7 @@ def notify_completed(context: CallbackContext):
             drive_free_space
         )
 
+        logger.debug("sending message")
         context.bot.send_message(
             chat_id=config.telegram.completed_torrents_notification,
             text=text,
@@ -111,3 +115,5 @@ def notify_completed(context: CallbackContext):
             disable_web_page_preview=True,
             disable_notification=True
         )
+
+    logger.info('...completed job executed')

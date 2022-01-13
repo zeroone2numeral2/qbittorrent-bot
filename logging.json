@@ -15,6 +15,15 @@
             "encoding": "utf8",
             "maxBytes": 524288,
             "backupCount": 25
+        },
+        "jobs_file": {
+            "class" : "logging.handlers.RotatingFileHandler",
+            "formatter": "standard",
+            "level": "DEBUG",
+            "filename": "logs/jobs.log",
+            "encoding": "utf8",
+            "maxBytes": 524288,
+            "backupCount": 25
         }
     },
     "loggers": {
@@ -22,6 +31,14 @@
             "handlers": [
                 "console",
                 "file"
+            ],
+            "propagate": false,
+            "level": "DEBUG"
+        },
+        "jobs": {
+            "handlers": [
+                "console",
+                "jobs_file"
             ],
             "propagate": false,
             "level": "DEBUG"
