@@ -6,7 +6,7 @@ import json
 from requests import HTTPError
 
 from .updater import updater
-from .jobs import notify_completed, toggle_queueing
+from .jobs import notify_completed
 from .qbtinstance import qb
 from utils import utils
 from config import config
@@ -29,8 +29,7 @@ def main():
 
     if qb.online:
         logger.info('registering jobs')
-        updater.job_queue.run_repeating(notify_completed, interval=120, first=120)
-        updater.job_queue.run_daily(toggle_queueing, time=datetime.time(hour=2, minute=0))
+        updater.job_queue.run_repeating(notify_completed, interval=120, first=60)
 
         # create the tag on startup
         if "added_torrents_tag" in config.qbittorrent and config.qbittorrent.added_torrents_tag:
