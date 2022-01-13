@@ -66,7 +66,7 @@ class CustomUpdater(Updater):
             for module in manifest_modules:
                 import_path = base_import_path + module
 
-                logger.debug('importing module: %s', import_path)
+                logger.debug('importing module [%s]', import_path)
 
                 paths_to_import.append(import_path)
         else:
@@ -84,7 +84,7 @@ class CustomUpdater(Updater):
                 paths_to_import.append(import_path)
 
         for import_path in paths_to_import:
-            logger.debug('importing module: %s', import_path)
+            logger.debug('importing module [%s]', import_path)
             importlib.import_module(import_path)
 
     def set_bot_commands(self, show_first: [list, None] = None):
@@ -113,9 +113,9 @@ class CustomUpdater(Updater):
     def add_handler(self, *args, bot_command=None, **kwargs):
         if isinstance(args[0], ConversationHandler):
             # ConverstaionHandler.name or the name of the first entry_point function
-            logger.info('adding conversation handler: %s', args[0].name or args[0].entry_points[0].callback.__name__)
+            logger.info('adding conversation handler <%s>', args[0].name or args[0].entry_points[0].callback.__name__)
         else:
-            logger.info('adding handler: %s', args[0].callback.__name__)
+            logger.info('adding handler <%s>', args[0].callback.__name__)
 
         self.dispatcher.add_handler(*args, **kwargs)
 
