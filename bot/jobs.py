@@ -76,20 +76,6 @@ except ConnectionError:
 
 
 @u.failwithmessage_job
-def toggle_queueing(context: CallbackContext):
-    logger.info('executing toggle queueing job')
-
-    if not config.qbittorrent.get('toggle_torrents_queueing_every_night', False) or not qb.torrents_queueing:
-        # do not run this job if queueing is disabled
-        logger.info('torrents queueing is disabled, or disabled from config: not doing anything')
-        return
-
-    qb.disable_torrents_queueing()
-    time.sleep(10)  # we need to sleep some time
-    qb.enable_torrents_queueing()
-
-
-@u.failwithmessage_job
 def notify_completed(context: CallbackContext):
     logger.info('executing completed job')
 
