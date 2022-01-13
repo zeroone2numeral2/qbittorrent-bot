@@ -1,5 +1,6 @@
 import datetime
 import logging
+import math
 from typing import Optional
 
 # noinspection PyPackageRequirements
@@ -60,7 +61,7 @@ NEW_ATTRS = {
     'dlspeed_pretty': lambda t: u.get_human_readable(t['dlspeed']),
     'upspeed_pretty': lambda t: u.get_human_readable(t['upspeed']),
     'generic_speed_pretty': lambda t: u.get_human_readable(t['generic_speed']),
-    'progress_pretty': lambda t: round(t['progress'] * 100),
+    'progress_pretty': lambda t: math.floor(t['progress'] * 100),  # 99.9% should be rounded to 99%
     'eta_pretty': lambda t: str(datetime.timedelta(seconds=t['eta'])),  # apparently it's already a string?
     'time_elapsed_pretty': lambda t: str(datetime.timedelta(seconds=t['time_elapsed'])),
     'force_start_pretty': lambda t: 'yes' if t['force_start'] else 'no',
