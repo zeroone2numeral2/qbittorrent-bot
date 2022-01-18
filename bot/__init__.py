@@ -31,13 +31,6 @@ def main():
         logger.info('registering jobs')
         updater.job_queue.run_repeating(notify_completed, interval=120, first=60)
 
-        # create the tag on startup
-        if "added_torrents_tag" in config.qbittorrent and config.qbittorrent.added_torrents_tag:
-            if not utils.check_version(min_version="2.3.0", version=qb.api_version):
-                logger.debug("cannot create tag: current api version doesn't support tags creation (v%s)", qb.api_version)
-            else:
-                logger.debug("creating tags: %s", config.qbittorrent.added_torrents_tag)
-                qb.create_tags(config.qbittorrent.added_torrents_tag)
         # create the category on startup
         if "added_torrents_category" in config.qbittorrent and config.qbittorrent.added_torrents_category:
             logger.debug("creating category: %s", config.qbittorrent.added_torrents_category)
