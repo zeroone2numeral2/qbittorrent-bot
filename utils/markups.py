@@ -80,7 +80,7 @@ def sort_markup(qbfilter, exclude_key='', row_width=2):
 
 
 def actions_markup(torrent_hash):
-    markup = [
+    keyboard = [
         [
             InlineKeyboardButton('resume', callback_data='resume:{}'.format(torrent_hash)),
             InlineKeyboardButton('pause', callback_data='pause:{}'.format(torrent_hash)),
@@ -103,7 +103,12 @@ def actions_markup(torrent_hash):
         ]
     ]
 
-    return InlineKeyboardMarkup(markup)
+    if config.telegram.completed_torrents_notification and config.telegram.no_notification_tag:
+        # add an option to add the "do not notify" tag to the torrent
+        button = InlineKeyboardButton('do not notify', callback_data='nonotification:{}'.format(torrent_hash))
+        keyboard[1].append(button)
+
+    return InlineKeyboardMarkup(keyboard)
 
 
 def confirm_delete(torrent_hash):

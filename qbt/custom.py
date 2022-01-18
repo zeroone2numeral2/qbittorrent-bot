@@ -1,7 +1,7 @@
 import datetime
 import logging
 import math
-from typing import Optional
+from typing import Optional, List
 
 # noinspection PyPackageRequirements
 from qbittorrent import Client
@@ -203,6 +203,12 @@ class Torrent:
     def trackers(self):
         return self._qbt.get_torrent_trackers(self.hash)
 
+    def add_tags(self, tags: [str, List]):
+        return self._qbt.add_tags(self.hash, tags)
+
+    def remove_tags(self, tags: [str, List] = None):
+        return self._qbt.remove_tags(self.hash, tags)
+
     def delete(self, with_files=False):
         if with_files:
             return self._qbt.delete_permanently([self.hash])
@@ -312,6 +318,23 @@ class CustomClient(Client):
         tags_str = ",".join(tags)
 
         return self._post('torrents/createTags', data={'tags': tags_str})
+
+    def add_tags(self, torrent_hash, tags: [str, List]):
+        if isinstance(tags, str):
+            tags = [tags]
+
+        tags_str = ",".join(tags)
+        return self._post('torrents/addTags', data={'hashes': torrent_hash, 'tags': tags_str})
+
+    def remove_tags(self, torrent_hash, tags: [str, List] = None):
+        if isinstance(tags, str):
+            tags_str = tags
+        elif isinstance(tags, list):
+            tags_str = ",".join(tags)
+        else:
+            tags_str = ""
+
+        return self._post('torrents/removeTags', data={'hashes': torrent_hash, 'tags': tags_str})
 
     def build_info(self):
         return self._get('app/buildInfo')

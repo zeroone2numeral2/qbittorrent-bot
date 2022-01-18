@@ -13,6 +13,7 @@ from bot.updater import updater
 from utils import u
 from utils import kb
 from utils import Permissions
+from config import config
 
 logger = logging.getLogger(__name__)
 
@@ -248,6 +249,29 @@ def recheck_cb(update: Update, context: CallbackContext):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
+def no_notification_cb(update: Update, context: CallbackContext):
+    logger.info('no notification inline button')
+
+    torrent_hash = context.match[1]
+    logger.info('torrent hash: %s', torrent_hash)
+
+    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
+
+    torrent_tags = torrent.tags_list(lower=True)
+    no_notification_tag = config.telegram.no_notification_tag
+
+    if no_notification_tag.lower() in torrent_tags:
+        torrent.remove_tags(no_notification_tag)
+        callback_answer = f'Tag "{no_notification_tag}" removed (the torrent WILL be posted when completed)'
+    else:
+        torrent.add_tags(no_notification_tag)
+        callback_answer = f'Tag "{no_notification_tag}" added (the torrent will NOT be posted when completed)'
+
+    update.callback_query.answer(callback_answer, show_alert=True)
+
+
+@u.check_permissions(required_permission=Permissions.EDIT)
+@u.failwithmessage
 def ask_confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     logger.info('delete with files inline button')
 
@@ -311,6 +335,7 @@ updater.add_handler(CallbackQueryHandler(unforce_start_torrent_cb, pattern=r'^un
 updater.add_handler(CallbackQueryHandler(priority_up_cb, pattern=r'^priorityup:(.*)$'))
 updater.add_handler(CallbackQueryHandler(max_priority_cb, pattern=r'^maxpriority:(.*)$'))
 updater.add_handler(CallbackQueryHandler(recheck_cb, pattern=r'^recheck:(.*)$'))
+updater.add_handler(CallbackQueryHandler(no_notification_cb, pattern=r'^nonotification:(.*)$'))
 updater.add_handler(CallbackQueryHandler(ask_confirm_delete_with_files_cb, pattern=r'^deletewithfiles:(.*)$'))
 updater.add_handler(CallbackQueryHandler(confirm_delete_with_files_cb, pattern=r'^confirmdeletewithfiles:(.*)$'))
 updater.add_handler(CallbackQueryHandler(reduce_buttons, pattern=r'^reduce:(.*)$'))
