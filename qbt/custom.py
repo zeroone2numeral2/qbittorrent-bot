@@ -71,7 +71,7 @@ NEW_ATTRS = {
     'auto_tmm_string': lambda t: 'yes' if t['auto_tmm'] else 'no',
 }
 
-TORRENT_STRING = """• [{priority}] <code>{name_escaped}</code>
+TORRENT_STRING = """[{priority}] <code>{name_escaped}</code>
   {progress_bar} {progress_pretty}%
   <b>state</b>: {state_pretty}
   <b>size</b>: {size_pretty}
@@ -89,7 +89,8 @@ TORRENT_STRING = """• [{priority}] <code>{name_escaped}</code>
   <b>force start</b>: {force_start_pretty}
   <b>tags</b>: <code>{tags}</code>
   <b>auto torrent management</b>: {auto_tmm_string}
-  infohash:<code>{hash}</code>
+  
+  <code>infohash:{hash}</code>
   [<a href="{info_deeplink}">info</a>]"""
 
 
