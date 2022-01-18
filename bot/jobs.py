@@ -56,16 +56,7 @@ class Completed(HashesStorage):
             return False
 
 
-class DontNotify(HashesStorage):
-    def send_notification(self, torrent_hash):
-        if torrent_hash not in self._data:
-            return True
-
-        return False
-
-
 completed_torrents = Completed('completed.json')
-dont_notify_torrents = DontNotify('do_not_notify.json')
 
 try:
     completed_torrents.insert([t.hash for t in qb.torrents(filter='completed')])
@@ -88,10 +79,6 @@ def notify_completed(context: CallbackContext):
 
         if not config.telegram.get('completed_torrents_notification', None):
             logger.info("notifications chat not set in the config file")
-            continue
-
-        if not dont_notify_torrents.send_notification(torrent.hash):
-            logger.info('notification disabled for this torrent', torrent.hash, torrent.name)
             continue
 
         if "no_notification_tag" in config.telegram and isinstance(config.telegram.no_notification_tag, str):
