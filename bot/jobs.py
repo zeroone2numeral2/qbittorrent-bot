@@ -101,11 +101,7 @@ def notify_completed(context: CallbackContext):
                 continue
 
         drive_free_space = u.free_space(qb.save_path)
-        text = '<code>{}</code> completed ({}, free space: {})'.format(
-            u.html_escape(torrent.name),
-            torrent.size_pretty,
-            drive_free_space
-        )
+        text = f'<code>{torrent.name_escaped}</code> completed ({torrent.size_pretty}, free space: {drive_free_space})'
 
         logger.debug("sending message")
         context.bot.send_message(

@@ -31,7 +31,7 @@ QUICK_INFO_TEXT = """• <b>completed:</b> {completed_count}
 {schedule}
 <b>Last refresh:</b> {last_refresh}"""
 
-TORRENT_STRING_COMPACT = """• <code>{short_name}</code> ({progress_pretty}% of {size_pretty}, {state_pretty}, \
+TORRENT_STRING_COMPACT = """• <code>{short_name_escaped}</code> ({progress_pretty}% of {size_pretty}, {state_pretty}, \
 <b>{generic_speed_pretty}/s</b>) [<a href="{info_deeplink}">info</a>]"""
 
 

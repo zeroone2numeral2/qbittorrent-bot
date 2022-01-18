@@ -139,6 +139,7 @@ class Torrent:
             )
 
         self._torrent_dict['short_name'] = self._torrent_dict['name'] if len(self._torrent_dict['name']) < 51 else self._torrent_dict['name'][:51] + '...'
+        self._torrent_dict['short_name_escaped'] = u.html_escape(self._torrent_dict['short_name'])
 
         self._torrent_dict['generic_speed'] = self._torrent_dict['dlspeed']
         if self._torrent_dict['state'] in ('uploading', 'forcedUP'):

@@ -282,8 +282,7 @@ def ask_confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     # torrent.delete(with_files=True)
 
     update.callback_query.edit_message_text(
-        'Are you sure you want to delete {}, <b>with all the connected files included</b>?'.format(
-            u.html_escape(torrent.name)),
+        f'Are you sure you want to delete {torrent.name_escaped}, <b>with all the connected files included</b>?',
         reply_markup=kb.confirm_delete(torrent.hash),
         parse_mode=ParseMode.HTML
     )
@@ -301,7 +300,7 @@ def confirm_delete_with_files_cb(update: Update, context: CallbackContext):
     torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
     torrent.delete(with_files=True)
 
-    update.callback_query.edit_message_text('{} deleted (with files)'.format(torrent.name))
+    update.callback_query.edit_message_text(f'{torrent.name} deleted (with files)')
 
 
 @u.check_permissions(required_permission=Permissions.READ)

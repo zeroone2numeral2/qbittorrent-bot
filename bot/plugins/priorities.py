@@ -12,7 +12,7 @@ from utils import Permissions
 
 logger = logging.getLogger(__name__)
 
-TORRENT_STRING = '{t.priority}. <code>{t.name}</code> (<b>{t.state_pretty}</b>, [<a href="{t.info_deeplink}">manage</a>])'
+TORRENT_STRING = '{t.priority}. <code>{t.name_escaped}</code> (<b>{t.state_pretty}</b>, [<a href="{t.info_deeplink}">manage</a>])'
 
 
 @u.check_permissions(required_permission=Permissions.READ)
