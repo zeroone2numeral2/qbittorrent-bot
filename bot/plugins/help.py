@@ -37,6 +37,9 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /pauseall: pause all torrents
 • /resumeall: resume all torrents
 • /set <code>[setting] [new value]</code>: change a setting
+• <code>+tag</code> or <code>-tag</code>: reply to a torrent info message with "<code>+some tags</code>" or \
+"<code>-some tags</code>" to add/remove tags. Multiple tags can be passed, separated by a comma \
+(tags can have white spaces)
 
 <i>ADMIN commands</i>
 • /permissions: get the current permissions configuration

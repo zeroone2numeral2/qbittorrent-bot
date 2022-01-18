@@ -60,6 +60,7 @@ NEW_ATTRS = {
     'up_speed_pretty': lambda t: u.get_human_readable(t['up_speed']),
     'dlspeed_pretty': lambda t: u.get_human_readable(t['dlspeed']),
     'upspeed_pretty': lambda t: u.get_human_readable(t['upspeed']),
+    'name_escaped': lambda t: u.html_escape(t['name']),
     'generic_speed_pretty': lambda t: u.get_human_readable(t['generic_speed']),
     'progress_pretty': lambda t: math.floor(t['progress'] * 100),  # eg. 99.9% should be rounded to 99%
     'eta_pretty': lambda t: str(datetime.timedelta(seconds=t['eta'])),  # apparently it's already a string?
@@ -70,7 +71,7 @@ NEW_ATTRS = {
     'auto_tmm_string': lambda t: 'yes' if t['auto_tmm'] else 'no',
 }
 
-TORRENT_STRING = """• [{priority}] <code>{name}</code>
+TORRENT_STRING = """• [{priority}] <code>{name_escaped}</code>
   {progress_bar} {progress_pretty}%
   <b>state</b>: {state_pretty}
   <b>size</b>: {size_pretty}
@@ -88,6 +89,7 @@ TORRENT_STRING = """• [{priority}] <code>{name}</code>
   <b>force start</b>: {force_start_pretty}
   <b>tags</b>: <code>{tags}</code>
   <b>auto torrent management</b>: {auto_tmm_string}
+  infohash:<code>{hash}</code>
   [<a href="{info_deeplink}">info</a>]"""
 
 
