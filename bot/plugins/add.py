@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def notify_addition(current_chat_id: int, bot: Bot, user: User, torrent_description: str):
-    if not config.telegram.get("new_torrents_notification", 0):
+    if not config.telegram.new_torrents_notification:
         return
 
     target_chat_id = config.telegram.new_torrents_notification
@@ -41,10 +41,10 @@ def notify_addition(current_chat_id: int, bot: Bot, user: User, torrent_descript
 
 def get_qbt_request_kwargs() -> dict:
     kwargs = dict()
-    if config.qbittorrent.get("added_torrents_tag", None):
+    if config.qbittorrent.added_torrents_tag:
         # string with tags separated by ",", but since it's only one tehre's no need to join
         kwargs["tags"] = config.qbittorrent.added_torrents_tag
-    if config.qbittorrent.get("added_torrents_category", None):
+    if config.qbittorrent.added_torrents_category:
         kwargs["category"] = config.qbittorrent.added_torrents_category
 
     return kwargs

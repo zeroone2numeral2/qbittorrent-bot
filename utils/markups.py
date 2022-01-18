@@ -58,7 +58,7 @@ def get_quick_menu_markup():
         InlineKeyboardButton('🔄 kb/s', callback_data='quick:refresh:dlspeed'),
     ]]
 
-    if "altspeed_presets" in config.qbittorrent and config.qbittorrent.altspeed_presets:
+    if config.qbittorrent.altspeed_presets:
         altspeed = config.qbittorrent.altspeed_presets
 
     for up, down in altspeed:

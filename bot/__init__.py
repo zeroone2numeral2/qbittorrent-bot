@@ -32,7 +32,7 @@ def main():
         updater.job_queue.run_repeating(notify_completed, interval=120, first=60)
 
         # create the category on startup
-        if "added_torrents_category" in config.qbittorrent and config.qbittorrent.added_torrents_category:
+        if config.qbittorrent.added_torrents_category:
             logger.debug("creating category: %s", config.qbittorrent.added_torrents_category)
             try:
                 qb.create_category(config.qbittorrent.added_torrents_category)

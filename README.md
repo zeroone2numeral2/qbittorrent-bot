@@ -24,7 +24,9 @@ Requires Python >= 3.6.2
 2. rename `config.example.toml` to `config.toml`
 3. edit `config.toml` in the following way:
   - `[telegram]` section: place your API token in `token` and your user ID in `admins`
-  - `[qbitttorrent]` section: fill the three values according to your qBittorrent WebUI settings
+  - `[qbitttorrent]` section: fill the `url`, `login` and `secret` values according to your qBittorrent WebUI settings
+  - all the other values in the config file are optional, and their function is described in `config.example.toml`. 
+Make sure your config file contains all the keys in the example file (the bot won't start if some are missing, but it will tell you which), and that their type is correct
 4. install the rquirements via `pip install -r requirements.txt`
 
 ### Permissions
