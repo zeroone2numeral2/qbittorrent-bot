@@ -40,7 +40,7 @@ SPEEDCAP_MENU = InlineKeyboardMarkup([[InlineKeyboardButton('toggle', callback_d
 
 REFRESH_ACTIVE = InlineKeyboardMarkup([[InlineKeyboardButton('refresh', callback_data='refreshactive')]])
 
-REFRESH_SPEED = InlineKeyboardMarkup([[InlineKeyboardButton('refresh', callback_data='refreshspeed')]])
+REFRESH_TRANSFER_INFO = InlineKeyboardMarkup([[InlineKeyboardButton('refresh', callback_data='refreshtransferinfo')]])
 
 REMOVE = ReplyKeyboardRemove()
 

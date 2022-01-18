@@ -88,7 +88,7 @@ def on_speed_command(update: Update, context: CallbackContext):
 
     text = get_speed_text()
 
-    update.message.reply_html(text, reply_markup=kb.REFRESH_SPEED)
+    update.message.reply_html(text, reply_markup=kb.REFRESH_TRANSFER_INFO)
 
 
 @u.check_permissions(required_permission=Permissions.READ)
@@ -99,7 +99,11 @@ def on_refresh_button_speed(update: Update, context: CallbackContext):
 
     text = get_speed_text()
 
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.REFRESH_SPEED)
+    update.callback_query.edit_message_text(
+        text,
+        parse_mode=ParseMode.HTML,
+        reply_markup=kb.REFRESH_TRANSFER_INFO
+    )
     update.callback_query.answer('Refreshed')
 
 
