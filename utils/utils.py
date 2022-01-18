@@ -107,7 +107,7 @@ def failwithmessage_job(func):
         except Exception as e:
             logger.info('error while running job: %s', str(e), exc_info=True)
             chat_id = config.telegram.admins[0]
-            if "errors_log_chat" in config.telegram and config.telegram.errors_log_chat:
+            if config.telegram.errors_log_chat:
                 chat_id = config.telegram.errors_log_chat
 
             text = f'#{context.bot.username} exception: an error occurred while running the job ' \

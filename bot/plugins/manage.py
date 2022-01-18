@@ -252,6 +252,10 @@ def recheck_cb(update: Update, context: CallbackContext):
 def no_notification_cb(update: Update, context: CallbackContext):
     logger.info('no notification inline button')
 
+    if not config.telegram.no_notification_tag:
+        update.callback_query.answer("tag not set in the config file", cache_time=10)
+        return
+
     torrent_hash = context.match[1]
     logger.info('torrent hash: %s', torrent_hash)
 

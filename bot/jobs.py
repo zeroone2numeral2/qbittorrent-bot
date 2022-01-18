@@ -77,11 +77,11 @@ def notify_completed(context: CallbackContext):
 
         logger.info('new completed torrent: %s (%s)', torrent.hash, torrent.name)
 
-        if not config.telegram.get('completed_torrents_notification', None):
+        if not config.telegram.completed_torrents_notification:
             logger.info("notifications chat not set in the config file")
             continue
 
-        if "no_notification_tag" in config.telegram and isinstance(config.telegram.no_notification_tag, str):
+        if config.telegram.no_notification_tag:
             tag_lower = config.telegram.no_notification_tag.lower()
             if tag_lower in torrent.tags_list(lower=True):
                 logger.info('the torrent has been tagged "%s": no notification will be sent', tag_lower)
