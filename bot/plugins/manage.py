@@ -207,34 +207,6 @@ def unforce_start_torrent_cb(update: Update, context: CallbackContext):
 
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
-def priority_up_cb(update: Update, context: CallbackContext):
-    logger.info('priority up inline button')
-
-    torrent_hash = context.match[1]
-    logger.info('torrent hash: %s', torrent_hash)
-
-    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
-    torrent.increase_priority()
-
-    update.callback_query.answer('Increased priority')
-
-
-@u.check_permissions(required_permission=Permissions.EDIT)
-@u.failwithmessage
-def max_priority_cb(update: Update, context: CallbackContext):
-    logger.info('max priority inline button')
-
-    torrent_hash = context.match[1]
-    logger.info('torrent hash: %s', torrent_hash)
-
-    torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
-    torrent.max_priority()
-
-    update.callback_query.answer('Max priority set')
-
-
-@u.check_permissions(required_permission=Permissions.EDIT)
-@u.failwithmessage
 def recheck_cb(update: Update, context: CallbackContext):
     logger.info('recheck inline button')
 
@@ -335,8 +307,6 @@ updater.add_handler(CallbackQueryHandler(toggle_atm_cb, pattern=r'^toggleatm:(.*
 updater.add_handler(CallbackQueryHandler(force_resume_torrent_cb, pattern=r'^forceresume:(.*)$'))
 updater.add_handler(CallbackQueryHandler(force_start_torrent_cb, pattern=r'^forcestart:(.*)$'))
 updater.add_handler(CallbackQueryHandler(unforce_start_torrent_cb, pattern=r'^unforcestart:(.*)$'))
-updater.add_handler(CallbackQueryHandler(priority_up_cb, pattern=r'^priorityup:(.*)$'))
-updater.add_handler(CallbackQueryHandler(max_priority_cb, pattern=r'^maxpriority:(.*)$'))
 updater.add_handler(CallbackQueryHandler(recheck_cb, pattern=r'^recheck:(.*)$'))
 updater.add_handler(CallbackQueryHandler(no_notification_cb, pattern=r'^nonotification:(.*)$'))
 updater.add_handler(CallbackQueryHandler(ask_confirm_delete_with_files_cb, pattern=r'^deletewithfiles:(.*)$'))

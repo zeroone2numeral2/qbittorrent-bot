@@ -109,12 +109,10 @@ def actions_markup(torrent_hash):
         [
             InlineKeyboardButton('force start', callback_data='forcestart:{}'.format(torrent_hash)),
             InlineKeyboardButton('un-force start', callback_data='unforcestart:{}'.format(torrent_hash)),
-            InlineKeyboardButton('see trackers', callback_data='trackers:{}'.format(torrent_hash))
         ],
         [
-            InlineKeyboardButton('priority up', callback_data='priorityup:{}'.format(torrent_hash)),
-            InlineKeyboardButton('max priority', callback_data='maxpriority:{}'.format(torrent_hash)),
             InlineKeyboardButton('atm on/off', callback_data='toggleatm:{}'.format(torrent_hash)),
+            InlineKeyboardButton('see trackers', callback_data='trackers:{}'.format(torrent_hash))
         ],
         [
             InlineKeyboardButton('delete', callback_data='deletewithfiles:{}'.format(torrent_hash)),
@@ -138,14 +136,11 @@ def confirm_delete(torrent_hash):
     ]])
 
 
-def short_markup(torrent_hash, max_priority_button=True, do_not_notify_tag_button=True):
+def short_markup(torrent_hash, do_not_notify_tag_button=True):
     markup = [[
         InlineKeyboardButton('pause', callback_data='pause:{}'.format(torrent_hash)),
         InlineKeyboardButton('manage', callback_data='manage:{}'.format(torrent_hash)),
     ]]
-
-    if max_priority_button:
-        markup[0].insert(0, InlineKeyboardButton('max priority', callback_data='maxpriority:{}'.format(torrent_hash)))
 
     if do_not_notify_tag_button \
             and config.telegram.completed_torrents_notification \

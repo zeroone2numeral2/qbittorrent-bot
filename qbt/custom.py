@@ -71,7 +71,7 @@ NEW_ATTRS = {
     'auto_tmm_string': lambda t: 'yes' if t['auto_tmm'] else 'no',
 }
 
-TORRENT_STRING = """[{priority}] <code>{name_escaped}</code>
+TORRENT_STRING = """<code>{name_escaped}</code>
   {progress_bar} {progress_pretty}%
   <b>state</b>: {state_pretty}
   <b>size</b>: {size_pretty}
@@ -194,12 +194,6 @@ class Torrent:
 
     def toggle_atm(self, value: bool):
         return self._qbt.set_automatic_torrent_management(self.hash, enable=value)
-
-    def increase_priority(self):
-        return self._qbt.increase_priority([self.hash])
-
-    def max_priority(self):
-        return self._qbt.set_max_priority([self.hash])
 
     def recheck(self):
         return self._qbt.recheck([self.hash])

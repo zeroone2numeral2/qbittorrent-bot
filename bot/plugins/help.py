@@ -18,7 +18,6 @@ HELP_MESSAGE = """<b>Commands</b>:
 • /available_filters: show a list of commands that can be used to list torrents by status
 • /overview: overview of what we're downloading/uploading
 • /filter or /f <code>[substring]</code>: filter by substring (filters from the full list)
-• /priorities: show the top 25 torrents by priority
 • /settings or /s: get current settings list
 • /transferinfo: overview of the current speed, queueing and share rateo settings
 • /atm: overview of the current Automatic Torrent Management settings
