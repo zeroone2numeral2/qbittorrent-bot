@@ -10,6 +10,7 @@ from telegram import ParseMode, MAX_MESSAGE_LENGTH, Bot, Update, BotCommand
 from qbt.custom import STATES_DICT
 from bot.qbtinstance import qb
 from bot.updater import updater
+from .transfer_info import get_speed_text
 from utils import u
 from utils import kb
 from utils import Permissions
@@ -238,7 +239,7 @@ updater.add_handler(CommandHandler(['overview', 'ov'], on_overview_command), bot
 updater.add_handler(CommandHandler(['quick'], on_overview_command))
 updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_overview_refresh))
 updater.add_handler(CallbackQueryHandler(on_refresh_button_overview, pattern=r'^(?:quick|overview):refresh:(\w+)$'))
-updater.add_handler(CallbackQueryHandler(on_free_space_button_overview, pattern=r'^(?:quick|overview):freespace:(\w+)$'))
+updater.add_handler(CallbackQueryHandler(on_free_space_button_overview, pattern=r'^(?:quick|overview):freespace'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_overview, pattern=r'^(?:quick|overview):alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_overview, pattern=r'^(?:quick|overview):altoff$'))
 updater.add_handler(CallbackQueryHandler(on_schedon_button_overview, pattern=r'^(?:quick|overview):schedon'))
