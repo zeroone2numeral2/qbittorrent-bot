@@ -124,7 +124,7 @@ def on_overview_command(update: Update, context: CallbackContext):
     logger.info('/overview command from %s', update.message.from_user.first_name)
 
     text = get_quick_info_text()
-    sent_message = update.message.reply_html(text, reply_markup=kb.get_quick_menu_markup())
+    sent_message = update.message.reply_html(text, reply_markup=kb.get_overview_base_markup())
 
     context.user_data['last_overview_message_id'] = sent_message.message_id
 
@@ -136,6 +136,7 @@ def on_overview_refresh(update: Update, context: CallbackContext):
 
     message_id = context.user_data.get('last_overview_message_id', None)
     if not message_id:
+        logger.debug("no 'last_overview_message_id' saved")
         return
 
     context.bot.delete_message(update.effective_chat.id, update.message.message_id)
@@ -146,7 +147,7 @@ def on_overview_refresh(update: Update, context: CallbackContext):
         message_id=message_id,
         text=text,
         parse_mode=ParseMode.HTML,
-        reply_markup=kb.get_quick_menu_markup()
+        reply_markup=kb.get_overview_base_markup()
     )
 
 
@@ -162,7 +163,7 @@ def on_refresh_button_overview(update: Update, context: CallbackContext):
 
     text = get_quick_info_text(sort_active_by_dl_speed=sort_active_by_dl_speed)
 
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_overview_base_markup())
     update.callback_query.answer('Refreshed')
 
 
@@ -176,7 +177,7 @@ def on_alton_button_overview(update: Update, context: CallbackContext):
         qb.toggle_alternative_speed()
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_overview_altspeed_markup())
     update.callback_query.answer('Alternative speed enabled')
 
 
@@ -190,7 +191,7 @@ def on_altoff_button_overview(update: Update, context: CallbackContext):
         qb.toggle_alternative_speed()
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_overview_altspeed_markup())
     update.callback_query.answer('Alternative speed disabled')
 
 
@@ -217,7 +218,25 @@ def on_transfer_info_button_overview(update: Update, context: CallbackContext):
 
     text = get_speed_text()
 
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_overview_base_markup())
+
+
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+@u.ignore_not_modified_exception
+def on_manage_alt_speed_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: alt speed')
+
+    update.callback_query.edit_message_reply_markup(reply_markup=kb.get_overview_altspeed_markup())
+
+
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+@u.ignore_not_modified_exception
+def on_manage_schedule_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: schedule')
+
+    update.callback_query.edit_message_reply_markup(reply_markup=kb.get_overview_schedule_markup())
 
 
 @u.check_permissions(required_permission=Permissions.EDIT)
@@ -229,7 +248,7 @@ def on_schedon_button_overview(update: Update, context: CallbackContext):
     qb.set_preferences(**{'scheduler_enabled': True})
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_overview_schedule_markup())
     update.callback_query.answer('Scheduled altenrative speed on')
 
 
@@ -242,16 +261,18 @@ def on_schedoff_button_overview(update: Update, context: CallbackContext):
     qb.set_preferences(**{'scheduler_enabled': False})
 
     text = get_quick_info_text()
-    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_overview_schedule_markup())
     update.callback_query.answer('Scheduled altenrative speed off')
 
 
 updater.add_handler(CommandHandler(['overview', 'ov'], on_overview_command), bot_command=BotCommand("overview", "overview of what we're downloading and uploading"))
 updater.add_handler(CommandHandler(['quick'], on_overview_command))
-updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_overview_refresh))
+updater.add_handler(MessageHandler(Filters.regex(r'^[aA\.]$'), on_overview_refresh))
 updater.add_handler(CallbackQueryHandler(on_refresh_button_overview, pattern=r'^(?:quick|overview):refresh:(\w+)$'))
 updater.add_handler(CallbackQueryHandler(on_free_space_button_overview, pattern=r'^overview:freespace'))
 updater.add_handler(CallbackQueryHandler(on_transfer_info_button_overview, pattern=r'^overview:transferinfo'))
+updater.add_handler(CallbackQueryHandler(on_manage_alt_speed_button_overview, pattern=r'^overview:altspeed$'))
+updater.add_handler(CallbackQueryHandler(on_manage_schedule_button_overview, pattern=r'^overview:schedule$'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_overview, pattern=r'^(?:quick|overview):alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_overview, pattern=r'^(?:quick|overview):altoff$'))
 updater.add_handler(CallbackQueryHandler(on_schedon_button_overview, pattern=r'^(?:quick|overview):schedon'))

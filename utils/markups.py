@@ -45,30 +45,47 @@ REFRESH_TRANSFER_INFO = InlineKeyboardMarkup([[InlineKeyboardButton('refresh', c
 REMOVE = ReplyKeyboardRemove()
 
 
-def get_quick_menu_markup():
-    altspeed = [(5, 10), (5, 50), (5, 200)]  # (up, down)
+def get_overview_altspeed_markup():
+    if config.qbittorrent.altspeed_presets:
+        altspeed = config.qbittorrent.altspeed_presets
+    else:
+        altspeed = []
 
-    base_keyboard = [[
-        InlineKeyboardButton('alt ✅', callback_data='overview:alton'),
-        InlineKeyboardButton('alt ❌', callback_data='overview:altoff'),
+    speeds_row = []
+    for up, down in altspeed:
+        inline_button = InlineKeyboardButton(f'▲{up} ▼{down}', callback_data=f'altspeed:{up}:{down}')
+        speeds_row.append(inline_button)
+
+    keyboard = [speeds_row, [
+        InlineKeyboardButton('ON', callback_data='overview:alton'),
+        InlineKeyboardButton('OFF', callback_data='overview:altoff'),
+        InlineKeyboardButton('back', callback_data='overview:refresh:dlspeed'),
+    ]]
+
+    return InlineKeyboardMarkup(keyboard)
+
+
+def get_overview_schedule_markup():
+    keyboard = [[
+        InlineKeyboardButton('ON', callback_data='overview:schedon'),
+        InlineKeyboardButton('OFF', callback_data='overview:schedoff'),
+        InlineKeyboardButton('back', callback_data='overview:refresh:dlspeed')
+    ]]
+
+    return InlineKeyboardMarkup(keyboard)
+
+
+def get_overview_base_markup():
+    keyboard = [[
+        InlineKeyboardButton('alt speed', callback_data='overview:altspeed'),
+        InlineKeyboardButton('schedule', callback_data='overview:schedule'),
     ], [
-        InlineKeyboardButton('🕑 ✅', callback_data='overview:schedon'),
-        InlineKeyboardButton('🕑 ❌', callback_data='overview:schedoff'),
         InlineKeyboardButton('📶 transfer info', callback_data='overview:transferinfo'),
-    ], [
-        InlineKeyboardButton('💾 free space', callback_data='overview:freespace'),
-        InlineKeyboardButton('🔄 %', callback_data='overview:refresh:percentage'),
+        InlineKeyboardButton('💾 space', callback_data='overview:freespace'),
         InlineKeyboardButton('🔄 kb/s', callback_data='overview:refresh:dlspeed'),
     ]]
 
-    if config.qbittorrent.altspeed_presets:
-        altspeed = config.qbittorrent.altspeed_presets
-
-    for up, down in altspeed:
-        inline_button = InlineKeyboardButton(f'▲{up}/▼{down}', callback_data=f'altspeed:{up}:{down}')
-        base_keyboard[0].append(inline_button)
-
-    return InlineKeyboardMarkup(base_keyboard)
+    return InlineKeyboardMarkup(keyboard)
 
 
 def sort_markup(qbfilter, exclude_key='', row_width=2):
