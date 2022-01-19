@@ -49,15 +49,15 @@ def get_quick_menu_markup():
     altspeed = [(5, 10), (5, 50), (5, 200)]  # (up, down)
 
     base_keyboard = [[
-        InlineKeyboardButton('alt ✅', callback_data='quick:alton'),
-        InlineKeyboardButton('alt ❌', callback_data='quick:altoff'),
+        InlineKeyboardButton('alt ✅', callback_data='overview:alton'),
+        InlineKeyboardButton('alt ❌', callback_data='overview:altoff'),
     ], [
-        InlineKeyboardButton('🕑 ✅', callback_data='quick:schedon'),
-        InlineKeyboardButton('🕑 ❌', callback_data='quick:schedoff'),
+        InlineKeyboardButton('🕑 ✅', callback_data='overview:schedon'),
+        InlineKeyboardButton('🕑 ❌', callback_data='overview:schedoff'),
     ], [
-        InlineKeyboardButton('💾 free space', callback_data='quick:freespace'),
-        InlineKeyboardButton('🔄 %', callback_data='quick:refresh:percentage'),
-        InlineKeyboardButton('🔄 kb/s', callback_data='quick:refresh:dlspeed'),
+        InlineKeyboardButton('💾 free space', callback_data='overview:freespace'),
+        InlineKeyboardButton('🔄 %', callback_data='overview:refresh:percentage'),
+        InlineKeyboardButton('🔄 kb/s', callback_data='overview:refresh:dlspeed'),
     ]]
 
     if config.qbittorrent.altspeed_presets:
