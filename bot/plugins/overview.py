@@ -202,7 +202,7 @@ def on_free_space_button_overview(update: Update, context: CallbackContext):
 
     try:
         drive_free_space = u.free_space(qb.save_path)
-        text = f"{drive_free_space} free, save path: {qb.save_path}"
+        text = f"{drive_free_space} free\n\n{qb.save_path}"
     except Exception as e:
         text = f"Exception while fetching the drive's free space: {e}"
 
