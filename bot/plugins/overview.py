@@ -193,6 +193,21 @@ def on_altoff_button_overview(update: Update, context: CallbackContext):
     update.callback_query.answer('Alternative speed disabled')
 
 
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+@u.ignore_not_modified_exception
+def on_free_space_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: free space')
+
+    try:
+        drive_free_space = u.free_space(qb.save_path)
+        text = f"{drive_free_space} free, save path: {qb.save_path}"
+    except Exception as e:
+        text = f"Exception while fetching the drive's free space: {e}"
+
+    update.callback_query.answer(text, show_alert=True, cache_time=15)
+
+
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
@@ -223,6 +238,7 @@ updater.add_handler(CommandHandler(['overview', 'ov'], on_overview_command), bot
 updater.add_handler(CommandHandler(['quick'], on_overview_command))
 updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_overview_refresh))
 updater.add_handler(CallbackQueryHandler(on_refresh_button_overview, pattern=r'^(?:quick|overview):refresh:(\w+)$'))
+updater.add_handler(CallbackQueryHandler(on_free_space_button_overview, pattern=r'^(?:quick|overview):freespace:(\w+)$'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_overview, pattern=r'^(?:quick|overview):alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_overview, pattern=r'^(?:quick|overview):altoff$'))
 updater.add_handler(CallbackQueryHandler(on_schedon_button_overview, pattern=r'^(?:quick|overview):schedon'))
