@@ -214,10 +214,11 @@ def on_free_space_button_overview(update: Update, context: CallbackContext):
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_transfer_info_button_overview(update: Update, context: CallbackContext):
-    logger.info('overview: transfer info')
+    logger.info('overview: show transfer info')
 
     text = get_speed_text()
 
+    update.callback_query.answer("showing transfer info data...")
     update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_overview_base_markup())
 
 
@@ -225,18 +226,20 @@ def on_transfer_info_button_overview(update: Update, context: CallbackContext):
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_manage_alt_speed_button_overview(update: Update, context: CallbackContext):
-    logger.info('overview: alt speed')
+    logger.info('overview: manage alt speed')
 
     update.callback_query.edit_message_reply_markup(reply_markup=kb.get_overview_altspeed_markup())
+    update.callback_query.answer("use these buttons to configure your alt speed settings")
 
 
 @u.check_permissions(required_permission=Permissions.READ)
 @u.failwithmessage
 @u.ignore_not_modified_exception
 def on_manage_schedule_button_overview(update: Update, context: CallbackContext):
-    logger.info('overview: schedule')
+    logger.info('overview: manage schedule')
 
     update.callback_query.edit_message_reply_markup(reply_markup=kb.get_overview_schedule_markup())
+    update.callback_query.answer("use these buttons to configure your schedule settings")
 
 
 @u.check_permissions(required_permission=Permissions.EDIT)
