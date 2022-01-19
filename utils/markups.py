@@ -54,6 +54,7 @@ def get_quick_menu_markup():
     ], [
         InlineKeyboardButton('🕑 ✅', callback_data='overview:schedon'),
         InlineKeyboardButton('🕑 ❌', callback_data='overview:schedoff'),
+        InlineKeyboardButton('📶 transfer info', callback_data='overview:transferinfo'),
     ], [
         InlineKeyboardButton('💾 free space', callback_data='overview:freespace'),
         InlineKeyboardButton('🔄 %', callback_data='overview:refresh:percentage'),

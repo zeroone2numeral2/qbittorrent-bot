@@ -209,6 +209,17 @@ def on_free_space_button_overview(update: Update, context: CallbackContext):
     update.callback_query.answer(text, show_alert=True, cache_time=15)
 
 
+@u.check_permissions(required_permission=Permissions.READ)
+@u.failwithmessage
+@u.ignore_not_modified_exception
+def on_transfer_info_button_overview(update: Update, context: CallbackContext):
+    logger.info('overview: transfer info')
+
+    text = get_speed_text()
+
+    update.callback_query.edit_message_text(text, parse_mode=ParseMode.HTML, reply_markup=kb.get_quick_menu_markup())
+
+
 @u.check_permissions(required_permission=Permissions.EDIT)
 @u.failwithmessage
 @u.ignore_not_modified_exception
@@ -239,7 +250,8 @@ updater.add_handler(CommandHandler(['overview', 'ov'], on_overview_command), bot
 updater.add_handler(CommandHandler(['quick'], on_overview_command))
 updater.add_handler(MessageHandler(Filters.regex(r'^[aA]$'), on_overview_refresh))
 updater.add_handler(CallbackQueryHandler(on_refresh_button_overview, pattern=r'^(?:quick|overview):refresh:(\w+)$'))
-updater.add_handler(CallbackQueryHandler(on_free_space_button_overview, pattern=r'^(?:quick|overview):freespace'))
+updater.add_handler(CallbackQueryHandler(on_free_space_button_overview, pattern=r'^overview:freespace'))
+updater.add_handler(CallbackQueryHandler(on_transfer_info_button_overview, pattern=r'^overview:transferinfo'))
 updater.add_handler(CallbackQueryHandler(on_alton_button_overview, pattern=r'^(?:quick|overview):alton$'))
 updater.add_handler(CallbackQueryHandler(on_altoff_button_overview, pattern=r'^(?:quick|overview):altoff$'))
 updater.add_handler(CallbackQueryHandler(on_schedon_button_overview, pattern=r'^(?:quick|overview):schedon'))
