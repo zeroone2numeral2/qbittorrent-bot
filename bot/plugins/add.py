@@ -22,10 +22,10 @@ logger = logging.getLogger(__name__)
 
 
 def notify_addition(current_chat_id: int, bot: Bot, user: User, torrent_description: str):
-    if not config.telegram.new_torrents_notification:
+    if not config.telegram.added_torrents_notification:
         return
 
-    target_chat_id = config.telegram.new_torrents_notification
+    target_chat_id = config.telegram.added_torrents_notification
     if target_chat_id != current_chat_id:  # do not send if the target chat is the current chat
         return
 
