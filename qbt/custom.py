@@ -198,7 +198,7 @@ class Torrent:
     def recheck(self):
         return self._qbt.recheck([self.hash])
 
-    def trackers(self):
+    def trackers(self) -> List:
         return self._qbt.get_torrent_trackers(self.hash)
 
     def add_tags(self, tags: [str, List]):

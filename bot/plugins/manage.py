@@ -68,16 +68,16 @@ def see_trackers_cb(update: Update, context: CallbackContext):
     if len(text) > MAX_MESSAGE_LENGTH:
         trackers_info = dict()
         for tracker in trackers:
-            if not trackers_info.get(tracker['status'], None):
-                trackers_info[tracker['status']] = dict(count=0, num_peers=0)
+            tracker_status = tracker['status']
+            if not trackers_info.get(tracker_status, None):
+                trackers_info[tracker_status] = dict(count=0, num_peers=0)
 
-            trackers_info[tracker['status']]['count'] += 1
-            trackers_info[tracker['status']]['num_peers'] += tracker['num_peers']
+            trackers_info[tracker_status]['count'] += 1
+            trackers_info[tracker_status]['num_peers'] += tracker['num_peers']
 
         lines_list = list()
         for status, status_counts in trackers_info.items():
-            lines_list.append(
-                '<b>{}</b>: {} trackers, {} peers'.format(status, status_counts['count'], status_counts['num_peers']))
+            lines_list.append(f"<b>{status}</b>: {status_counts['count']} trackers, {status_counts['num_peers']} peers")
 
         text = '\n'.join(lines_list)
 

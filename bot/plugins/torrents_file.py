@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def on_json_command(update: Update, context: CallbackContext):
     logger.info('/json command from %s', update.message.from_user.first_name)
 
-    torrents = qb.torrents(filter='all')
+    torrents = qb.torrents(filter='all', get_torrent_generic_properties=True)
 
     logger.info('qbittirrent request returned %d torrents', len(torrents))
 
@@ -28,14 +28,18 @@ def on_json_command(update: Update, context: CallbackContext):
         update.message.reply_html('There is no torrent')
         return
 
+    update.message.reply_text("Sending file, it might take a while...")
+
     result_dict = defaultdict(list)
     for torrent in torrents:
-        result_dict[torrent.state].append(torrent.dict())
+        torrent_dict = torrent.dict()
+        torrent_dict["_trackers"] = torrent.trackers()
+        result_dict[torrent.state].append(torrent_dict)
 
-    file_path = os.path.join('downloads', '{}.json'.format(update.message.message_id))
+    file_path = os.path.join('downloads', f'{update.message.message_id}.json')
 
     with open(file_path, 'w+') as f:
-        json.dump(result_dict, f, indent=4)
+        json.dump(result_dict, f, indent=2)
 
     update.message.reply_document(open(file_path, 'rb'), caption='#torrents_list', timeout=60 * 10)
 
