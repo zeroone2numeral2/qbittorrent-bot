@@ -224,7 +224,7 @@ def recheck_cb(update: Update, context: CallbackContext):
 def no_notification_cb(update: Update, context: CallbackContext):
     logger.info('no notification inline button')
 
-    if not config.telegram.no_notification_tag:
+    if not config.notifications.no_notification_tag:
         update.callback_query.answer("tag not set in the config file", cache_time=10)
         return
 
@@ -234,7 +234,7 @@ def no_notification_cb(update: Update, context: CallbackContext):
     torrent = qb.torrent(torrent_hash, get_torrent_generic_properties=False)
 
     torrent_tags = torrent.tags_list(lower=True)
-    no_notification_tag = config.telegram.no_notification_tag
+    no_notification_tag = config.notifications.no_notification_tag
 
     if no_notification_tag.lower() in torrent_tags:
         torrent.remove_tags(no_notification_tag)

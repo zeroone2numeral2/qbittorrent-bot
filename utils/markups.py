@@ -121,7 +121,7 @@ def actions_markup(torrent_hash):
         ]
     ]
 
-    if config.telegram.completed_torrents_notification and config.telegram.no_notification_tag:
+    if config.notifications.completed_torrents and config.notifications.no_notification_tag:
         # add an option to add the "do not notify" tag to the torrent
         button = InlineKeyboardButton('do not notify', callback_data='nonotification:{}'.format(torrent_hash))
         keyboard[1].append(button)
@@ -142,9 +142,7 @@ def short_markup(torrent_hash, do_not_notify_tag_button=True):
         InlineKeyboardButton('manage', callback_data='manage:{}'.format(torrent_hash)),
     ]]
 
-    if do_not_notify_tag_button \
-            and config.telegram.completed_torrents_notification \
-            and config.telegram.no_notification_tag:
+    if config.notifications.completed_torrents and config.notifications.no_notification_tag:
         markup[0].insert(0, InlineKeyboardButton('do not notify', callback_data='nonotification:{}'.format(torrent_hash)))
 
     return InlineKeyboardMarkup(markup)
