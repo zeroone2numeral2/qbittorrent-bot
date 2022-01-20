@@ -43,7 +43,6 @@ HELP_MESSAGE = """<b>Commands</b>:
 <i>ADMIN commands</i>
 • /permissions: get the current permissions configuration
 • /pset <code>[key] [val]</code>: change the value of a permission key
-• /config: get the qbittorrent's section of the config file
 • /freespace: get the current free space from qbittorrent's download drive
 
 <i>FREE commands</i>
