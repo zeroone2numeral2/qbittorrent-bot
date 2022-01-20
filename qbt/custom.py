@@ -201,6 +201,9 @@ class Torrent:
     def trackers(self) -> List:
         return self._qbt.get_torrent_trackers(self.hash)
 
+    def remove_trackers(self, urls: [str, List]) -> List:
+        return self._qbt.remove_trackers(self.hash, urls)
+
     def add_tags(self, tags: [str, List]):
         return self._qbt.add_tags(self.hash, tags)
 
@@ -333,6 +336,13 @@ class CustomClient(Client):
             tags_str = ""
 
         return self._post('torrents/removeTags', data={'hashes': torrent_hash, 'tags': tags_str})
+
+    def remove_trackers(self, torrent_hash, urls: [str, List]):
+        if isinstance(urls, str):
+            urls = [urls]
+
+        urls_str = "|".join(urls)
+        return self._post('torrents/removeTrackers', data={'hash': torrent_hash, 'urls': urls_str})
 
     def build_info(self):
         return self._get('app/buildInfo')
