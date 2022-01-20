@@ -77,8 +77,8 @@ def get_overview_schedule_markup():
 
 def get_overview_base_markup():
     keyboard = [[
-        InlineKeyboardButton('alt speed', callback_data='overview:altspeed'),
-        InlineKeyboardButton('schedule', callback_data='overview:schedule'),
+        InlineKeyboardButton('⚙️ alt speed', callback_data='overview:altspeed'),
+        InlineKeyboardButton('⚙️ schedule', callback_data='overview:schedule'),
     ], [
         InlineKeyboardButton('📶 transfer info', callback_data='overview:transferinfo'),
         InlineKeyboardButton('💾 space', callback_data='overview:freespace'),
