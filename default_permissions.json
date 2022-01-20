@@ -1,6 +1,6 @@
 {
     "admins_only": false,
-    "free_read": false,
-    "free_write": false,
-    "free_edit": false
+    "read": false,
+    "write": false,
+    "edit": false
 }

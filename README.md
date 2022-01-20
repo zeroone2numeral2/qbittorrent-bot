@@ -31,12 +31,13 @@ Make sure your config file contains all the keys in the example file (the bot wo
 
 ### Permissions
 
-By default, only _admins_ are allowed to use the bot (users listed under `telegram.admins` in `config.toml`), but there's a couple of values in the `permissions.json` file (`default_permissions.json` if you have not started the bot yet) that can be toggled to set who can use the bot:
+By default, only _admins_ are allowed to use the bot (users listed under `telegram.admins` in `config.toml`), but thereare some values in the `permissions.json` file (`default_permissions.json` if you have not started the bot yet) that can be toggled to set who can use the bot:
 
-- `free_read`: when `true`, anyone can use read-only commands (viewing the torrents list, the torrents info and the current settings)
-- `free_write`: when `true`, anyone can add torrents by magnet link and file. Only works if `free_read` is `true`
-- `free_edit`: when `true`, anyone can manage torrents' settings and qbittorrent's setting. Only works if `free_read` is `true`
-- `admins_only`: nobody can use the bot except for the users listed as `admins`, which can do anything. When `true`, this setting has the priority over the `free_*` settings
+- `read`: when `true`, anyone can use read-only commands (viewing the torrents list, the torrents' info etc.)
+- `write`: when `true`, anyone can add torrents by magnet link/file/link. Only works if `read` is `true`
+- `edit`: when `true`, anyone can manage a torrent's settings and qbittorrent's setting. Only works if `read` is `true`
+- `admins_only`: nobody can use the bot except for the users listed as `admins`, which can do anything. When `true`, this setting has the priority over the read/write/edit settings
+(they will be ignored and the bot will only work for the admins)
 
 You can see and change the current permissions configuration from the bot's chat, using the `/permissions` and `/pset` commands
 

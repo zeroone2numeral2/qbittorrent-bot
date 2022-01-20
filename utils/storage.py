@@ -3,11 +3,11 @@ import json
 
 
 class Storage:
-    def __init__(self, file_path, default_dict={}, autosave=False):
+    def __init__(self, file_path, default_dict: dict, autosave=False):
         self._file_path = os.path.normpath(file_path)
         self._data = dict()
         self._autosave = autosave
-        self._default_dict = default_dict
+        self._default_dict = default_dict or {}
 
         try:
             with open(self._file_path, 'r') as f:

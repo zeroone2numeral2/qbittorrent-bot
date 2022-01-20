@@ -40,21 +40,21 @@ def check_permissions(required_permission='admin'):
                 return
             
             # check if the config allows one of the operations for non-admin users
-            if required_permission in ('r', 'read') and permissions['free_read']:
+            if required_permission in ('r', 'read') and permissions['read']:
                 return func(update, context, *args, **kwargs)
             # "edit/write" permission require "read" permission to be enabled
-            elif required_permission in ('w', 'write') and (permissions['free_read'] and permissions['free_write']):
+            elif required_permission in ('w', 'write') and (permissions['read'] and permissions['write']):
                 return func(update, context, *args, **kwargs)
-            elif required_permission in ('e', 'edit') and (permissions['free_read'] and permissions['free_edit']):
+            elif required_permission in ('e', 'edit') and (permissions['read'] and permissions['edit']):
                 return func(update, context, *args, **kwargs)
             
             # all the permissions are disabled: unauthorized access
             logger.info('unauthorized command usage (%s) by %d (%s)', required_permission, user_id, update.effective_user.first_name)
-            text = '"{}" permission disabled for non-admin users'.format(required_permission)
             if update.callback_query:
-                update.callback_query.answer(text)
+                text = f'"{required_permission}" permission disabled for non-admin users'
+                update.callback_query.answer(text, show_alert=True, cache_time=30)
             elif update.message:
-                update.message.reply_text(text)
+                update.message.reply_html(f'<code>[{required_permission}]</code> permission disabled for non-admin users')
             
             return
 
