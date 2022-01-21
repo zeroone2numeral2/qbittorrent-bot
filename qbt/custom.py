@@ -143,8 +143,12 @@ class Torrent:
         self._torrent_dict['short_name_escaped'] = u.html_escape(self._torrent_dict['short_name'])
 
         self._torrent_dict['generic_speed'] = self._torrent_dict['dlspeed']
-        if self._torrent_dict['state'] in ('uploading', 'forcedUP'):
+        icon = '▼'
+        if self._torrent_dict['state'] in ('uploading', 'forcedUP', 'stalledUP'):
             self._torrent_dict['generic_speed'] = self._torrent_dict['upspeed']
+            icon = '▲'
+        generic_speed_human_readable = u.get_human_readable(self._torrent_dict['generic_speed'])
+        self._torrent_dict['generic_speed_pretty_icon'] = f"{icon}{generic_speed_human_readable}"
 
         for k, v in NEW_ATTRS.items():
             try:
