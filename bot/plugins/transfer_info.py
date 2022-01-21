@@ -29,6 +29,7 @@ TEXT = """<b>Current speed</b>
 <b>Data uploaded/downloaded during this session</b>
 ▲ {session_total_upload}
 ▼ {session_total_download}
+• this session's share rateo: {session_share_rateo}
 
 <b>Torrents queueing</b>
 • max active: {queueing_max_active_downloads} down, {queueing_max_active_uploads} up, \
@@ -52,6 +53,7 @@ def get_speed_text():
 
     fdict['session_total_upload'] = u.get_human_readable(transfer_info['up_info_data'])
     fdict['session_total_download'] = u.get_human_readable(transfer_info['dl_info_data'])
+    fdict['session_share_rateo'] = round(transfer_info['up_info_data']/transfer_info['dl_info_data'], 2)
 
     preferences = qb.preferences()
 
