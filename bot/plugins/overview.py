@@ -33,16 +33,10 @@ QUICK_INFO_TEXT = """• <b>completed:</b> {completed_count}
 <b>Last refresh:</b> {last_refresh}"""
 
 TORRENT_STRING_COMPACT = """• <code>{short_name_escaped}</code> ({progress_pretty}% of {size_pretty}, \
-{traffic_direction_icon} <b>{generic_speed_pretty}/s</b>, {share_ratio_rounded} u/d) \
-[<a href="{info_deeplink}">info</a>]"""
+<b>{generic_speed_pretty}/s</b>, {share_ratio_rounded} u/d) [<a href="{info_deeplink}">info</a>]"""
 
 
 def get_quick_info_text(sort_active_by_dl_speed=True):
-    if sort_active_by_dl_speed:
-        active_torrents_sort = 'dlspeed'
-    else:
-        active_torrents_sort = 'progress'
-
     all_torrents = qb.torrents(filter='all', get_torrent_generic_properties=False)
     states_counter = Counter([t.state for t in all_torrents])
     categories_counter = Counter([t.category for t in all_torrents])
@@ -51,7 +45,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     active_torrents_up.sort(key=lambda t: t['upspeed'])
 
     active_torrents_down = [torrent for torrent in all_torrents if torrent.state in ("downloading",)]
-    active_torrents_down.sort(key=lambda t: t[active_torrents_sort])
+    active_torrents_down.sort(key=lambda t: t['dlspeed'])
 
     active_torrents_down_strings_list = ['no active downloading torrents']
     active_torrents_up_strings_list = ['no active uploading torrents']

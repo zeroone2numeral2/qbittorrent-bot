@@ -66,7 +66,7 @@ NEW_ATTRS = {
     'eta_pretty': lambda t: str(datetime.timedelta(seconds=t['eta'])),  # apparently it's already a string?
     'time_elapsed_pretty': lambda t: str(datetime.timedelta(seconds=t['time_elapsed'])),
     'force_start_pretty': lambda t: 'yes' if t['force_start'] else 'no',
-    'share_ratio_rounded': lambda t: round(t['share_ratio'], 2),
+    'share_ratio_rounded': lambda t: round(t['ratio'], 2),
     'dl_limit_pretty': lambda t: 'no limit' if t['dl_limit'] == -1 else u.get_human_readable(t['dl_limit']),
     'auto_tmm_string': lambda t: 'yes' if t['auto_tmm'] else 'no',
 }
@@ -148,7 +148,7 @@ class Torrent:
             self._torrent_dict['generic_speed'] = self._torrent_dict['upspeed']
             icon = '▲'
         generic_speed_human_readable = u.get_human_readable(self._torrent_dict['generic_speed'])
-        self._torrent_dict['traffic_direction_icon'] = f"{icon}{generic_speed_human_readable}"
+        self._torrent_dict['traffic_direction_icon'] = f"{icon}"
 
         for k, v in NEW_ATTRS.items():
             try:
