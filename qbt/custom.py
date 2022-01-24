@@ -148,7 +148,7 @@ class Torrent:
             self._torrent_dict['generic_speed'] = self._torrent_dict['upspeed']
             icon = '▲'
         generic_speed_human_readable = u.get_human_readable(self._torrent_dict['generic_speed'])
-        self._torrent_dict['generic_speed_pretty_icon'] = f"{icon}{generic_speed_human_readable}"
+        self._torrent_dict['traffic_direction_icon'] = f"{icon}{generic_speed_human_readable}"
 
         for k, v in NEW_ATTRS.items():
             try:
