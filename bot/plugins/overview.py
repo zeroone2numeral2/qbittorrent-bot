@@ -47,7 +47,7 @@ def get_quick_info_text(sort_active_by_dl_speed=True):
     categories_counter = Counter([t.category for t in all_torrents])
 
     active_torrents_up = [torrent for torrent in all_torrents if torrent.state in ("uploading",)]
-    active_torrents_up.sort(key=lambda t: t[active_torrents_sort])
+    active_torrents_up.sort(key=lambda t: t['upspeed'])
 
     active_torrents_down = [torrent for torrent in all_torrents if torrent.state in ("downloading",)]
     active_torrents_down.sort(key=lambda t: t[active_torrents_sort])
