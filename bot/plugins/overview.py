@@ -33,7 +33,7 @@ QUICK_INFO_TEXT = """• <b>completed:</b> {completed_count}
 <b>Last refresh:</b> {last_refresh}"""
 
 TORRENT_STRING_COMPACT = """• <code>{short_name_escaped}</code> ({progress_pretty}% of {size_pretty}, \
-<b>{generic_speed_pretty}/s</b>, {share_ratio_rounded} u/d) [<a href="{info_deeplink}">info</a>]"""
+{share_ratio_rounded}, <b>{generic_speed_pretty}/s</b>) [<a href="{info_deeplink}">info</a>]"""
 
 
 def get_quick_info_text(sort_active_by_dl_speed=True):
