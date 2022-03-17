@@ -14,7 +14,6 @@ if config.proxy.url:
         }
 
 
-
 updater = CustomUpdater(
     token=config.telegram.token,
     defaults=Defaults(timeout=config.telegram.timeout, disable_web_page_preview=True),

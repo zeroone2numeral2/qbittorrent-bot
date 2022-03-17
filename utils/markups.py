@@ -136,14 +136,15 @@ def confirm_delete(torrent_hash):
     ]])
 
 
-def short_markup(torrent_hash, do_not_notify_tag_button=True):
+def short_markup(torrent_hash, do_not_notify_tag_emoji=False):
     markup = [[
         InlineKeyboardButton('pause', callback_data='pause:{}'.format(torrent_hash)),
         InlineKeyboardButton('manage', callback_data='manage:{}'.format(torrent_hash)),
     ]]
 
     if config.notifications.completed_torrents and config.notifications.no_notification_tag:
-        markup[0].insert(0, InlineKeyboardButton('do not notify', callback_data='nonotification:{}'.format(torrent_hash)))
+        label = "🏷 do not notify" if do_not_notify_tag_emoji else "do not notify"
+        markup[0].insert(0, InlineKeyboardButton(label, callback_data='nonotification:{}'.format(torrent_hash)))
 
     return InlineKeyboardMarkup(markup)
 
