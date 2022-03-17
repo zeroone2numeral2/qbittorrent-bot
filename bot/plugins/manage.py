@@ -239,10 +239,10 @@ def no_notification_cb(update: Update, context: CallbackContext):
     is_torrent_tagged = no_notification_tag.lower() in torrent_tags
     if is_torrent_tagged:
         torrent.remove_tags(no_notification_tag)
-        callback_answer = f'Tag "{no_notification_tag}" removed (the torrent WILL be posted when completed)'
+        callback_answer = f'Tag "{no_notification_tag}" removed -> 🔔'
     else:
         torrent.add_tags(no_notification_tag)
-        callback_answer = f'Tag "{no_notification_tag}" added (the torrent will NOT be posted when completed)'
+        callback_answer = f'Tag "{no_notification_tag}" added -> 🔕'
 
     update.callback_query.edit_message_reply_markup(kb.short_markup(torrent_hash, not is_torrent_tagged))
     update.callback_query.answer(callback_answer)
