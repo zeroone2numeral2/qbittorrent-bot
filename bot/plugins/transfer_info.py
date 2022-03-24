@@ -53,7 +53,10 @@ def get_speed_text():
 
     fdict['session_total_upload'] = u.get_human_readable(transfer_info['up_info_data'])
     fdict['session_total_download'] = u.get_human_readable(transfer_info['dl_info_data'])
-    fdict['session_share_rateo'] = round(transfer_info['up_info_data']/transfer_info['dl_info_data'], 2)
+    if transfer_info['dl_info_data'] > 0:
+        fdict['session_share_rateo'] = round(transfer_info['up_info_data']/transfer_info['dl_info_data'], 2)
+    else:
+        fdict['session_share_rateo'] = 0
 
     preferences = qb.preferences()
 
