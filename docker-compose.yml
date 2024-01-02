@@ -1,0 +1,9 @@
+version: "3.2"
+services:
+  qbittelebot:
+    image: qbittelegrambot
+    container_name: qbittelegrambot
+#    volumes:
+#      - ./config.toml:/app/config.toml
+    restart: unless-stopped
+    network_mode: "host"
