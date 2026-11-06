@@ -79,7 +79,7 @@ An MTProto proxy can't carry Bot API requests. To use one, run a local
    TELEGRAM_MTPROTO_PROXY=tg://proxy?server=proxy.example.com&port=443&secret=ee...
    ```
    `TELEGRAM_MTPROTO_PROXY` also accepts `server:port:secret` and `https://t.me/proxy?...` links
-3. build and start the server: `docker compose --profile mtproto up -d --build telegram-bot-api` (the first build takes a while and needs several GB of RAM)
+3. build and start the server: `docker compose --profile mtproto up -d --build telegram-bot-api` (the first build compiles TDLib in a single thread and takes a long time; with plenty of free RAM you can speed it up with `docker compose --profile mtproto build --build-arg JOBS=2 telegram-bot-api`)
 4. in `config.toml` set
    ```toml
    [bot_api]
