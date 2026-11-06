@@ -1,0 +1,127 @@
+diff --git a/telegram-bot-api/Client.cpp b/telegram-bot-api/Client.cpp
+index 3beb030..6e7356a 100644
+--- a/telegram-bot-api/Client.cpp
++++ b/telegram-bot-api/Client.cpp
+@@ -9408,6 +9408,20 @@ void Client::on_update_authorization_state() {
+                      td::make_unique<TdOnOkCallback>());
+       }
+ 
++      if (!parameters_->mtproto_proxy_server_.empty()) {
++        // addProxy reuses an already saved identical proxy, so it is safe to call it on every start
++        send_request(make_object<td_api::addProxy>(
++                         make_object<td_api::proxy>(parameters_->mtproto_proxy_server_,
++                                                    parameters_->mtproto_proxy_port_,
++                                                    make_object<td_api::proxyTypeMtproto>(
++                                                        parameters_->mtproto_proxy_secret_)),
++                         true, "mtproto-proxy"),
++                     td::make_unique<TdOnOkCallback>());
++      } else {
++        // a proxy enabled during a previous run is stored in the bot database, turn it off explicitly
++        send_request(make_object<td_api::disableProxy>(), td::make_unique<TdOnOkCallback>());
++      }
++
+       auto request = make_object<td_api::setTdlibParameters>();
+       request->use_test_dc_ = is_test_dc_;
+       request->database_directory_ = dir_;
+diff --git a/telegram-bot-api/ClientParameters.h b/telegram-bot-api/ClientParameters.h
+index 150cfaf..25fbcab 100644
+--- a/telegram-bot-api/ClientParameters.h
++++ b/telegram-bot-api/ClientParameters.h
+@@ -118,6 +118,10 @@ struct ClientParameters {
+   td::int32 default_max_webhook_connections_ = 0;
+   td::IPAddress webhook_proxy_ip_address_;
+ 
++  td::string mtproto_proxy_server_;
++  td::int32 mtproto_proxy_port_ = 0;
++  td::string mtproto_proxy_secret_;
++
+   double start_time_ = 0;
+ 
+   td::ActorId<td::GetHostByNameActor> get_host_by_name_actor_id_;
+diff --git a/telegram-bot-api/telegram-bot-api.cpp b/telegram-bot-api/telegram-bot-api.cpp
+index 76b1a8f..b395fc0 100644
+--- a/telegram-bot-api/telegram-bot-api.cpp
++++ b/telegram-bot-api/telegram-bot-api.cpp
+@@ -134,6 +134,54 @@ static void sigsegv_signal_handler(int signum, void *addr) {
+   fail_signal_handler(signum);
+ }
+ 
++// Accepts "server:port:secret", "tg://proxy?server=...&port=...&secret=..." or "https://t.me/proxy?..."
++static td::Status parse_mtproto_proxy(td::Slice value, ClientParameters *parameters) {
++  td::string server;
++  td::string port;
++  td::string secret;
++  auto query_pos = value.find('?');
++  if (query_pos != td::Slice::npos && (td::begins_with(value, "tg:") || td::begins_with(value, "http"))) {
++    for (auto arg : td::full_split(value.substr(query_pos + 1), '&')) {
++      auto key_value = td::split(arg, '=');
++      auto decoded = td::url_decode(key_value.second, false);
++      if (key_value.first == "server") {
++        server = std::move(decoded);
++      } else if (key_value.first == "port") {
++        port = std::move(decoded);
++      } else if (key_value.first == "secret") {
++        secret = std::move(decoded);
++      }
++    }
++  } else {
++    auto secret_pos = value.rfind(':');
++    if (secret_pos == td::Slice::npos) {
++      return td::Status::Error("MTProto proxy must be in the format server:port:secret");
++    }
++    secret = value.substr(secret_pos + 1).str();
++    auto host_port = value.substr(0, secret_pos);
++    auto port_pos = host_port.rfind(':');
++    if (port_pos == td::Slice::npos) {
++      return td::Status::Error("MTProto proxy must be in the format server:port:secret");
++    }
++    server = host_port.substr(0, port_pos).str();
++    port = host_port.substr(port_pos + 1).str();
++  }
++  if (server.size() > 2 && server[0] == '[' && server.back() == ']') {
++    server = server.substr(1, server.size() - 2);
++  }
++  if (server.empty() || secret.empty()) {
++    return td::Status::Error("MTProto proxy server and secret must be non-empty");
++  }
++  TRY_RESULT(port_number, td::to_integer_safe<td::int32>(port));
++  if (port_number <= 0 || port_number > 65535) {
++    return td::Status::Error("Wrong MTProto proxy port");
++  }
++  parameters->mtproto_proxy_server_ = std::move(server);
++  parameters->mtproto_proxy_port_ = port_number;
++  parameters->mtproto_proxy_secret_ = std::move(secret);
++  return td::Status::OK();
++}
++
+ int main(int argc, char *argv[]) {
+   SET_VERBOSITY_LEVEL(VERBOSITY_NAME(FATAL));
+   td::ExitGuard exit_guard;
+@@ -205,6 +253,16 @@ int main(int argc, char *argv[]) {
+     return td::string();
+   }(std::getenv("TELEGRAM_API_HASH"));
+ 
++  if (auto env_proxy = std::getenv("TELEGRAM_MTPROTO_PROXY")) {
++    if (env_proxy[0] != '\0') {
++      auto status = parse_mtproto_proxy(td::Slice(env_proxy), parameters.get());
++      if (status.is_error()) {
++        LOG(PLAIN) << "Invalid TELEGRAM_MTPROTO_PROXY: " << status.message();
++        return 2;
++      }
++    }
++  }
++
+   options.set_usage(td::Slice(argv[0]), "--api-id=<arg> --api-hash=<arg> [--local] [OPTION]...");
+   options.set_description("Telegram Bot API server");
+   options.add_option('h', "help", "display this help text and exit", [&] { need_print_usage = true; });
+@@ -291,6 +349,10 @@ int main(int argc, char *argv[]) {
+   (void)main_thread_affinity;
+ #endif
+ 
++  options.add_checked_option('\0', "mtproto-proxy",
++                             "MTProto proxy used to connect to Telegram servers, \"server:port:secret\" or a "
++                             "tg://proxy link (defaults to the value of the TELEGRAM_MTPROTO_PROXY environment variable)",
++                             [&](td::Slice value) { return parse_mtproto_proxy(value, parameters.get()); });
+   options.add_checked_option('\0', "proxy",
+                              "HTTP proxy server for outgoing webhook requests in the format http://host:port",
+                              [&](td::Slice address) {
