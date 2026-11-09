@@ -64,6 +64,35 @@ Docker is only tested on Linux. It will most likeyly work on macOS too, but not 
 3. pull the image: `docker pull 0one2/qbittorrent-bot`
 4. run docker `docker run -d -v ${PWD}/config.toml:/app/config.toml 0one2/qbittorrent-bot`
 
+### MTProto proxy
+
+The bot talks to Telegram through the Bot API (HTTPS), so the `[proxy]` section only accepts SOCKS5/HTTP proxies.
+An MTProto proxy can't carry Bot API requests. To use one, run a local
+[Bot API server](https://github.com/tdlib/telegram-bot-api): it connects to Telegram over MTProto, and the
+`telegram-bot-api` directory contains a patch that makes it do so through your MTProto proxy (including `ee`/fake-TLS secrets).
+
+1. get `api_id` and `api_hash` at https://my.telegram.org
+2. create a `.env` file next to `docker-compose.yml`:
+   ```
+   TELEGRAM_API_ID=123456
+   TELEGRAM_API_HASH=0123456789abcdef0123456789abcdef
+   TELEGRAM_MTPROTO_PROXY=tg://proxy?server=proxy.example.com&port=443&secret=ee...
+   ```
+   `TELEGRAM_MTPROTO_PROXY` also accepts `server:port:secret` and `https://t.me/proxy?...` links
+3. build and start the server: `docker compose --profile mtproto up -d --build telegram-bot-api` (the first build compiles TDLib in a single thread and takes a long time; with plenty of free RAM you can speed it up with `docker compose --profile mtproto build --build-arg JOBS=2 telegram-bot-api`)
+4. in `config.toml` set
+   ```toml
+   [bot_api]
+   url = "http://127.0.0.1:8081"
+   ```
+   and restart the bot
+
+Without Docker, apply `telegram-bot-api/mtproto-proxy.patch` to the commit named in `telegram-bot-api/Dockerfile`,
+build as described in the telegram-bot-api README and start it with `--mtproto-proxy=server:port:secret`.
+
+If the bot was used with api.telegram.org before, Telegram recommends calling
+[logOut](https://core.telegram.org/bots/api#logout) there once before moving it to a local server.
+
 ### Currently running on...
 
 I made this bot to be able to manage what I'm downloading on my Raspberry running Raspbian (using qBittorrent's [headless version](https://github.com/qbittorrent/qBittorrent/wiki/Setting-up-qBittorrent-on-Ubuntu-server-as-daemon-with-Web-interface-(15.04-and-newer))), and that's the only environment I've tested this thing in. There's also the systemd file I'm using, `qbtbot.service` (which assumes you're going to run the bot in a python3 virtual environment)

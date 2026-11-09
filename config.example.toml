@@ -10,6 +10,13 @@ url = ""        # socks5(h)://ip:port or http://user:pass@ip:port/
 username = ""   # Socks only, Use url embeded user/pass for http(s)
 password = ""   # Socks only
 
+[bot_api]
+# Bot API server to use instead of api.telegram.org. Leave "" to use the official one.
+# To go through an MTProto proxy, run the bundled server from ./telegram-bot-api (see README)
+# and set this to its address, e.g. "http://127.0.0.1:8081".
+# The [proxy] section above, if set, is applied to the requests to this server too.
+url = ""
+
 [notifications]
 completed_torrents = 0 # id of a chat to notify when a torrent is completed. 0 to disable
 no_notification_tag = "" # if a torrent has this tag, do not send the completed download notification in the notifications chat (if set). Case insensitive. "" (empty string) to disable

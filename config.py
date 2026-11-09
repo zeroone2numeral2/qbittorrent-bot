@@ -20,8 +20,15 @@ def exit_with_message(message: str):
 
 example_config = toml.load('config.example.toml')
 
+# sections added after the first release: configs that don't have them keep working with the example defaults
+OPTIONAL_SECTIONS = ('bot_api',)
+
 for config_section, example_config_section_dict in example_config.items():
     if config_section not in config:
+        if config_section in OPTIONAL_SECTIONS:
+            config[config_section] = AttrDict(example_config_section_dict)
+            continue
+
         exit_with_message(f"missing section [{config_section}]")
 
     config_section_dict = config[config_section]

@@ -13,10 +13,18 @@ if config.proxy.url:
             'password': config.proxy.password 
         }
 
+BOT_API_KWARGS = {}
+if config.bot_api.url:
+    # local Bot API server (e.g. the one in ./telegram-bot-api, connected to Telegram through an MTProto proxy)
+    bot_api_url = config.bot_api.url.rstrip('/')
+    BOT_API_KWARGS['base_url'] = f'{bot_api_url}/bot'
+    BOT_API_KWARGS['base_file_url'] = f'{bot_api_url}/file/bot'
+
 
 updater = CustomUpdater(
     token=config.telegram.token,
     defaults=Defaults(timeout=config.telegram.timeout, disable_web_page_preview=True),
     workers=config.telegram.workers,
     request_kwargs=REQUEST_KWARGS,
+    **BOT_API_KWARGS,
 )

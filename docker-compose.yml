@@ -7,3 +7,24 @@ services:
 #      - ./config.toml:/app/config.toml
     restart: unless-stopped
     network_mode: "host"
+
+  # Optional: local Bot API server connected to Telegram through an MTProto proxy.
+  # Start it with `docker compose --profile mtproto up -d` and set [bot_api] url = "http://127.0.0.1:8081" in config.toml
+  telegram-bot-api:
+    build: ./telegram-bot-api
+    image: telegram-bot-api-mtproxy
+    container_name: telegram-bot-api
+    profiles: ["mtproto"]
+    restart: unless-stopped
+    environment:
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH}
+      # server:port:secret or a tg://proxy?server=...&port=...&secret=... link
+      TELEGRAM_MTPROTO_PROXY: ${TELEGRAM_MTPROTO_PROXY}
+    volumes:
+      - telegram-bot-api-data:/var/lib/telegram-bot-api
+    ports:
+      - "127.0.0.1:8081:8081"
+
+volumes:
+  telegram-bot-api-data:
